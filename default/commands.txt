@@ -1,6 +1,7 @@
 // bash script to create files from a to n and copy template file into each file created
 
-for i in {a..n}; do touch $i.cpp ; done
+touch main.cpp input.txt output.txt
+touch {a..n}.txt
 for i in {a..n}; do cp main.cpp $i.cpp ; done
 
 -------------------------------------------------
@@ -8,7 +9,7 @@ for i in {a..n}; do cp main.cpp $i.cpp ; done
 cd Desktop/cp
 
 // Create necessary files
-touch main.cpp input.txt output.txt
+
 
 // Open VS Code in the current directory
 code . &
