@@ -5,7 +5,6 @@ using namespace std;
 #define ll long long
 #define endl '\n'
 #define all(x) x.begin(), x.end()
-#define sz(x) (int)x.size()
 
 void files() {
 	ios_base::sync_with_stdio(false), cin.tie(nullptr), cout.tie(nullptr);
