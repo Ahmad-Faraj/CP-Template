@@ -80,15 +80,22 @@ struct manacher
 };
 void solve(int tc)
 {
-    string s;
-    cin >> s;
     manacher m(s);
-    for (auto x : m.s)
-        cout << x << sp;
-    cout << nl;
-    for (auto x : m.p)
-        cout << x << sp;
-    cout << nl;
+    vector<ll> &p = m.p;
+    int n = (int)p.size();
+
+    ll mx = 0;
+    int idx = 0;
+    for(int i = 0; i < n; i++) {
+        if(p[i] > mx) {
+            mx = p[i];
+            idx = i;
+        }
+    }
+
+    // mx is radius in transformed string; palindrome length = mx - 1
+    int start = (idx - mx + 1) / 2; // map back to original string index
+    return s.substr(start, mx - 1);
 }
 signed main(void)
 {
