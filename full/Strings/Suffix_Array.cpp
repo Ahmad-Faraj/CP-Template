@@ -261,6 +261,24 @@ struct SuffixArray
         }
         return "No such line.";
     }
+
+    static int min_common_substring(const string &s, const string &t) {
+        string st = s + "#" + t + "$";
+        SuffixArray sa(st);
+        int n = (int)s.size();
+        int ans = (int)1e9;
+        for (int i = 1; i < (int)sa.lcp.size() - 1; i++) {
+            bool cond1 = (sa.p[i] < n && sa.p[i - 1] > n);
+            bool cond2 = (sa.p[i] > n && sa.p[i - 1] < n);
+            if (cond1 || cond2) {
+                int mx = max(sa.lcp[i - 1], sa.lcp[i + 1]);
+                if (sa.lcp[i] > mx)
+                    ans = min(ans, mx + 1);
+            }
+        }
+        if (ans == (int)1e9) return -1;
+        return ans;
+    }
 };
 
 void solve(int tc)
