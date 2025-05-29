@@ -77,6 +77,37 @@ struct Zfunctions
         }
         return out;
     }
+
+    string minString(const string &a, const string &b)
+    {
+        string s = a + b;
+        vector<int> z(s.size());
+        int maxMatch = 0;
+        for (int i = 1, l = 0, r = 0; i < s.size(); i++)
+        {
+            z[i] = max(0, min(z[i - l], r - i + 1));
+     
+            while (i + z[i] < s.size() && s[z[i]] == s[i + z[i]])
+            {
+                l = i;
+                r = i + z[i];
+                z[i]++;
+            }
+     
+            if (i >= a.size())
+            {
+                if (z[i] + i == s.size())
+                {
+                    maxMatch = max(maxMatch, z[i]);
+                }
+                if (z[i] == a.size())
+                {
+                    return b;
+                }
+            }
+        }
+        return b + a.substr(maxMatch);
+    }
 };
 void solve(int tc)
 {
