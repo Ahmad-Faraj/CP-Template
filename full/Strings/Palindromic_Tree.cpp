@@ -99,3 +99,25 @@ struct PalindromicTree {
         return sum;
     }
 };
+
+int main(){
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
+
+    string S = "ababa";
+    int n = S.size();
+
+    // For lowercase letters: sigma=26, base='a'
+    PalindromicTree pt(n, 26, 'a');
+
+    for (int i = 0; i < n; i++)
+        pt.addChar(S[i], i+1);
+
+    pt.propagateOccurrences();
+
+    cout << "Distinct palindromes: " << pt.distinctCount() << "\n";
+    cout << "Total occurrences:   " << pt.totalOccurrences() << "\n";
+
+    return 0;
+}
+
