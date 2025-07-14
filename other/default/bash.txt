@@ -1,0 +1,5 @@
+// bash script to create files from a to n and copy template file into each file created
+
+touch main.cpp input.txt output.txt
+touch {a..n}.txt
+for i in {a..n}; do cp main.cpp $i.cpp ; done
