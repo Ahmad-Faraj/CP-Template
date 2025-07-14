@@ -2,7 +2,7 @@
 using namespace std;
 
 // extended euclidean algorithm and diofantian equation
-int extended_gcd(int a, int b, int& x, int& y) {
+int extended_gcd(int a, int b, int &x, int &y) {
     if (b == 0) {
         x = 1;
         y = 0;
