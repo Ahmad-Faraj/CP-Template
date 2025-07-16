@@ -69,21 +69,3 @@ template <typename T = int> struct Kruskal {
         return ans;
     }
 };
-
-void Accepted() {}
-
-int main() {
-
-    ios::sync_with_stdio(0);
-    cin.tie(0);
-    cout.tie(0);
-    if (fopen("input.txt", "r")) {
-        freopen("input.txt", "r", stdin), freopen("output.txt", "w", stdout);
-    }
-
-    tt = tc = 1; // cin >> tt;
-    while (tt--) Accepted(), ++tc;
-
-    Time;
-    return 0;
-}

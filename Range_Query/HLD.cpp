@@ -1,8 +1,7 @@
 #include <bits/stdc++.h>
-#include <ext/pb_ds/assoc_container.hpp>
-#include <ext/pb_ds/tree_policy.hpp>
 #define ll long long
 using namespace std;
+
 template <typename T = int, int Base = 0> struct Segment_Tree {
 
     struct Node {

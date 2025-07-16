@@ -23,14 +23,3 @@ void solve(ll l, ll r) {
     R = to_string(r);
     if (sz(L) < sz(R)) L = string(sz(R) - sz(L), '0') + L;
 }
-
-signed main() {
-    // Ahmed_Faraj();
-    int test = 1;
-    // cin >> test;
-    for (int tc = 1; tc <= test; tc++) {
-        // cout << "Case " << tc << ":";
-        // solve();
-    }
-    return 0;
-}
