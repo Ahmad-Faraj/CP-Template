@@ -1,12 +1,11 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-const int N = 3e5 + 9;
-
 // Works for both directed, undirected and with negative cost too
-// doesn't work for negative cycles
+// fails for negative cycles
 // for undirected edges just make the directed flag false
 // Complexity: O(min(E^2 *V log V, E logV * flow))
+
 using T = long long;
 const T inf = 1LL << 61;
 struct MCMF {
@@ -74,9 +73,9 @@ struct MCMF {
         for (int i = 0; i < n; i++) {
             if (d[i] < inf) potential[i] = d[i];
         }
-        return d[t] != inf; // for max flow min cost
-                            // return d[t] <= 0; // for min cost flow
+        return d[t] != inf;
     }
+
     T send_flow(int v, T cur) {
         if (par[v] == -1) return cur;
         int id = par[v];
@@ -88,6 +87,7 @@ struct MCMF {
         e[id ^ 1].cap += f;
         return f;
     }
+
     // returns {maxflow, mincost}
     pair<T, T> solve(int _s, int _t, T goal = inf) {
         s = _s;
@@ -95,10 +95,6 @@ struct MCMF {
         flow = 0, cost = 0;
         potential.assign(n, 0);
         if (neg) {
-            // Run Bellman-Ford to find starting potential on the starting graph
-            // If the starting graph (before pushing flow in the residual graph) is a DAG,
-            // then this can be calculated in O(V + E) using DP:
-            // potential(v) = min({potential[u] + cost[u][v]}) for each u -> v and potential[s] = 0
             d.assign(n, inf);
             d[s] = 0;
             bool relax = true;
@@ -129,38 +125,54 @@ struct MCMF {
         return make_pair(flow, cost);
     }
 };
-int main() {
-    ios_base::sync_with_stdio(0);
-    cin.tie(0);
+
+void solve_match() {
     int n;
     cin >> n;
-    assert(n <= 10);
-    MCMF F(2 * n);
+    MCMF F(2 * n + 3);
     for (int i = 0; i < n; i++) {
         for (int j = 0; j < n; j++) {
             int k;
             cin >> k;
-            F.add_edge(i, j + n, 1, k, i * 20 + j);
+            F.add_edge(i, j + n, 1, k, i * n + j);
         }
     }
     int s = 2 * n + 1, t = s + 1;
+    // link source to u // link v to sink
     for (int i = 0; i < n; i++) {
         F.add_edge(s, i, 1, 0);
         F.add_edge(i + n, t, 1, 0);
     }
-    auto ans = F.solve(s, t).second;
-    long long w = 0;
-    set<int> se;
+    auto cost = F.solve(s, t).second;
+    cout << cost << endl;
+    long long number_of_matched = 0;
     for (int i = 0; i < n; i++) {
         for (int j = 0; j < n; j++) {
-            int p = i * 20 + j;
+            int p = i * n + j;
             if (F.flow_through[p] > 0) {
-                se.insert(j);
-                w += F.flow_through[p];
+                cout << i + 1 << " " << j + 1 << endl;
+                number_of_matched += F.flow_through[p];
             }
         }
     }
-    assert(se.size() == n && w == n);
-    cout << ans << '\n';
-    return 0;
+    cout << number_of_matched << endl;
+}
+
+void solve_general() {
+    int n, m, k;
+    cin >> n >> m >> k;
+    MCMF F(n + 3);
+    int st = 1, en = n + 1;
+    for (int i = 1; i <= m; i++) {
+        int u, v, r, c;
+        cin >> u >> v >> r >> c;
+        F.add_edge(u, v, r, c, i);
+    }
+    F.add_edge(n, en, k, 0, m + 1);
+    auto ans = F.solve(st, en);
+    if(ans.first < k){
+        cout << -1 << endl;
+        return;
+    }
+    cout << ans.second << '\n';
 }
