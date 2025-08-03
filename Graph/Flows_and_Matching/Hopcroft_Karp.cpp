@@ -1,8 +1,6 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-const int N = 3e5 + 9;
-
 struct HopcroftKarp {
     static const int inf = 1e9;
     int n;
@@ -61,9 +59,8 @@ struct HopcroftKarp {
         return ans;
     }
 };
-int32_t main() {
-    ios_base::sync_with_stdio(0);
-    cin.tie(0);
+
+int main() {
     int n, m, q;
     cin >> n >> m >> q;
     HopcroftKarp M(n, m);
@@ -72,6 +69,5 @@ int32_t main() {
         cin >> u >> v;
         M.add_edge(u, v);
     }
-    cout << M.maximum_matching() << '\n';
-    return 0;
+    cout << M.maximum_matching() << endl;
 }

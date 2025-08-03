@@ -2,6 +2,7 @@
 using namespace std;
 #define ll long long
 
+// 0-based indexing
 class Segtree {
     int sz;
     vector<ll> seg;

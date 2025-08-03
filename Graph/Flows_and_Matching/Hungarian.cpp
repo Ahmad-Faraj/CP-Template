@@ -1,13 +1,19 @@
 #include <bits/stdc++.h>
 using namespace std;
+#define int long long
+const int MAXN = 505;
+const int64_t INF = (int64_t)4e18;
 
-const int N = 509;
-
-/* Complexity: O(n^3) but optimized
+/* 1-indexed / Complexity: O(n^3) but optimized
 It finds minimum cost maximum matching.
 For finding maximum cost maximum matching
 add -cost and return -matching()
-1-indexed */
+c[i][j] = inf -> min;
+c[i][j] = 0 -> max;
+*/
+
+const int N = 505;
+
 struct Hungarian {
     long long c[N][N], fx[N], fy[N], d[N];
     int l[N], r[N], arg[N], trace[N];
@@ -19,7 +25,9 @@ struct Hungarian {
         for (int i = 1; i <= n; ++i) {
             fy[i] = l[i] = r[i] = 0;
             for (int j = 1; j <= n; ++j)
-                c[i][j] = inf; // make it 0 for maximum cost matching (not necessarily with max count of matching)
+                c[i][j] = inf; // make it 0 for maximum cost matching 
+                // (not necessarily with max count of matching)
+                // if you need max flow with max flow
         }
     }
     void add_edge(int u, int v, long long cost) { c[u][v] = min(c[u][v], cost); }
@@ -122,18 +130,22 @@ struct Hungarian {
         return ans;
     }
 };
-int32_t main() {
-    ios_base::sync_with_stdio(0);
-    cin.tie(0);
-    int n1, n2, m;
-    cin >> n1 >> n2 >> m;
-    Hungarian M(n1, n2);
-    for (int i = 1; i <= m; i++) {
-        int u, v, w;
-        cin >> u >> v >> w;
-        M.add_edge(u, v, -w);
+
+void solve() {
+    int n;
+    cin >> n;
+    Hungarian M(n, n);
+    for (int i = 1; i <= n; ++i) {
+        for (int j = 1; j <= n; ++j) {
+            int cost;
+            cin >> cost;
+            M.add_edge(i, j, cost);
+        }
     }
-    cout << -M.maximum_matching() << '\n';
-    for (int i = 1; i <= n1; i++) cout << M.l[i] << ' ';
-    return 0;
+    int total = M.maximum_matching();
+    cout << total << '\n';
+    // Print matched nodes
+    for (int i = 1; i <= n; ++i) {
+        cout << i << ' ' << M.l[i] << '\n';
+    }
 }

@@ -1,6 +1,7 @@
 #include <bits/stdc++.h>
 using namespace std;
 
+// 0-based indexing
 const int N = 505, LG = 10;
 
 int st[N][N][LG][LG];
@@ -85,9 +86,7 @@ int32_t main() {
     while (q--) {
         int x1, y1, x2, y2;
         cin >> x1 >> y1 >> x2 >> y2;
-        x1--, y1--;
-        x2--;
-        y2--;
+        x1--, y1--, x2--, y2--;
         int l = 1, r = min(x2 - x1 + 1, y2 - y1 + 1), ans = 0;
         while (l <= r) {
             int mid = l + r >> 1;
@@ -100,4 +99,3 @@ int32_t main() {
     }
     return 0;
 }
-// https://www.codechef.com/problems/CENS20B

@@ -2,9 +2,10 @@
 using namespace std;
 
 const int N = 2e5 + 9;
-
 using ll = long long;
 
+// all queries are performed on [l, r) segment (right exclusive)
+// 0 indexed
 struct SGTBeats {
     const ll inf = 1e18;
     int n, n0;
@@ -251,9 +252,9 @@ struct SGTBeats {
     void add_val(int a, int b, ll x) { _add_val(x, a, b, 0, 0, n0); }
     // range update query
     void update_val(int a, int b, ll x) { _update_val(x, a, b, 0, 0, n0); }
-    // range minimum query
-    ll query_max(int a, int b) { return _query_max(a, b, 0, 0, n0); }
     // range maximum query
+    ll query_max(int a, int b) { return _query_max(a, b, 0, 0, n0); }
+    // range minimum query
     ll query_min(int a, int b) { return _query_min(a, b, 0, 0, n0); }
     // range sum query
     ll query_sum(int a, int b) { return _query_sum(a, b, 0, 0, n0); }
@@ -261,8 +262,6 @@ struct SGTBeats {
 
 ll a[N];
 int32_t main() {
-    ios_base::sync_with_stdio(0);
-    cin.tie(0);
     int n, q;
     cin >> n >> q;
     for (int i = 0; i < n; i++) {
@@ -284,6 +283,4 @@ int32_t main() {
             cout << t.query_sum(l, r) << '\n';
         }
     }
-    return 0;
 }
-// https://judge.yosupo.jp/problem/range_chmin_chmax_add_range_sum

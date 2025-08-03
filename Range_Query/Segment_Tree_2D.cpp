@@ -5,43 +5,10 @@ using namespace std;
 // 2D segment tree
 // 1-based indexing but pass 0-based indexing vector to the constructor
 // 1-based indexing for queries and updates
-// we are building segement tree of segment trees
-// at first we are building segment tree for each row
-// then each node in the segment tree of rows will have a segment tree for columns
-// example for sum
-/*
-     1, 2, 3, 4
-     5, 6, 7, 8
-     1, 2, 3, 4
-     5, 6, 7, 8
-
-                                                                                    1, 2, 3, 4
-                                                                    6, 8, 10, 12
-                                                                                    5, 6, 7, 8
-                                                    12, 16, 20, 24
-                                                                                    1, 2, 3, 4
-                                                                    6, 8, 10, 12
-                                                                                    5, 6, 7, 8
-    this is the structure of the segment tree on rows
-    [12, 16, 20, 24] is the sum of the first 4 rows
-    [6, 8, 10, 12] is the sum of row 1 and 2
-    [6, 8, 10, 12] is the sum of row 3 and 4
-    [1, 2, 3, 4] is the sum of the first row
-    [5, 6, 7, 8] is the sum of the second row
-    [1, 2, 3, 4] is the sum of the third row
-    [5, 6, 7, 8] is the sum of the fourth row
-    and each node in the segment tree of rows will have a segment tree for columns
-    so if i'm querying the from (row=1, col=2) to (row=2, col=3)
-    first i will query for the first 2 rows until i reached the node that contains the segment tree for the first 2 rows
-    then i will query in this segment tree from 2 to 3 on columns
-    and the result will be the sum of the first 2 rows from 2 to 3
-    if i query from row 1 to row 3 so i will reach the node contains sum of the 2 rows 6, 8, 10, 12
-    and the node contains the sum of the third row 1, 2, 3, 4 and query from them on columns and merge results
-*/
 struct SegTree2D {
     int n, m;
     vector<vector<int>> t;
-    int Default = 0; // default value for the segment tree and return value for invalid queries
+    int Default = 0; // return value for invalid queries
     SegTree2D(int n, int m) : n(n), m(m), t(4 * n, vector<int>(4 * m, Default)) {}
     SegTree2D(int n, int m, vector<vector<int>> &a) : n(n), m(m), t(4 * n, vector<int>(4 * m, Default)) { build(a); }
     void build_y(int vx, int lx, int rx, int vy, int ly, int ry, vector<vector<int>> &a) {

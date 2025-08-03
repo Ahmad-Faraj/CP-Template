@@ -2,6 +2,7 @@
 using namespace std;
 #define ll long long
 
+// 1-based indexing
 struct Lazy_Segment_Tree {
     struct Node {
         ll val, lazy;
@@ -12,9 +13,11 @@ struct Lazy_Segment_Tree {
             return *this;
         }
     };
+
     int size;
     vector<Node> tree;
     Node Default;
+
     void init(int n) {
         size = 1;
         while (size < n) size *= 2;
@@ -22,6 +25,7 @@ struct Lazy_Segment_Tree {
         tree = vector<Node>(2 * size);
     }
     Node merge(Node &a, Node &b) { return a.val + b.val; }
+
     void build(vector<int> &nums, int idx, int lx, int rx) {
         if (lx == rx) {
             if (lx <= nums.size()) tree[idx] = nums[lx - 1];
@@ -33,6 +37,7 @@ struct Lazy_Segment_Tree {
         tree[idx] = merge(tree[2 * idx], tree[2 * idx + 1]);
     }
     void build(vector<int> &nums) { build(nums, 1, 1, size); }
+
     void push(int idx, int lx, int rx) {
         if (tree[idx].lazy == 0) return;
         tree[idx].val += (rx - lx + 1) * tree[idx].lazy;
@@ -42,6 +47,7 @@ struct Lazy_Segment_Tree {
         }
         tree[idx].lazy = 0;
     }
+
     void update(int l, int r, int v, int idx, int lx, int rx) {
         push(idx, lx, rx);
         if (rx < l || lx > r) return;
@@ -55,7 +61,9 @@ struct Lazy_Segment_Tree {
         update(l, r, v, 2 * idx + 1, mx + 1, rx);
         tree[idx] = merge(tree[2 * idx], tree[2 * idx + 1]);
     }
+
     void update(int l, int r, int v) { update(l, r, v, 1, 1, size); }
+
     Node query(int l, int r, int idx, int lx, int rx) {
         push(idx, lx, rx);
         if (rx < l || lx > r) return Default;
@@ -65,5 +73,6 @@ struct Lazy_Segment_Tree {
         auto right = query(l, r, 2 * idx + 1, mx + 1, rx);
         return merge(left, right);
     }
+
     ll query(int l, int r) { return query(l, r, 1, 1, size).val; }
 };

@@ -59,6 +59,7 @@ template <typename T = int> struct PST {
     void update(int idx, T val) { roots.push_back(update(roots.back(), idx, val, Lx, Rx)); }
 
     void update_version(int idx, T val, int version) { roots[version] = (update(roots[version], idx, val, Lx, Rx)); }
+
     Node *query(Node *root, int l, int r, T lx, T rx) {
         if (root == nullptr) return new Node();  // Base case for null pointer
         if (lx > r || l > rx) return new Node(); // Base case for out-of-range interval
@@ -71,6 +72,7 @@ template <typename T = int> struct PST {
 
     T query(int l, int r, int version) { return query(roots[version], l, r, Lx, Rx)->val; }
 
+    // clones a version and pushes it into PST
     void copy(int version) { roots.push_back(roots[version]); }
 
     T get(int time, int idx) { return query(idx, idx, time)->val; }
@@ -87,10 +89,12 @@ void solve(int tc) {
         int type;
         cin >> type;
         if (type == 1) {
+            // Updates & Creates a new version in the PST
             int idx, val;
             cin >> idx >> val;
             pst.update(idx, val);
         } else if (type == 2) {
+            // Query sum from l to r on version k
             int k, l, r;
             cin >> k >> l >> r;
             cout << pst.query(l, r, k) << endl;

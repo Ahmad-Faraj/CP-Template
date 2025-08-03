@@ -1,50 +1,116 @@
 #include <bits/stdc++.h>
+#define ll long long
+#define sz(x) (int)(x.size())
 using namespace std;
-using ll = long long;
-#define sz(st) int(st.size())
-#define all(st) st.begin(), st.end()
-// Merge Sort Tree using SQRT
-template <typename T> class Merge_Sort_Tree {
-    // 1-Based
-    int n;
-    static const int MAX_N = 2e5 + 5; // TODO
-    static const int len = 450;       // TODO
-    vector<T> a;
-    vector<vector<T>> b;
-    int blk_idx(int idx) { return idx / len; }
-    int get(int idx, T val, bool is_block = 0) // TODO
-    {
-        if (is_block) {
-            idx = blk_idx(idx);
-            return sz(b[idx]) - (lower_bound(all(b[idx]), val) - b[idx].begin());
+
+// 1-Based indexing
+// build: nlog(n) | query/update: log^2(n)
+struct Segment_Tree {
+
+    struct Node {
+        vector<int> vec;
+        Node(const vector<int> &V = vector<int>()) : vec(V) {}
+        Node operator=(const int rhs) {
+            vec = vector<int>(1, rhs);
+            return *this;
         }
-        return a[idx] >= val;
+    };
+
+    int size;
+    Node DEFAULT;
+    vector<Node> tree;
+
+    Segment_Tree(int n = 0) {
+        size = 1, DEFAULT = vector<int>();
+        while (size < n) size *= 2;
+        tree = vector<Node>(2 * size, DEFAULT);
     }
 
-    Merge_Sort_Tree(int N, const vector<T> &vec) {
-        n = N, a = vec;
-        b = vector<vector<T>>(len + 5);
-        for (int i = 1; i <= n; i++) b[blk_idx(i)].push_back(a[i]);
-        for (int i = 0; i <= len; i++) sort(all(b[i]));
+    Segment_Tree(int n, const vector<int> &nums) {
+        size = 1, DEFAULT = vector<int>();
+        while (size < n) size *= 2;
+        tree = vector<Node>(2 * size, DEFAULT);
+        build(nums);
     }
 
-    void update(int idx, T val) {
-        int k = blk_idx(idx);
-        int j = lower_bound(all(b[k]), a[idx]) - b[k].begin();
-        b[k][j] = a[idx] = val;
-        sort(all(b[k]));
-    }
-
-    int query(int L, int R, T x) {
-        int res = 0;
-        while (L <= R) {
-            if (L % len == 0 && L + len - 1 <= R) {
-                res += get(L, x, 1);
-                L += len;
+    // Main operation to do
+    Node operation(const Node &a, const Node &b) {
+        int i = 0, j = 0;
+        Node res;
+        while (i < sz(a.vec) && j < sz(b.vec)) {
+            if (a.vec[i] < b.vec[j]) {
+                res.vec.push_back(a.vec[i]);
+                i++;
             } else {
-                res += get(L++, x);
+                res.vec.push_back(b.vec[j]);
+                j++;
             }
+        }
+        while (i < sz(a.vec)) {
+            res.vec.push_back(a.vec[i]);
+            i++;
+        }
+        while (j < sz(b.vec)) {
+            res.vec.push_back(b.vec[j]);
+            j++;
         }
         return res;
     }
+
+    // nums should be 0-based indexing
+    void build(const vector<int> &nums, int idx, int lx, int rx) {
+        if (lx > sz(nums)) return;
+        if (rx == lx)
+            tree[idx] = nums[lx - 1];
+        else {
+            int mx = (rx + lx) / 2;
+            build(nums, 2 * idx, lx, mx);
+            build(nums, 2 * idx + 1, mx + 1, rx);
+            tree[idx] = operation(tree[2 * idx], tree[2 * idx + 1]);
+        }
+    }
+
+    void build(const vector<int> &nums) { build(nums, 1, 1, size); }
+
+    void update(int index, int v, int idx, int lx, int rx) {
+        if (rx == lx)
+            tree[idx] = v;
+        else {
+            int mx = (rx + lx) / 2;
+            if (index <= mx)
+                update(index, v, 2 * idx, lx, mx);
+            else
+                update(index, v, 2 * idx + 1, mx + 1, rx);
+            tree[idx] = operation(tree[2 * idx], tree[2 * idx + 1]);
+        }
+    }
+
+    void update(const int index, const int v) { update(index, v, 1, 1, size); }
+
+    int query(int l, int r, int k, int idx, int lx, int rx) {
+        if (lx > r || l > rx) return 0;
+        if (lx >= l && rx <= r) {
+            auto it = tree[idx].vec.end() - upper_bound(tree[idx].vec.begin(), tree[idx].vec.end(), k);
+            return it;
+        }
+        int mx = (lx + rx) / 2;
+        return query(l, r, k, 2 * idx, lx, mx) + query(l, r, k, 2 * idx + 1, mx + 1, rx);
+    }
+
+    int query(const int l, const int r, int k) { return query(l, r, k, 1, 1, size); }
 };
+
+void solve() {
+    int n;
+    cin >> n;
+    vector<int> a(n);
+    for (auto &i : a) cin >> i;
+    Segment_Tree st(n, a);
+    int q;
+    cin >> q;
+    while (q--) {
+        int l, r, k;
+        cin >> l >> r >> k;
+        cout << st.query(l, r, k) << "\n";
+    }
+}

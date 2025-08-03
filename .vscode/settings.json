@@ -1,5 +1,12 @@
 {
   "files.associations": {
-    "ostream": "cpp"
-  }
+    "ostream": "cpp",
+    "iostream": "cpp",
+    "flat_map": "cpp",
+    "flat_set": "cpp",
+    "chrono": "cpp",
+    "span": "cpp",
+    "vector": "cpp"
+  },
+  "C_Cpp.errorSquiggles": "enabled"
 }

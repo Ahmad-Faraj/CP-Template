@@ -1,10 +1,12 @@
 #include <bits/stdc++.h>
 using namespace std;
 
+// Complexity: O(min(E^2 *V log V, E logV * flow))
 // Works for both directed, undirected and with negative cost too
+// For finding maximum cost maximum matching
+// add -cost and return -matching()
 // fails for negative cycles
 // for undirected edges just make the directed flag false
-// Complexity: O(min(E^2 *V log V, E logV * flow))
 
 using T = long long;
 const T inf = 1LL << 61;
@@ -126,7 +128,7 @@ struct MCMF {
     }
 };
 
-void solve_match() {
+void solve_bipartite() {
     int n;
     cin >> n;
     MCMF F(2 * n + 3);
@@ -170,7 +172,7 @@ void solve_general() {
     }
     F.add_edge(n, en, k, 0, m + 1);
     auto ans = F.solve(st, en);
-    if(ans.first < k){
+    if (ans.first < k) {
         cout << -1 << endl;
         return;
     }

@@ -1,10 +1,8 @@
 #include <bits/stdc++.h>
 using namespace std;
-using ll = long long;
-#define sz(st) int(st.size())
-#define all(st) st.begin(), st.end()
 
-class DSU {
+// 1-based indexing / O(log n)
+struct DSU {
     vector<int> parent, gsize;
     stack<pair<int, int>> stk;
     int sets;
@@ -12,7 +10,10 @@ class DSU {
         parent = gsize = vector<int>(n + 1, 1);
         for (int i = 1; i <= n; i++) parent[i] = i;
     }
-    int find(int u) { return parent[u] == u ? u : parent[u] = find(parent[u]); }
+    int find(int u) {
+        while (u != parent[u]) u = parent[u];
+        return u;
+    }
     void join(int u, int v) {
         u = find(u), v = find(v);
         if (u == v) {
@@ -40,3 +41,29 @@ class DSU {
     int get_size(int u) { return gsize[find(u)]; }
     bool same(int u, int v) { return find(u) == find(v); }
 };
+
+void solve() {
+    int n, m;
+    cin >> n >> m;
+
+    DSU dsu(n);
+    vector<int> checkpoints;
+
+    while (m--) {
+        string cmd;
+        cin >> cmd;
+        if (cmd == "union") {
+            int u, v;
+            cin >> u >> v;
+            dsu.join(u, v);
+            cout << dsu.get_sets() << '\n';
+        } else if (cmd == "persist") {
+            checkpoints.push_back(dsu.stk.size());
+        } else if (cmd == "rollback") {
+            int last = checkpoints.back();
+            checkpoints.pop_back();
+            dsu.rollback(dsu.stk.size() - last);
+            cout << dsu.get_sets() << '\n';
+        }
+    }
+}

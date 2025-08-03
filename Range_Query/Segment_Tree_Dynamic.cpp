@@ -1,8 +1,10 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-// Dynamic Segment Tree
-// segment tree on the fly specify the range of the segment tree by passing the range in the constructor lx and rx
+
+// 1-Based Indexing
+// use when huge interval with few elements
+// segment tree on the fly by passing the range in the constructor lx and rx
 struct Dynamic_Segment_Tree {
     struct Node {
         int val;

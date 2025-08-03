@@ -1,9 +1,6 @@
 #include <bits/stdc++.h>
 using namespace std;
-
 #define ll long long int
-#define X first
-#define Y second
 
 struct SPFA // shortest path faster algorithm
 {
