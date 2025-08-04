@@ -4,6 +4,7 @@ using namespace std;
 const int MAXN = (int)3e5 + 9;
 const int MAXV = (int)1e9 + 9; // maximum value of any element in array
 
+// 1-based
 // array values can be negative too, use appropriate minimum and maximum value
 struct wavelet_tree {
     int lo, hi;
