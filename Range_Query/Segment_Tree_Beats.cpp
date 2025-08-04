@@ -4,6 +4,7 @@ using namespace std;
 const int N = 2e5 + 9;
 using ll = long long;
 
+// Segment Tree Beats: range add/set/min/max updates & sum/min/max queries
 // all queries are performed on [l, r) segment (right exclusive)
 // 0 indexed
 struct SGTBeats {
