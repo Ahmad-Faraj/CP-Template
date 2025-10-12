@@ -2,4 +2,5 @@ IndentWidth: 4
 ColumnLimit: 120
 AllowShortIfStatementsOnASingleLine: true
 AllowShortLoopsOnASingleLine: true
+AllowShortFunctionsOnASingleLine: false
 BreakBeforeBraces: Attach
