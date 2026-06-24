@@ -72,6 +72,7 @@ using namespace std;
 
 const int MAX_N = 1e6;
 // max_div[i] contains the largest prime that goes into i
+// Count nymber of divisors O((x+n)logx)
 int max_div[MAX_N + 1];
 
 int main() {
