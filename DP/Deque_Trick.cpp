@@ -1,12 +1,14 @@
-// Optimise from O(NK^2) to O(NK) by answering min/max queries among k consecutive elements in O(1) in DP transition
-// Problem link: https://codeforces.com/contest/1077/problem/F2
+/*
+ * Topic: DP - Deque Trick (Sliding Window Min/Max)
+ * Description: Optimizes DP transitions of the form dp[i] = max_{i-k <= j < i} (dp[j]) + a[i]
+ * It reduces the complexity from O(NK^2) or O(NK) to O(NK) or O(N) respectively,
+ * by answering min/max queries among k consecutive elements in O(1) amortized.
+ * Input: An array a and a sliding window size k.
+ * Output: The optimal DP value taking the max/min of the previous k states.
+ * Problem link: https://codeforces.com/contest/1077/problem/F2
+ */
 
-#include <bits/stdc++.h>
-
-using namespace std;
-
-#define ar array
-#define ll long long
+#include "../core.h"
 
 const int MAX_N = 1e5 + 1;
 const ll MOD = 1e9 + 7;
@@ -22,7 +24,7 @@ void solve() {
     memset(dp, -0x3f, sizeof dp);
     dp[0][0] = 0;
     for (int j = 1; j <= x; j++) {
-        deque<ar<ll,2>> dq; // {id, value}
+        deque<vector<ll>> dq; // {id, value}
         dq.push_back({j - 1, dp[j - 1][j - 1]});
         for (int i = j; i <= n; i++) {
             while (dq.size() && dq.front()[0] < i - k) dq.pop_front();

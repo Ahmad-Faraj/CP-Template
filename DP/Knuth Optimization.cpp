@@ -1,15 +1,14 @@
-// Given a length x and n cutting points, find the minimum cost perform all n cuts
-// Cost of a cut is equal to the length of the current stick
-// A variation of Matrix Chain Multiplication DP Problem
-// Time complexity: O(n^3), can be reduced to O(n^2) with Knuth Optimization
-// Problem link: https://vjudge.net/problem/UVA-10003
+/*
+ * Topic: DP - Knuth Optimization (Matrix Chain Multiplication variation)
+ * Description: Given a length x and n cutting points, find the minimum cost to perform all n cuts.
+ * Cost of a cut is equal to the length of the current stick.
+ * Time complexity: O(n^3), can be reduced to O(n^2) with Knuth Optimization.
+ * Input: Array of elements/cuts.
+ * Output: Minimum cost to process/merge all elements.
+ * Problem link: https://vjudge.net/problem/UVA-10003
+ */
 
-#include <bits/stdc++.h>
-
-using namespace std;
-
-#define ar array
-#define ll long long
+#include "../core.h"
 
 const int MAX_N = 50 + 5;
 const int MOD = 1e9 + 7;

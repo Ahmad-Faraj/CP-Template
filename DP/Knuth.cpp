@@ -1,22 +1,21 @@
-#include <bits/stdc++.h>
-using namespace std;
+#include "../core.h"
 
-const int N = 1010;
-using ll = long long;
+const int MAX_N = 1010;
 /*
-Knuths optimization works for optimization over sub arrays
-for which optimal middle point depends monotonously on the end points.
-Let mid[l,r] be the first middle point for (l,r) sub array which gives optimal result.
-It can be proven that mid[l,r-1] <= mid[l,r] <= mid[l+1,r]
-- this means monotonicity of mid by l and r.
-Applying this optimization reduces time complexity from O(k^3) to O(k^2)
-because with fixed s (sub array length) we have m_right(l) = mid[l+1][r] = m_left(l+1).
-That's why nested l and m loops require not more than 2k iterations overall.
-*/
+ * Topic: DP - Knuth Optimization
+ * Description: Works for optimization over subarrays for which optimal middle point 
+ * depends monotonously on the end points.
+ * Let mid[l,r] be the first middle point for (l,r) subarray which gives optimal result.
+ * It can be proven that mid[l,r-1] <= mid[l,r] <= mid[l+1,r].
+ * Applying this optimization reduces time complexity from O(k^3) to O(k^2).
+ * Input: Elements array and partition sizes.
+ * Output: Optimal DP value for merging intervals.
+ * Problem link: https://vjudge.net/problem/ZOJ-2860
+ */
 
 int n, k;
-int a[N], mid[N][N];
-ll res[N][N];
+int a[MAX_N], mid[MAX_N][MAX_N];
+ll res[MAX_N][MAX_N];
 ll solve() {
     for (int s = 0; s <= k; s++) {         // s - length of the subarray
         for (int l = 0; l + s <= k; l++) { // l - left point

@@ -1,19 +1,13 @@
-#include <bits/stdc++.h>
-using namespace std;
+#include "../core.h"
 
-#define ll long long
-#define eb emplace_back
-#define nl '\n'
-#define deb(x) cerr << #x " = " << x << nl
-#define in()                                                                                                           \
-    ({                                                                                                                 \
-        int a;                                                                                                         \
-        scanf("%d", &a);                                                                                               \
-        a;                                                                                                             \
-    })
-
-const int N = 3e5 + 9;
-const int mod = 1e9 + 7;
+/*
+ * Topic: DP - Convex Hull Trick (CHT)
+ * Description: Optimizes DP transitions of the form dp[i] = min/max(m[j] * x[i] + b[j])
+ * where slopes m[j] are monotonic. If x[i] are also monotonic, we can use a pointer
+ * to answer queries in O(1) amortized. Otherwise, we can use binary search in O(log N).
+ * Input: Lines (m, b) added sequentially, and queries x.
+ * Output: The minimum/maximum evaluated value of m*x + b across all lines.
+ */
 
 struct CHT {
     vector<ll> m, b;

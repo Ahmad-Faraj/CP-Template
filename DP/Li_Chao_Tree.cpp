@@ -1,7 +1,12 @@
-#include <bits/stdc++.h>
-using namespace std;
-
-using ll = long long;
+/*
+ * Topic: DP - Li Chao Tree
+ * Description: A data structure used to maintain a set of lines or line segments
+ * and query the minimum/maximum value among them at any given x.
+ * Useful for optimizing DP transitions of the form dp[i] = min/max(m[j] * x[i] + b[j]).
+ * Input: Lines / line segments to insert, and x-coordinates to query.
+ * Output: Minimum/maximum y-value at queried x-coordinate.
+ */
+#include "../core.h"
 const ll inf = 2e18;
 
 struct Line {

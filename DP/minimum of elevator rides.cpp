@@ -1,14 +1,14 @@
-// Find the minimum of elevator rides to move n people knowing everyone's weight and the elevator's limit
-// Time complexity: O(2^n * n)
-// Problem link: https://cses.fi/problemset/task/1653
-// Use DP with bitmask
+/*
+ * Topic: DP - DP with Bitmask (Minimum Elevator Rides)
+ * Description: Find the minimum of elevator rides to move n people knowing everyone's weight 
+ * and the elevator's limit.
+ * Time complexity: O(2^n * n).
+ * Input: N people's weights and the maximum weight capacity of an elevator.
+ * Output: The minimum number of elevator rides required.
+ * Problem link: https://cses.fi/problemset/task/1653
+ */
 
-#include <bits/stdc++.h>
-
-using namespace std;
-
-#define ar array
-#define ll long long
+#include "../core.h"
 
 const int MAX_N = 1e5 + 1;
 const int MOD = 1e9 + 7;
@@ -22,7 +22,7 @@ void solve() {
     int weight[n]; 
     for (int i = 0; i < n; i++) cin >> weight[i];
 
-    ar<int,2> dp[1 << n];
+    vector<vector<int>> dp(1 << n, vector<int>(2));
     // dp[i][0] = the minimum number of rides for bitmask i
     // dp[i][1] = the minimum weight of the last ride for bitmask i
     dp[0] = {0, 0};
