@@ -1,5 +1,10 @@
-#include <bits/stdc++.h>
-using namespace std;
+#include "../../core.h"
+
+/*
+ * Topic: Data Structures - Minimum Excluded (MEX)
+ * Description: Finds the smallest non-negative integer not present in a given array/set.
+ *              Contains both O(N log N) set-based and O(N) array-based implementations.
+ */
 
 int mex(vector<int> const &A) {
     set<int> b(A.begin(), A.end());

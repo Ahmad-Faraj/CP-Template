@@ -1,7 +1,12 @@
-#include <bits/stdc++.h>
-using namespace std;
+#include "../../core.h"
 
-class Mex {
+/*
+ * Topic: Data Structures - Dynamic MEX with Updates
+ * Description: Maintains the MEX of a collection while supporting dynamic insertions 
+ *              and deletions using a frequency map and a set of missing numbers.
+ */
+
+struct Mex {
     map<int, int> frequency;
     set<int> missing_numbers;
     vector<int> A;
@@ -15,7 +20,7 @@ class Mex {
         }
     }
 
-    int mex() { return *missing_numbers.begin(); }
+    int query() { return *missing_numbers.begin(); }
 
     void update(int idx, int new_value) {
         if (--frequency[A[idx]] == 0) missing_numbers.insert(A[idx]);

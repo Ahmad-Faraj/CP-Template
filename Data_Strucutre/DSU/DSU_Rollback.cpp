@@ -1,5 +1,11 @@
-#include <bits/stdc++.h>
-using namespace std;
+#include "../../core.h"
+
+/*
+ * Topic: Data Structures - DSU with Rollback
+ * Description: A Disjoint Set Union that supports rolling back the last union operations.
+ *              Because of rollbacks, path compression cannot be used, so it relies 
+ *              strictly on union by size/rank, making operations O(log N).
+ */
 
 // 1-based indexing / O(log n)
 struct DSU {
@@ -14,7 +20,7 @@ struct DSU {
         while (u != parent[u]) u = parent[u];
         return u;
     }
-    void join(int u, int v) {
+    void unite(int u, int v) {
         u = find(u), v = find(v);
         if (u == v) {
             stk.push({-1, -1});
@@ -37,8 +43,8 @@ struct DSU {
             sets++;
         }
     }
-    int get_sets() { return sets; }
-    int get_size(int u) { return gsize[find(u)]; }
+    int components() { return sets; }
+    int size(int u) { return gsize[find(u)]; }
     bool same(int u, int v) { return find(u) == find(v); }
 };
 
@@ -55,15 +61,15 @@ void solve() {
         if (cmd == "union") {
             int u, v;
             cin >> u >> v;
-            dsu.join(u, v);
-            cout << dsu.get_sets() << '\n';
+            dsu.unite(u, v);
+            cout << dsu.components() << '\n';
         } else if (cmd == "persist") {
             checkpoints.push_back(dsu.stk.size());
         } else if (cmd == "rollback") {
             int last = checkpoints.back();
             checkpoints.pop_back();
             dsu.rollback(dsu.stk.size() - last);
-            cout << dsu.get_sets() << '\n';
+            cout << dsu.components() << '\n';
         }
     }
 }

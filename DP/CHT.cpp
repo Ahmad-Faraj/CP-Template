@@ -65,6 +65,6 @@ int32_t main() {
         ans = cht.query(a[i]);
         cht.add(b[i], ans);
     }
-    cout << ans << nl;
+    cout << ans << '\n';
     return 0;
 }

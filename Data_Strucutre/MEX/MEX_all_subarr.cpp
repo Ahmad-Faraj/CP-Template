@@ -1,5 +1,9 @@
-#include <bits/stdc++.h>
-using namespace std;
+#include "../../core.h"
+
+/*
+ * Topic: Data Structures - MEX of All Subarrays
+ * Description: Finds the MEX for all subarrays. Uses a Segment Tree.
+ */
 
 const int N = 1e5 + 9, inf = 1e9;
 
@@ -16,30 +20,31 @@ struct ST {
         build(r, mid + 1, e);
         t[n] = min(t[l], t[r]);
     }
-    void upd(int n, int b, int e, int i, int x) {
+    void update(int n, int b, int e, int i, int x) {
         if (b > i || e < i) return;
         if (b == e && b == i) {
             t[n] = x;
             return;
         }
         int mid = (b + e) >> 1, l = n << 1, r = l | 1;
-        upd(l, b, mid, i, x);
-        upd(r, mid + 1, e, i, x);
+        update(l, b, mid, i, x);
+        update(r, mid + 1, e, i, x);
         t[n] = min(t[l], t[r]);
     }
-    int get_min(int n, int b, int e, int i, int j) {
+    int query_min(int n, int b, int e, int i, int j) {
         if (b > j || e < i) return inf;
         if (b >= i && e <= j) return t[n];
         int mid = (b + e) >> 1, l = n << 1, r = l | 1;
-        int L = get_min(l, b, mid, i, j);
-        int R = get_min(r, mid + 1, e, i, j);
+        int L = query_min(l, b, mid, i, j);
+        int R = query_min(r, mid + 1, e, i, j);
         return min(L, R);
     }
-    int get_mex(int n, int b, int e, int i) { // mex of [i... cur_id]
+    int query_mex(int n, int b, int e, int i) { // mex of [i... cur_id]
+        if (t[n] >= i) return inf;
         if (b == e) return b;
         int mid = (b + e) >> 1, l = n << 1, r = l | 1;
-        if (t[l] >= i) return get_mex(r, mid + 1, e, i);
-        return get_mex(l, b, mid, i);
+        if (t[l] < i) return query_mex(l, b, mid, i);
+        return query_mex(r, mid + 1, e, i);
     }
 } t;
 
@@ -57,8 +62,8 @@ int32_t main() {
     set<array<int, 3>> seg; // for cur_id = i, [x[0]...i], [x[0] + 1...i], ... [x[1]...i] has mex x[2]
     for (int i = 1; i <= n; i++) {
         int x = a[i];
-        int r = min(i - 1, t.get_min(1, 0, n, 0, x - 1));
-        int l = t.get_min(1, 0, n, 0, x) + 1;
+        int r = min(i - 1, t.query_min(1, 0, n, 0, x - 1));
+        int l = t.query_min(1, 0, n, 0, x) + 1;
         if (l <= r) {
             auto it = seg.lower_bound({l, -1, -1});
             while (it != seg.end() && (*it)[1] <= r) {
@@ -66,10 +71,10 @@ int32_t main() {
                 it = seg.erase(it);
             }
         }
-        t.upd(1, 0, n, x, i);
+        t.update(1, 0, n, x, i);
         for (int j = r; j >= l;) {
-            int m = t.get_mex(1, 0, n, j);
-            int L = max(l, t.get_min(1, 0, n, 0, m) + 1);
+            int m = t.query_mex(1, 0, n, j);
+            int L = max(l, t.query_min(1, 0, n, 0, m) + 1);
             f[m] = 1;
             seg.insert({L, j, m});
             j = L - 1;

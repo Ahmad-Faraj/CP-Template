@@ -1,3 +1,5 @@
+#include "../core.h"
+
 /*
  * Topic: DP - Weighted Job Scheduling
  * Description: Given a list of jobs with start time, end time, and profit, find the maximum profit.
@@ -6,15 +8,6 @@
  * Output: The maximum profit obtainable without overlapping jobs.
  * Problem link: https://dunjudge.me/analysis/problems/414/
  */
-
-#include "../core.h"
-
-const int MAX_N = 1e5 + 1;
-const int MOD = 1e9 + 7;
-const int INF = 1e9;
-const ll LINF = 1e18;
-
-
 
 void solve() {
     int n; cin >> n;

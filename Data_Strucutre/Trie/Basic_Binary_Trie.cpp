@@ -1,32 +1,13 @@
-#include <bits/stdc++.h>
-#include <ext/pb_ds/assoc_container.hpp>
-#include <ext/pb_ds/tree_policy.hpp>
-#define ll long long
-#define ull unsigned long long
-#define ld long double
-#define int long long
-#define nl "\n"
-#define oo 1e9 + 1
-#define OO 1e18 + 1
-#define sp ' '
-#define sz(x) (int)(x.size())
-#define MOD 1000000007
-#define fixed(n) fixed << setprecision(n)
-#define sub_mod(a, b, m) ((((a) % m) - ((b) % m) + m) % m)
-#define add_mod(a, b, m) ((((a) % m) + ((b) % m)) % m)
-#define mult_mod(a, b, m) ((((a) % m) * ((b) % m)) % m)
-#define EPS 1e-9
-#define PI acos(-1)
-using namespace __gnu_pbds;
-using namespace std;
-void fastio() {
-    ios_base::sync_with_stdio(false), cin.tie(nullptr), cout.tie(nullptr);
-#ifndef ONLINE_JUDGE
-    freopen("input.txt", "r", stdin), freopen("output.txt", "w", stdout);
-#endif
-}
-template <typename T = long long, int LOG = 40>
+#include "../../core.h"
+
+/*
+ * Topic: Data Structures - Binary Trie
+ * Description: A Trie for binary representations of numbers. Supports fast XOR 
+ *              operations, finding max/min XOR, and bitwise manipulations.
+ */
+
 struct BinaryTrie {
+    const int LOG = 60;
 
     struct Node {
         Node *child[2];
@@ -43,7 +24,7 @@ struct BinaryTrie {
         insert(0);
     }
 
-    void insert(const int n) {
+    void insert(const ll n) {
         Node *curr = root;
         for (int i = LOG; i >= 0; i--) {
             int bit = (n >> i) & 1;
@@ -53,7 +34,7 @@ struct BinaryTrie {
         }
     }
 
-    void erase(const int n, int idx, Node *curr) {
+    void erase(const ll n, int idx, Node *curr) {
         if (idx == -1) {
             return;
         }
@@ -65,10 +46,10 @@ struct BinaryTrie {
             curr->child[bit] = 0;
         }
     }
-    void erase(const int n) { erase(n, LOG, root); }
-    int max_xor(const int n) {
+    void erase(const ll n) { erase(n, LOG, root); }
+    ll max_xor(const ll n) {
         Node *curr = root;
-        int ans = 0;
+        ll ans = 0;
         for (int i = LOG; i >= 0; i--) {
             int bit = (n >> i) & 1;
             if (curr->child[!bit]) {
@@ -80,9 +61,9 @@ struct BinaryTrie {
         }
         return ans;
     }
-    int min_xor(const int n) {
+    ll min_xor(const ll n) {
         Node *curr = root;
-        int ans = 0;
+        ll ans = 0;
         for (int i = LOG; i >= 0; i--) {
             int bit = (n >> i) & 1;
             if (curr->child[bit]) {
@@ -95,7 +76,7 @@ struct BinaryTrie {
         return ans;
     }
 
-    inline bool search(const T x) {
+    inline bool search(const ll x) {
         Node* cur = root;
         for (int i = LOG; ~i; i--) {
             bool bit = (x >> i) & 1;

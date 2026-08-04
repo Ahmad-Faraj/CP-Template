@@ -1,3 +1,5 @@
+#include "../core.h"
+
 /*
  * Topic: DP - Sum Over Subsets (SOS DP)
  * Description: Efficiently computes the sum of a function over all subsets or supersets 
@@ -6,7 +8,6 @@
  * Output: An array where the i-th element contains the sum over all submasks/supermasks of i.
  * Problem link: https://cses.fi/problemset/task/1654
  */
-#include "../core.h"
 
 const int B = 20;
 int a[1 << B], f[1 << B], g[1 << B];

@@ -1,3 +1,5 @@
+#include "../core.h"
+
 /*
  * Topic: DP - Li Chao Tree
  * Description: A data structure used to maintain a set of lines or line segments
@@ -6,7 +8,7 @@
  * Input: Lines / line segments to insert, and x-coordinates to query.
  * Output: Minimum/maximum y-value at queried x-coordinate.
  */
-#include "../core.h"
+
 const ll inf = 2e18;
 
 struct Line {

@@ -1,3 +1,5 @@
+#include "../core.h"
+
 /*
  * Topic: DP - DP with Bitmask (Minimum Elevator Rides)
  * Description: Find the minimum of elevator rides to move n people knowing everyone's weight 
@@ -7,15 +9,6 @@
  * Output: The minimum number of elevator rides required.
  * Problem link: https://cses.fi/problemset/task/1653
  */
-
-#include "../core.h"
-
-const int MAX_N = 1e5 + 1;
-const int MOD = 1e9 + 7;
-const int INF = 1e9;
-const ll LINF = 1e18;
-
-
 
 void solve() {
     int n, x; cin >> n >> x;

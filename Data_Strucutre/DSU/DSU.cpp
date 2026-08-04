@@ -1,3 +1,12 @@
+#include "../../core.h"
+
+/*
+ * Topic: Data Structures - Disjoint Set Union (DSU)
+ * Description: Maintains a collection of disjoint sets and supports 
+ *              uniting sets and finding the representative of a set.
+ *              Includes tracking of set sizes and roots.
+ */
+
 template <typename T = int, int Base = 1> struct DSU {
 
     vector<T> parent, Gsize, nxt, tail, pos, roots;
@@ -10,12 +19,12 @@ template <typename T = int, int Base = 1> struct DSU {
         }
     }
 
-    T find_leader(int node) { return parent[node] = (parent[node] == node ? node : find_leader(parent[node])); }
+    T find(int node) { return parent[node] = (parent[node] == node ? node : find(parent[node])); }
 
-    bool is_same_sets(int u, int v) { return find_leader(u) == find_leader(v); }
+    bool same(int u, int v) { return find(u) == find(v); }
 
-    void union_sets(int u, int v) {
-        int leader_u = find_leader(u), leader_v = find_leader(v);
+    void unite(int u, int v) {
+        int leader_u = find(u), leader_v = find(v);
         if (leader_u == leader_v) return;
         // make leader_u is the leader with the larger component
         if (Gsize[leader_u] < Gsize[leader_v]) swap(leader_u, leader_v);
@@ -45,7 +54,7 @@ template <typename T = int, int Base = 1> struct DSU {
         return components;
     }
 
-    int get_size(int u) { return Gsize[find_leader(u)]; }
+    int size(int u) { return Gsize[find(u)]; }
 
-    int get_components_number() { return sz(roots) - Base; }
+    int components() { return sz(roots) - Base; }
 };

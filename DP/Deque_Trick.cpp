@@ -1,3 +1,5 @@
+#include "../core.h"
+
 /*
  * Topic: DP - Deque Trick (Sliding Window Min/Max)
  * Description: Optimizes DP transitions of the form dp[i] = max_{i-k <= j < i} (dp[j]) + a[i]
@@ -7,14 +9,6 @@
  * Output: The optimal DP value taking the max/min of the previous k states.
  * Problem link: https://codeforces.com/contest/1077/problem/F2
  */
-
-#include "../core.h"
-
-const int MAX_N = 1e5 + 1;
-const ll MOD = 1e9 + 7;
-const ll INF = 1e9;
-
-
 
 void solve() {
     int n, k, x; cin >> n >> k >> x;

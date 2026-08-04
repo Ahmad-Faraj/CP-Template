@@ -1,9 +1,11 @@
-#include <iostream>
-#include <stack>
-#include <vector>
-using namespace std;
+#include "../../core.h"
 
-void prevSmaller(vector<int> &arr) {
+/*
+ * Topic: Data Structures - Monotonic Stack
+ * Description: Finds the previous smaller element for each element in an array using a stack.
+ */
+
+void prev_smaller(vector<int> &arr) {
     stack<int> s;
 
     for (int i = 0; i < arr.size(); i++) {
@@ -20,6 +22,6 @@ void prevSmaller(vector<int> &arr) {
 
 int main() {
     vector<int> arr = {1, 5, 0, 3, 4, 5};
-    prevSmaller(arr);
+    prev_smaller(arr);
     return 0;
 }

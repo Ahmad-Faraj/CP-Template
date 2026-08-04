@@ -1,3 +1,5 @@
+#include "../core.h"
+
 /*
  * Topic: DP - Knuth Optimization (Matrix Chain Multiplication variation)
  * Description: Given a length x and n cutting points, find the minimum cost to perform all n cuts.
@@ -8,13 +10,7 @@
  * Problem link: https://vjudge.net/problem/UVA-10003
  */
 
-#include "../core.h"
-
 const int MAX_N = 50 + 5;
-const int MOD = 1e9 + 7;
-const int INF = 1e9;
-const ll LINF = 1e18;
-
 int opt[MAX_N][MAX_N];
 
 void solve() {

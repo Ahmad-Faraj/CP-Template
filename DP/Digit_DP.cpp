@@ -1,3 +1,5 @@
+#include "../core.h"
+
 /*
  * Topic: DP - Digit DP
  * Description: Used to count the number of integers in a range [L, R] that satisfy
@@ -5,7 +7,6 @@
  * Input: A range [L, R] and a digit-based condition.
  * Output: Count of valid integers within the given range.
  */
-#include "../core.h"
 
 ll dp[20][2][2][90], k;
 string L, R;

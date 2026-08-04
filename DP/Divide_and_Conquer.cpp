@@ -1,39 +1,70 @@
-#include <bits/stdc++.h>
-using namespace std;
-
-const int MAXN = 4010;
-const int INF = 1e9 + 7;
+#include "../core.h"
 
 /*
  * Topic: DP - Divide and Conquer Optimization
  * Description: Divide and Conquer Optimization reduces the time complexity of DP transitions of
- *   the form dp[i][j] = min(dp[i-1][k] + cost(k, j)) from O(K N^2) to O(K N log N)
+ *   the form dp[i][j] = min(dp[i-1][k-1] + cost(k, j)) from O(K N^2) to O(K N log N)
  *   when the cost function satisfies the quadrangle inequality.
+ *
+ * Basic Idea: 
+ *   If the optimal split point for dp[i][j] is opt(i, j), the quadrangle inequality
+ *   guarantees that opt(i, j-1) <= opt(i, j) <= opt(i+1, j). 
+ *   Because of this monotonicity, if we compute dp[i][mid] for the middle element, 
+ *   we can restrict the search space for the left half to [opt_left, opt_mid] and 
+ *   the right half to [opt_mid, opt_right]. This divide and conquer approach reduces 
+ *   the transition time per layer to O(N log N).
+ *
+ * Basic Problem Implemented:
+ *   Divide an array of N positive integers into K contiguous segments such that the sum 
+ *   of the squares of the sums of each segment is minimized.
+ *   cost(l, r) = (pref[r] - pref[l-1])^2
  */
 
+const int MAXN = 4010;
 int n, k;
-int c[MAXN][MAXN];
-int dp_before[MAXN], dp_curr[MAXN];
+ll pref[MAXN];
+ll dp_before[MAXN], dp_curr[MAXN];
 
-
-// O(1) - Evaluates cost of interval [left, right] using 2D prefix sums
-inline int get_cost(int left, int right) {
+/*
+ * Function: get_cost
+ * Description: Evaluates the cost function C(left, right) in O(1) time.
+ *              For Divide and Conquer to work, this cost function MUST satisfy the 
+ *              Quadrangle Inequality: C(a, c) + C(b, d) <= C(a, d) + C(b, c) for a <= b <= c <= d.
+ * Parameters:
+ *   - left: Starting index of the interval
+ *   - right: Ending index of the interval
+ * Returns: The cost of the interval [left, right]
+ */
+inline ll get_cost(int left, int right) {
     if (left > right) return 0;
-    return c[right][right] - c[left - 1][right] - c[right][left - 1] + c[left - 1][left - 1];
+    ll sum = pref[right] - pref[left - 1];
+    return sum * sum;
 }
 
-// O(N log N) per layer
+/*
+ * Function: compute
+ * Description: Recursively computes the DP transitions for a specific layer.
+ *              It finds the optimal split point (opt_k) for the midpoint `mid` 
+ *              by iterating only between the optimal split points of its boundaries 
+ *              (`opt_left` to `opt_right`). This monotonic property reduces 
+ *              the complexity from O(N^2) to O(N log N) per layer.
+ * Parameters:
+ *   - left: The left boundary of the state indices we are currently evaluating
+ *   - right: The right boundary of the state indices we are currently evaluating
+ *   - opt_left: The lowest possible optimal split point for the current range
+ *   - opt_right: The highest possible optimal split point for the current range
+ */
 void compute(int left, int right, int opt_left, int opt_right) {
     if (left > right) return;
     int mid = left + (right - left) / 2;
 
-    int best_cost = INF;
+    ll best_cost = INF;
     int opt_k = -1;
 
-    // k represents the start of the current gondola segment [k, mid].
-    // dp_before[k - 1] represents the optimal cost of grouping people 1 to k-1 in previous gondolas.
+    // k represents the start of the current segment [k, mid].
+    // dp_before[k - 1] represents the optimal cost of dividing elements 1 to k-1 into previous segments.
     for (int k = opt_left; k <= min(mid, opt_right); k++) {
-        int current_cost = (k > 1 ? dp_before[k - 1] : 0) + get_cost(k, mid);
+        ll current_cost = (k > 1 ? dp_before[k - 1] : 0) + get_cost(k, mid);
         if (current_cost < best_cost) {
             best_cost = current_cost;
             opt_k = k;
@@ -49,12 +80,21 @@ void compute(int left, int right, int opt_left, int opt_right) {
     compute(mid + 1, right, opt_k, opt_right);
 }
 
-// O(K * N log N)
-int solve(int total_layers) {
+/*
+ * Function: solve
+ * Description: Manages the layer-by-layer computation of the DP. 
+ *              Since dp[layer][j] only depends on dp[layer-1][k], we use two 1D arrays 
+ *              (`dp_before` and `dp_curr`) to optimize memory to O(N).
+ *              For each layer, it invokes `compute` to populate `dp_curr`.
+ * Parameters:
+ *   - total_layers: The number of partitions/layers (e.g. K segments)
+ * Returns: The optimal DP value after computing all layers
+ */
+ll solve(int total_layers) {
     // 1-based indexing for DP layers and elements
     for (int i = 1; i <= n; i++) dp_before[i] = get_cost(1, i);
     
-    // i represents the current gondola we are filling
+    // i represents the current segment we are forming
     for (int i = 2; i <= total_layers; i++) {
         compute(1, n, 1, n);
         
@@ -67,22 +107,17 @@ int solve(int total_layers) {
 }
 
 int main() {
-
     ios_base::sync_with_stdio(0);
     cin.tie(0);
 
-    cin >> n >> k ;
-
-    for (int i = 1; i <= n; i++) {
-        for (int j = 1; j <= n; j++) {
-            int val ; cin >> val ;
-            c[i][j] = val + c[i - 1][j] + c[i][j - 1] - c[i - 1][j - 1];
+    if (cin >> n >> k) {
+        for (int i = 1; i <= n; i++) {
+            ll val; cin >> val;
+            pref[i] = pref[i - 1] + val;
         }
+
+        cout << solve(k) << "\n";
     }
-
-    int min_unfamiliarity = solve(k);
-
-    cout << min_unfamiliarity / 2 << "\n";
 
     return 0;
 }

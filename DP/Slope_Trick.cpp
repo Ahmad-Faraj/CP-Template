@@ -1,10 +1,11 @@
+#include "../core.h"
+
 /*
  * Topic: DP - Slope Trick
  * Description: Slope Trick optimization for DP transitions involving convex piecewise linear functions.
  * Input: Convex/concave functions added iteratively.
  * Output: The minimum/maximum evaluated value across states.
  */
-#include "../core.h"
 
 // Problem: Make array non-decreasing with minimum sum of |a[i] - b[i]|
 // To make it strictly increasing, first apply: a[i] -= i for all i.

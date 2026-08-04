@@ -1,18 +1,11 @@
-#include <bits/stdc++.h>
-using namespace std;
+#include "../../core.h"
 
-// treap
-// Balanced Binary Search Tree with random priority and it's height is around 2 * log(n)
-// can do like ordered statistics tree and more
-// basic treap
-// 1. insert
-// 2. erase
-// 3. kth element
-// 4. lower_bound
-// 5. upper_bound
-// 6. print
-//! don't forget to set the seed for random number generator
-//! don't forget to set the seed for random number generator
+/*
+ * Topic: Data Structures - Treap
+ * Description: A Balanced Binary Search Tree with random priority (height ~ 2*log(N)).
+ *              Supports insert, erase, kth element, lower_bound, upper_bound.
+ *              Don't forget to set the seed for the random number generator!
+ */
 
 mt19937 eng(0);
 uniform_int_distribution<int> rnd{INT_MIN + 1, INT_MAX};
@@ -29,7 +22,7 @@ template <typename DataType> struct Treap {
 
         node(const DataType &val) : val(val), pri(rnd(eng)), size(1), ch{EMPTY, EMPTY}, par(EMPTY), frq(1) {}
 
-        void upd() { size = ch[L]->size + frq + ch[R]->size; }
+        void update() { size = ch[L]->size + frq + ch[R]->size; }
     };
     static node *EMPTY;
     node *root = EMPTY;
@@ -38,7 +31,7 @@ template <typename DataType> struct Treap {
         if (c != EMPTY) c->par = p;
         if (p != EMPTY) {
             p->ch[dir] = c;
-            p->upd();
+            p->update();
         }
     }
 
@@ -66,7 +59,7 @@ template <typename DataType> struct Treap {
         if (root == EMPTY) return new node(val);
         if (root->val == val) {
             root->frq++;
-            root->upd();
+            root->update();
             return root;
         }
         int d = val > root->val;
@@ -80,7 +73,7 @@ template <typename DataType> struct Treap {
         if (root->val == val) {
             if (root->frq > 1) {
                 root->frq--;
-                root->upd();
+                root->update();
                 return root;
             }
             int mxcd = 0;
@@ -123,7 +116,7 @@ template <typename DataType> struct Treap {
     void print(node *root, int d = 0) {
         if (root == EMPTY) return;
         print(root->ch[L], d + 1);
-        cout << root->val << sp << root->pri << sp << root->frq << sp << d << nl;
+        cout << root->val << sp << root->pri << sp << root->frq << sp << d << '\n';
         print(root->ch[R], d + 1);
     };
     void print() { print(root); };

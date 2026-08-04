@@ -1,6 +1,5 @@
 #include "../core.h"
 
-const int MAX_N = 1010;
 /*
  * Topic: DP - Knuth Optimization
  * Description: Works for optimization over subarrays for which optimal middle point 
@@ -13,6 +12,7 @@ const int MAX_N = 1010;
  * Problem link: https://vjudge.net/problem/ZOJ-2860
  */
 
+const int MAX_N = 1010;
 int n, k;
 int a[MAX_N], mid[MAX_N][MAX_N];
 ll res[MAX_N][MAX_N];
