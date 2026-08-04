@@ -25,6 +25,7 @@ void fastio() {
     freopen("input.txt", "r", stdin), freopen("output.txt", "w", stdout);
 #endif
 }
+template <typename T = long long, int LOG = 40>
 struct BinaryTrie {
 
     struct Node {
@@ -44,7 +45,7 @@ struct BinaryTrie {
 
     void insert(const int n) {
         Node *curr = root;
-        for (int i = 40; i >= 0; i--) {
+        for (int i = LOG; i >= 0; i--) {
             int bit = (n >> i) & 1;
             if (!curr->child[bit]) curr->child[bit] = new Node;
             curr = curr->child[bit];
@@ -64,11 +65,11 @@ struct BinaryTrie {
             curr->child[bit] = 0;
         }
     }
-    void erase(const int n) { erase(n, 40, root); }
+    void erase(const int n) { erase(n, LOG, root); }
     int max_xor(const int n) {
         Node *curr = root;
         int ans = 0;
-        for (int i = 40; i >= 0; i--) {
+        for (int i = LOG; i >= 0; i--) {
             int bit = (n >> i) & 1;
             if (curr->child[!bit]) {
                 ans |= (1LL << i);
@@ -82,7 +83,7 @@ struct BinaryTrie {
     int min_xor(const int n) {
         Node *curr = root;
         int ans = 0;
-        for (int i = 40; i >= 0; i--) {
+        for (int i = LOG; i >= 0; i--) {
             int bit = (n >> i) & 1;
             if (curr->child[bit]) {
                 curr = curr->child[bit];
@@ -93,16 +94,14 @@ struct BinaryTrie {
         }
         return ans;
     }
-};
-void solve(int tc) {}
-signed main(void) {
-    fastio();
-    int tc = 1;
-    // cin >> tc;
-    int i = 1;
-    while (tc--) {
-        // cout<<"Case #"<<i<<": ";
-        solve(i++);
+
+    inline bool search(const T x) {
+        Node* cur = root;
+        for (int i = LOG; ~i; i--) {
+            bool bit = (x >> i) & 1;
+            if (!cur->child[bit] or !cur->child[bit]->freq) return false;
+            cur = cur->child[bit];
+        }
+        return true;
     }
-    return 0;
-}
+};
