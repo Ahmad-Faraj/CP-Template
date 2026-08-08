@@ -1,11 +1,3 @@
-# 🏆 The Ultimate Dynamic Programming (DP) Guide
-
-Dynamic Programming is one of the most vital paradigms in Competitive Programming. It revolves around solving complex optimization problems by breaking them down into simpler, overlapping subproblems.
-
-This guide provides a comprehensive overview of DP paradigms, canonical subproblems, and advanced optimizations (many of which have implementations in this folder).
-
----
-
 ## 🧠 Core Concepts
 
 1. **Overlapping Subproblems**: The problem can be broken down into subproblems which are reused several times. We solve them once and store the result (Memoization).
@@ -70,7 +62,7 @@ This guide provides a comprehensive overview of DP paradigms, canonical subprobl
 
 ---
 
-## 🚀 Advanced DP Optimizations (Tips & Tricks)
+## 🚀 Extra DP Optimizations (Tips & Tricks)
 
 When a DP state transition is too slow (e.g., $O(N^2)$ transitioning to $O(N^3)$), we use these tricks to shave off a factor of $N$. Many of these are implemented in this repository.
 

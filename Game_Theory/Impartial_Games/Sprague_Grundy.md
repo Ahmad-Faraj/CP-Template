@@ -39,7 +39,7 @@ int compute_grundy(int h, const vector<int>& moves, vector<int>& dp) {
 }
 ```
 
-## Advanced SG Optimizations for CP
+## Further SG Optimizations for CP
 1. **MEX Optimization:** If calculating MEX over many intervals or dynamically changing states, use a **Trie** or a **Segment Tree**. If you want $\text{MEX}(S \oplus X)$ where you XOR all values in a set by $X$, a Binary Trie can find the MEX in $O(\log(\text{MAX\_VAL}))$ time!
 2. **Periodic Grundy Values:** If a game has states defined by an integer $N$ and moves involve subtracting bounded constants (e.g., subtract $x \in \{a, b, c\}$), the Grundy values $G(N)$ **will eventually become periodic**! (Due to finite states bounding the MEX). Find the cycle using Brent's or Floyd's algorithm, and answer $O(1)$ queries for $N=10^{18}$.
 

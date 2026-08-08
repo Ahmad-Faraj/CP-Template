@@ -44,7 +44,7 @@ This document serves as the theoretical and pattern-recognition backbone for Com
 
 ## 2. Grandmaster Level Patterns (2400-2600+)
 
-### 2.1 Advanced Convexity
+### 2.1 Complex Convexity
 * **Minkowski Sum:** The geometric addition of two convex polygons $P$ and $Q$. The resulting shape contains all possible vector sums $p+q$. Solved in $O(N+M)$ by sequentially merging edges sorted by angle.
 * **Rotating Calipers:** Maintaining two parallel tangent lines sweeping around a convex hull to find the maximum diameter (farthest pair of points) or the minimum bounding rectangle in $O(N)$.
 * **Problem Signature:** "Given two convex polygons, can you translate one to fit entirely inside the other without rotating?" or "Find the maximum distance between any two points in $10^5$ elements."
@@ -70,7 +70,7 @@ This document serves as the theoretical and pattern-recognition backbone for Com
 * **Problem Signature:** "Given $N$ intersecting circles or lines, how many distinct enclosed regions are formed?"
 * **Complexity Bounds:** Euler components can be calculated in $O(E \log E)$ or $O(V \log V)$ using sweep lines to find intersections.
 
-### 2.5 Advanced Sweep Line: Voronoi & Delaunay
+### 2.5 Complex Sweep Line: Voronoi & Delaunay
 **Concept:** 
 * **Voronoi Diagram:** Partitions the plane into regions based on the distance to a specific set of seed points.
 * **Delaunay Triangulation:** The dual graph of the Voronoi diagram. It connects points such that no point is inside the circumcircle of any triangle.
