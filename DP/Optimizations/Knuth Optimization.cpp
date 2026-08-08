@@ -1,4 +1,4 @@
-#include "../core.h"
+#include "../../core.h"
 
 /*
  * Topic: DP - Knuth Optimization (Matrix Chain Multiplication variation)

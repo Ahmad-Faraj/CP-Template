@@ -1,4 +1,4 @@
-#include "../core.h"
+#include "../../core.h"
 
 /*
  * Topic: Math/DP - Matrix Exponentiation
