@@ -1,38 +1,67 @@
-#include <bits/stdc++.h>
-#define ll long long
-using namespace std;
+/*
+    [1] Definition:
+    Mo's Algorithm processes range queries [L, R] offline.
+    It sorts queries by block index (sqrt(N)) to minimize overall pointer movement.
+
+    [2] Time & Space Complexity:
+    - Time Complexity: O((N + Q) * sqrt(N))
+    - Space Complexity: O(N + Q)
+
+    [3] Important Notes:
+    - Works for offline queries only (no updates to array).
+    - Uses 1-based indexing.
+    - Set SQ = sqrt(N) for best performance.
+    - 0-based indexing (array - queries)
+*/
+
+#include "../../core.h"
 
 const int N = 200000 + 5;
 const int SQ = 450;
+
 struct Query {
     int l, r, q_idx, blk_idx;
+
     Query() {}
+
     Query(int l, int r, int q_idx) {
         this->l = l;
         this->r = r;
         this->q_idx = q_idx;
         blk_idx = l / SQ;
     }
-    bool operator<(const Query &other) const {
+
+    bool operator<(const Query& other) const {
         if (blk_idx != other.blk_idx) return blk_idx < other.blk_idx;
         return r < other.r;
     }
 };
-ll n, q, arr[N], vis[1000006], ans[200005], res = 0;
+
+ll n, q, arr[N], ans[200005];
 Query query[200005];
+
+// change these depending on problem
+ll vis[1000006], res = 0;
+
+// Adds element at arr[idx] to current range
 void add(int idx) {
     res -= (vis[arr[idx]] * vis[arr[idx]] * arr[idx]);
     vis[arr[idx]]++;
     res += (vis[arr[idx]] * vis[arr[idx]] * arr[idx]);
 }
+
+// Removes element at arr[idx] from current range
 void remove(int idx) {
     res -= (vis[arr[idx]] * vis[arr[idx]] * arr[idx]);
     vis[arr[idx]]--;
     res += (vis[arr[idx]] * vis[arr[idx]] * arr[idx]);
 }
+
+// Processes all queries offline
 void procces() {
     sort(query, query + q);
     int l = 1, r = 0;
+
     for (int i = 0; i < q; i++) {
         while (l < query[i].l) remove(l++);
         while (l > query[i].l) add(--l);
@@ -41,14 +70,5 @@ void procces() {
         ans[query[i].q_idx] = res;
     }
 }
-void solve(int tc) {
-    cin >> n >> q;
-    for (int i = 0; i < n; i++) cin >> arr[i];
-    for (int i = 0; i < q; i++) {
-        int l, r;
-        cin >> l >> r;
-        query[i] = Query(--l, --r, i); // 0 based indexing
-    }
-    procces();
-    for (int i = 0; i < q; i++) cout << ans[i] << "\n";
-}
+
+// don't forget to resizing arrays based on problem's constrains

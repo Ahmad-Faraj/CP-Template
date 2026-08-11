@@ -1,32 +1,33 @@
-#include <bits/stdc++.h>
-#include <ext/pb_ds/assoc_container.hpp>
-#include <ext/pb_ds/tree_policy.hpp>
-#define ll long long
-#define ull unsigned long long
-#define ld long double
-#define int long long
-#define nl "\n"
-#define oo 1e9 + 1
-#define OO 1e18 + 1
-#define sp ' '
-#define sz(x) (int)(x.size())
-#define MOD 1000000007
-#define fixed(n) fixed << setprecision(n)
-#define sub_mod(a, b, m) ((((a) % m) - ((b) % m) + m) % m)
-#define add_mod(a, b, m) ((((a) % m) + ((b) % m)) % m)
-#define mult_mod(a, b, m) ((((a) % m) * ((b) % m)) % m)
-#define EPS 1e-9
-#define PI acos(-1)
-using namespace __gnu_pbds;
-using namespace std;
+/*
+    [1] Definition:
+    Mo's Algorithm on Trees answers path queries [u, v] offline.
+    It flattens a tree into a 1D array using Euler Tour (Start/End times),
+    converting tree path queries into 1D range queries.
 
-template <typename T = int, bool VAL_ON_EDGE = false> class MoTree {
-  public:
+    [2] Time & Space Complexity:
+    - Build Time: O(N log N)
+    - Query Time: O((N + Q) * sqrt(N))
+    - Space Complexity: O(N log N + Q)
+
+    [3] Important Notes:
+    - Uses 1-based indexing.
+    - VAL_ON_EDGE = false for node values, true for edge values.
+    - Uses Hilbert Curve ordering for fast query sorting.
+    - Currently tracks unique node values on the tree path.
+*/
+
+#include "../../core.h"
+
+// 1-based Indexing
+template <typename T = int, bool VAL_ON_EDGE = false>
+class MoTree {
+   public:
     struct Query {
         int l, r, k, lca, queryIdx;
         int64_t ord;
 
-        Query(vector<T> &S, vector<T> &E, int L = 0, int R = 0, int QueryIdx = 0, int LCA = 0, int HilbertPow = 0) {
+        // Maps tree path query between nodes L and R to 1D range [l, r]
+        Query(vector<T>& S, vector<T>& E, int L = 0, int R = 0, int QueryIdx = 0, int LCA = 0, int HilbertPow = 0) {
             if (S[L] > S[R]) swap(L, R);
             if (LCA == L)
                 l = S[L] + VAL_ON_EDGE, r = S[R], lca = -1, queryIdx = QueryIdx;
@@ -35,22 +36,24 @@ template <typename T = int, bool VAL_ON_EDGE = false> class MoTree {
             calcOrder(HilbertPow);
         }
 
+        // Calculates Hilbert order for fast query sorting
         void calcOrder(int hilbert_pow) { ord = MoTree::hilbertOrder(l, r, hilbert_pow, 0); }
 
-        bool operator<(const Query &rhs) const { return ord < rhs.ord; }
+        bool operator<(const Query& rhs) const { return ord < rhs.ord; }
     };
 
-    MoTree(int N, int M, vector<vector<pair<int, int>>> &G, vector<T> V = vector<T>(), int root = 1)
+    MoTree(int N, int M, vector<vector<int>>& G, vector<T>& V, int root = 1)
         : curr_l(1), curr_r(0), n(N), m(M), SqrtN(n / sqrt(m) + 1), timer(1), ans(0), answers(M), val(V), adj(G) {
         LOG = calcLog(N);
         helbertPow = calcHilbertPow(2 * N + 1);
         nodeFreq = S = E = dep = vector<int>(n + 5);
         FT = vector<int>(2 * n + 5);
-        val = vector<T>(n + 5);
         anc = vector<vector<int>>(n + 5, vector<int>(LOG));
+        freq = vector<int>(n + 5);
         dfs(root);
     }
 
+    // Maps 2D coordinate (x, y) to a 1D Hilbert Curve index for optimal sorting
     static inline int64_t hilbertOrder(int x, int y, int pow, int rotate) {
         if (pow == 0) return 0;
         int hpow = 1 << (pow - 1);
@@ -66,28 +69,23 @@ template <typename T = int, bool VAL_ON_EDGE = false> class MoTree {
         return ordd;
     }
 
+    // Reads queries from input and processes them
     void getData() {
         for (int i = 0, u, v; i < m && cin >> u >> v; i++)
             queries.emplace_back(S, E, u, v, i, getLCA(u, v), helbertPow);
         process();
     }
 
+    // Processes all queries offline
     void process() {
         sort(queries.begin(), queries.end());
-        // for (auto &i : FT)
-        //     cout << i << sp;
-        // cout << nl;
-        // for (int i = 1; i <= n; i++)
-        //     cout << val[i] << sp << S[i] << sp << E[i] << nl;
-        // cout << nl;
-        // start with the first query
+
         curr_l = queries[0].l, curr_r = queries[0].l - 1;
 
-        for (auto &q : queries) {
-            // cout << q.l << sp << q.r << sp << q.lca << sp << q.queryIdx << nl;
+        for (auto& q : queries) {
             setRange(q);
 
-            // if lca is -1 then the two nodes are in the same subtree
+            // If LCA is -1, nodes are in the same subtree
             if (~q.lca && !VAL_ON_EDGE) add(q.lca);
 
             answers[q.queryIdx] = ans;
@@ -97,31 +95,30 @@ template <typename T = int, bool VAL_ON_EDGE = false> class MoTree {
     }
 
     vector<T> getAnswers() const { return answers; }
-    MEX<int> Mex;
 
-  private:
+   private:
     int curr_l, curr_r, n, m, SqrtN, timer, LOG, helbertPow;
-    T ans;
     vector<T> answers, val;
     vector<int> dep, S, E, FT, nodeFreq;
-    vector<vector<pair<int, int>>> adj;
-    vector<vector<int>> anc;
+    vector<vector<int>> adj, anc;
     vector<Query> queries;
+
+    // Euler Tour DFS to flatten tree and build binary lifting table
     void dfs(int u, int p = -1) {
         S[u] = timer;
         FT[timer++] = u;
-        for (auto &[v, w] : adj[u]) {
+        for (auto& v : adj[u]) {
             if (v == p) continue;
             dep[v] = dep[u] + 1;
             anc[v][0] = u;
             for (int bit = 1; bit < LOG; bit++) anc[v][bit] = anc[anc[v][bit - 1]][bit - 1];
-            val[v] = w;
             dfs(v, u);
         }
         E[u] = timer;
         FT[timer++] = u;
     }
 
+    // Returns k-th ancestor of node u
     int kthAncestor(int u, int k) const {
         if (dep[u] < k) return -1;
         for (int bit = LOG - 1; bit >= 0; bit--)
@@ -129,6 +126,7 @@ template <typename T = int, bool VAL_ON_EDGE = false> class MoTree {
         return u;
     }
 
+    // Returns Lowest Common Ancestor (LCA) of u and v
     int getLCA(int u, int v) const {
         if (dep[u] < dep[v]) swap(u, v);
         u = kthAncestor(u, dep[u] - dep[v]);
@@ -138,25 +136,36 @@ template <typename T = int, bool VAL_ON_EDGE = false> class MoTree {
         return anc[u][0];
     }
 
-    void setRange(Query &q) {
+    // Adjusts current range [curr_l, curr_r] to match query [q.l, q.r]
+    void setRange(Query& q) {
         while (curr_l > q.l) operation(--curr_l);
         while (curr_r < q.r) operation(++curr_r);
         while (curr_l < q.l) operation(curr_l++);
         while (curr_r > q.r) operation(curr_r--);
     }
 
-    inline void add(int u) {}
+    vector<int> freq;
+    T ans;
 
-    inline void remove(int u) {}
+    // Adds node u value to current path state
+    void add(int u) {
+        freq[val[u]]++;
+        if (freq[val[u]] == 1) ans++;
+    }
 
-    inline void operation(int idx) {
+    // Removes node u value from current path state
+    void remove(int u) {
+        freq[val[u]]--;
+        if (freq[val[u]] == 0) ans--;
+    }
+
+    // Toggles node u presence on the path
+    void operation(int idx) {
         int u = FT[idx];
         nodeFreq[u] ^= 1;
         if (nodeFreq[u] == 1) {
-            // add u to the path
             add(u);
         } else {
-            // remove u from the path
             remove(u);
         }
     }
@@ -173,18 +182,3 @@ template <typename T = int, bool VAL_ON_EDGE = false> class MoTree {
         return pow;
     }
 };
-
-void solve() {
-    int n, m;
-    cin >> n >> m;
-    vector<vector<pair<int, int>>> adj(n + 1);
-    for (int i = 0; i < n - 1; i++) {
-        int u, v, w;
-        cin >> u >> v >> w;
-        adj[u].emplace_back(v, w);
-        adj[v].emplace_back(u, w);
-    }
-    MoTree<int, true> mo(n, m, adj);
-    mo.getData();
-    for (auto &i : mo.getAnswers()) cout << i << nl;
-}
