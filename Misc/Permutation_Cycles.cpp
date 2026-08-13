@@ -1,4 +1,8 @@
-#include <bits/stdc++.h>
+/*
+ * Topic: Permutation Cycles
+ * Description: Decomposes a permutation into disjoint cycles.
+ */
+#include "../core.h"
 using namespace std;
 
 const int N = 3e5 + 9;

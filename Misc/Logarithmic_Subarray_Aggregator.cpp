@@ -1,4 +1,8 @@
-#include<bits/stdc++.h>
+/*
+ * Topic: Logarithmic Subarray Aggregator
+ * Description: Aggregates properties (like GCD, Bitwise AND/OR) over all subarrays in O(N log(MAX_VAL)).
+ */
+#include "../core.h"
 using namespace std;
 
 const int N = 1e5 + 9;

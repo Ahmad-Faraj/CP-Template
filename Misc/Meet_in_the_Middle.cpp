@@ -1,6 +1,9 @@
-#include <bits/stdc++.h>
+/*
+ * Topic: Meet in the Middle
+ * Description: An optimization technique that splits the search space in half.
+ */
+#include "../core.h"
 using namespace std;
-using ll = long long;
 
 int main() {
     int n, x;

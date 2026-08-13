@@ -1,4 +1,9 @@
-#include <bits/stdc++.h>
+/*
+ * Topic: Gray Code
+ * Description: Generates the Gray Code, a binary numeral system where two 
+ *   successive values differ in only one bit.
+ */
+#include "../core.h"
 using namespace std;
 
 // two successive values differ in only one bit.

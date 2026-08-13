@@ -1,4 +1,9 @@
-#include <bits/stdc++.h>
+/*
+ * Topic: Inversions
+ * Description: Counting the number of inversions in an array.
+ *   Uses Policy Based Data Structures (pb_ds) for an O(N log N) solution.
+ */
+#include "../core.h"
 #include <ext/pb_ds/assoc_container.hpp>
 #include <ext/pb_ds/tree_policy.hpp>
 using namespace __gnu_pbds;
