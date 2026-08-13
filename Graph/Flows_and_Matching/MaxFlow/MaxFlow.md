@@ -43,6 +43,25 @@ You have a set of projects, each yielding a profit $p_i$ (which can be negative,
 **Answer**: `Total_Positive_Profit` - `Max_Flow(S, T)`.
 *Why?* A cut partitions the graph into $S$-side (selected) and $T$-side (rejected). Cutting $S \to i$ means we abandon profit $p_i$. Cutting $i \to T$ means we pay cost $|p_i|$. The $\infty$ edges prevent selecting $u$ without $v$.
 
+```cpp
+// Blueprint: Recovering Min-Cut Edges (after running Dinic's Max Flow)
+vector<bool> reachable(N + 1, false);
+queue<int> q;
+q.push(source);
+reachable[source] = true;
+
+while (!q.empty()) {
+    int u = q.front(); q.pop();
+    for (auto& edge : dinic.g[u]) {
+        if (edge.w - edge.flow > 0 && !reachable[edge.to]) {
+            reachable[edge.to] = true;
+            q.push(edge.to);
+        }
+    }
+}
+// Any edge connecting a reachable node to an unreachable node is in the Min Cut!
+```
+
 ### Minimum Cut for Binary Assignments (Penalty Model)
 Given variables $x_i \in \{0, 1\}$. 
 - Assigning $x_i = 0$ costs $A_i$.

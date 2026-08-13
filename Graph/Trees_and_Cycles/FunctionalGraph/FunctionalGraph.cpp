@@ -1,9 +1,12 @@
 #include "../../../core.h"
 /*
- * Algorithm: Functional Graph (Successor Graph)
- * Purpose: Handles graphs with out-degree 1. Fast cycle finding and K-th successor queries.
- * Complexity: Time O(V log K) | Space O(V log K)
- * Verified: [CSES 1750 - Planets Queries I](https://cses.fi/problemset/task/1750)
+ * Topic: Functional Graph (Successor Graph)
+ * Description: Handles graphs with out-degree 1. Fast cycle finding and K-th successor queries.
+ * 
+ * Important Facts:
+ * - 0-based indexing for nodes by default.
+ * - Time Complexity: O(V log K)
+ * - Space Complexity: O(V log K)
  */
 #include <vector>
 #include <algorithm>

@@ -1,9 +1,12 @@
 #include "../../../core.h"
 /*
- * Algorithm: Dinic's Algorithm (Max Flow)
- * Purpose: Finds max flow using layered graphs. Extremely fast in practice.
- * Complexity: Time O(V^2 * E) | Space O(V + E)
- * Verified: [CSES 1694 - Download Speed](https://cses.fi/problemset/task/1694)
+ * Topic: Dinic's Algorithm (Max Flow)
+ * Description: Finds max flow using layered graphs. Extremely fast in practice.
+ * 
+ * Important Facts:
+ * - Supports 0-based and 1-based indexing.
+ * - Time Complexity: O(V^2 * E) generally, O(E * sqrt(V)) for bipartite graphs.
+ * - Space Complexity: O(V + E)
  */
 struct Dinic {
     struct edge {

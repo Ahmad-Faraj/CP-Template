@@ -1,9 +1,12 @@
 #include "../../../core.h"
 /*
- * Algorithm: Dominator Tree (Lengauer-Tarjan)
- * Purpose: Finds dominators in a directed graph efficiently using DFS and DSU.
- * Complexity: Time O((V+E) log V) | Space O(V + E)
- * Verified: ..........
+ * Topic: Dominator Tree (Lengauer-Tarjan)
+ * Description: Finds dominators in a directed graph efficiently using DFS and DSU.
+ * 
+ * Important Facts:
+ * - 1-based indexing for nodes by default.
+ * - Time Complexity: O((V+E) log V)
+ * - Space Complexity: O(V + E)
  */
 struct DominatorTree {
     int n, T;

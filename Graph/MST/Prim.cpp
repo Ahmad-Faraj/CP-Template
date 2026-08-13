@@ -1,9 +1,12 @@
 #include "../../core.h"
 /*
- * Algorithm: Prim's Minimum Spanning Tree
- * Purpose: Builds MST by adding cheapest edges from tree to non-tree vertices.
- * Complexity: Time O(E log V) | Space O(V + E)
- * Verified: [CSES 1675 - Road Reparation](https://cses.fi/problemset/task/1675)
+ * Topic: Prim's Minimum Spanning Tree
+ * Description: Builds MST by adding cheapest edges from tree to non-tree vertices.
+ * 
+ * Important Facts:
+ * - 0-based indexing for nodes by default.
+ * - Time Complexity: O(E log V)
+ * - Space Complexity: O(V + E)
  */
 #include <vector>
 #include <queue>

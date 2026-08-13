@@ -1,9 +1,12 @@
 #include "../../../core.h"
 /*
- * Algorithm: Floyd-Warshall (All-Pairs Shortest Path)
- * Purpose: Finds shortest paths between all pairs. Best for small dense graphs (V <= 400).
- * Complexity: Time O(V^3) | Space O(V^2)
- * Verified: [CSES 1672 - Shortest Routes II](https://cses.fi/problemset/task/1672)
+ * Topic: Floyd-Warshall (All-Pairs Shortest Path)
+ * Description: Finds shortest paths between all pairs. Best for small dense graphs (V <= 400).
+ * 
+ * Important Facts:
+ * - 0-based and 1-based indexing supported via template parameter.
+ * - Time Complexity: O(V^3)
+ * - Space Complexity: O(V^2)
  */
 template <typename T = int, int Base = 0>
 struct Floyd {

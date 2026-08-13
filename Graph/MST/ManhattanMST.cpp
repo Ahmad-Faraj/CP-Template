@@ -1,9 +1,12 @@
 #include "../../core.h"
 /*
- * Algorithm: Manhattan Minimum Spanning Tree
- * Purpose: Computes MST for 2D points using Manhattan distance efficiently.
- * Complexity: Time O(N log N) | Space O(N)
- * Verified: ..........
+ * Topic: Manhattan Minimum Spanning Tree
+ * Description: Computes MST for 2D points using Manhattan distance efficiently.
+ * 
+ * Important Facts:
+ * - 0-based indexing for nodes by default.
+ * - Time Complexity: O(N log N)
+ * - Space Complexity: O(N)
  */
 #include <vector>
 #include <algorithm>

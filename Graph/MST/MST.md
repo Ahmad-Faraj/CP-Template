@@ -1,4 +1,4 @@
-# Guide to Minimum Spanning Trees (MST)
+# Spanning Trees (MST)
 
 Minimum Spanning Tree (MST) problems appear frequently in competitive programming. This guide covers classical approaches, structures, and specific patterns needed to master MST problems.
 
@@ -94,6 +94,31 @@ When edges are added and removed over time, maintaining the MST requires techniq
 
 2. **Kruskal Reconstruction Tree (Reachability Tree):**
    When running Kruskal, instead of merging sets, create a new parent node for the two sets with the weight of the edge. This creates a rooted binary tree where the leaves are the original vertices. The maximum edge on the path between $u$ and $v$ is simply the weight of their Lowest Common Ancestor (LCA) in this tree. Incredibly useful for reachability queries constrained by edge weights.
+
+```cpp
+// Blueprint: Kruskal Reconstruction Tree
+// N original nodes (1 to N). Tree will have up to 2N-1 nodes.
+vector<int> parent(2 * N), weight(2 * N);
+iota(parent.begin(), parent.end(), 0);
+int node_cnt = N;
+
+auto find_set = [&](auto& self, int v) -> int {
+    return v == parent[v] ? v : (parent[v] = self(self, parent[v]));
+};
+
+sort(edges.begin(), edges.end()); // sorted by weight
+for (auto e : edges) {
+    int u = find_set(find_set, e.u);
+    int v = find_set(find_set, e.v);
+    if (u != v) {
+        ++node_cnt;
+        weight[node_cnt] = e.w;
+        parent[u] = parent[v] = parent[node_cnt] = node_cnt;
+        // Add directed edges: node_cnt -> u and node_cnt -> v
+    }
+}
+// Now, max edge on path between u and v is weight[LCA(u, v)] in the new tree!
+```
 
 3. **Multi-source / Super-node MST:**
    If a problem gives you a cost to "build a power plant" at any node, and costs to lay cables between nodes, add a dummy super-node $0$. Connect it to each node $i$ with weight equal to the power plant cost. The MST of this new graph gives the optimal answer.

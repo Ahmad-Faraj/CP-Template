@@ -1,9 +1,13 @@
 #include "../../../core.h"
 /*
- * Algorithm: Topological Sorting (Kahn's Algorithm)
- * Purpose: Linearly orders a DAG and detects cycles.
- * Complexity: Time O(V + E) | Space O(V + E)
- * Verified: [CSES 1679 - Course Schedule](https://cses.fi/problemset/task/1679)
+ * Topic: Topological Sorting
+ * Description: Linearly orders a Directed Acyclic Graph (DAG) and detects cycles.
+ *              Uses DFS to push nodes to answer array on exit time.
+ * 
+ * Important Facts:
+ * - 1-based indexing for nodes by default.
+ * - Time Complexity: O(V + E)
+ * - Space Complexity: O(V + E)
  */
 struct TopologicalSort {
     int n;

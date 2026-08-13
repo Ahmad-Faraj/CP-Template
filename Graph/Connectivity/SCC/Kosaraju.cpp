@@ -1,9 +1,13 @@
 #include "../../../core.h"
 /*
- * Algorithm: Kosaraju's Strongly Connected Components (SCC)
- * Purpose: Finds SCCs in a directed graph using two DFS passes.
- * Complexity: Time O(V + E) | Space O(V + E)
- * Verified: [CSES 1683 - Planets and Kingdoms](https://cses.fi/problemset/task/1683)
+ * Topic: Kosaraju's Strongly Connected Components (SCC)
+ * Description: Finds SCCs in a directed graph using two DFS passes.
+ *              Simpler to implement than Tarjan's but requires an extra pass.
+ * 
+ * Important Facts:
+ * - 0-based indexing for nodes by default.
+ * - Time Complexity: O(V + E)
+ * - Space Complexity: O(V + E) (Requires reversed adjacency list)
  */
 struct Kosaraju {
     int n;

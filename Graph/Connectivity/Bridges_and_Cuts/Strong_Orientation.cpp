@@ -1,9 +1,13 @@
 #include "../../../core.h"
 /*
- * Algorithm: Strong Edge Orientation
- * Purpose: Orients undirected edges to make the graph strongly connected, if possible.
- * Complexity: Time O(V + E) | Space O(V + E)
- * Verified: ..........
+ * Topic: Strong Edge Orientation
+ * Description: Orients undirected edges to minimize the number of Strongly Connected Components.
+ *              Often used to make an undirected graph strongly connected (if bridge-less).
+ * 
+ * Important Facts:
+ * - 0-based indexing for nodes by default.
+ * - Time Complexity: O(V + E)
+ * - Space Complexity: O(V + E)
  */
 // Assignment of a direction to each undirected edge to be a strongly connected graph
 // this cannot be done to every graph, A bridge will make the graph fails

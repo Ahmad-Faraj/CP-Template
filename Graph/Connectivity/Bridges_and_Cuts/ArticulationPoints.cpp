@@ -1,9 +1,12 @@
 #include "../../../core.h"
 /*
- * Algorithm: Articulation Points (Cut Vertices)
- * Purpose: Finds vertices that disconnect the graph if removed.
- * Complexity: Time O(V + E) | Space O(V + E)
- * Verified: ..........
+ * Topic: Articulation Points (Cut Vertices)
+ * Description: Finds vertices that disconnect the graph if removed.
+ * 
+ * Important Facts:
+ * - 1-based indexing for nodes by default.
+ * - Time Complexity: O(V + E)
+ * - Space Complexity: O(V + E)
  */
 template <typename T = int>
 struct ArticulationPoints {

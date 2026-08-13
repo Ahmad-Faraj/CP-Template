@@ -1,9 +1,12 @@
 #include "../../../core.h"
 /*
- * Algorithm: Hungarian Algorithm
- * Purpose: Finds minimum or maximum weight perfect matching in a bipartite graph.
- * Complexity: Time O(V^3) | Space O(V^2)
- * Verified: [CSES 2129 - Task Assignment](https://cses.fi/problemset/task/2129)
+ * Topic: Hungarian Algorithm
+ * Description: Finds minimum or maximum weight perfect matching in a bipartite graph.
+ * 
+ * Important Facts:
+ * - 1-based indexing for nodes by default.
+ * - Time Complexity: O(V^3)
+ * - Space Complexity: O(V^2)
  */
 
 

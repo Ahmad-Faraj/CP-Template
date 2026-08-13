@@ -1,9 +1,12 @@
 #include "../../../core.h"
 /*
- * Algorithm: System of Difference Constraints
- * Purpose: Solves x_i - x_j <= C using Bellman-Ford on a constraint graph.
- * Complexity: Time O(V * E) | Space O(V + E)
- * Verified: ..........
+ * Topic: System of Difference Constraints
+ * Description: Solves systems of inequalities x_i - x_j <= C using Bellman-Ford on a constraint graph.
+ * 
+ * Important Facts:
+ * - 0-based indexing for nodes by default.
+ * - Time Complexity: O(V * E)
+ * - Space Complexity: O(V + E)
  */
 template <typename T = int>
 struct DifferenceConstraints {

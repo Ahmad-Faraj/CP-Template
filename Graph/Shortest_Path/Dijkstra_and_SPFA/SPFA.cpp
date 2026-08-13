@@ -1,9 +1,12 @@
 #include "../../../core.h"
 /*
- * Algorithm: Shortest Path Faster Algorithm (SPFA)
- * Purpose: Queue-optimized Bellman-Ford. Fast on average but O(V*E) worst-case.
- * Complexity: Time O(E) avg, O(V * E) worst | Space O(V + E)
- * Verified: [CSES 1671 - Shortest Routes I](https://cses.fi/problemset/task/1671)
+ * Topic: Shortest Path Faster Algorithm (SPFA)
+ * Description: Queue-optimized Bellman-Ford. Fast on average but O(V*E) worst-case.
+ * 
+ * Important Facts:
+ * - 1-based indexing for nodes by default.
+ * - Time Complexity: O(E) avg, O(V * E) worst
+ * - Space Complexity: O(V + E)
  */
 template <typename T = int>
 struct SPFA {

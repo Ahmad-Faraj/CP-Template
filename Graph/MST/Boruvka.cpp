@@ -1,9 +1,12 @@
 #include "../../core.h"
 /*
- * Algorithm: Boruvka's Minimum Spanning Tree
- * Purpose: Builds MST in O(log V) parallel phases. Great for implicitly defined graphs.
- * Complexity: Time O(E log V) | Space O(V + E)
- * Verified: [CSES 1675 - Road Reparation](https://cses.fi/problemset/task/1675)
+ * Topic: Boruvka's Minimum Spanning Tree
+ * Description: Builds MST in O(log V) parallel phases. Great for implicitly defined graphs.
+ * 
+ * Important Facts:
+ * - 0-based indexing for nodes by default.
+ * - Time Complexity: O(E log V)
+ * - Space Complexity: O(V + E)
  */
 #include <vector>
 #include <numeric>

@@ -1,9 +1,12 @@
 #include "../../../core.h"
 /*
- * Algorithm: Minimum Mean Cycle
- * Purpose: Finds a cycle in a directed graph with the minimum average edge weight.
- * Complexity: Time O(V * E) | Space O(V + E)
- * Verified: ..........
+ * Topic: Minimum Mean Cycle
+ * Description: Finds a cycle in a directed graph with the minimum average edge weight.
+ * 
+ * Important Facts:
+ * - 0-based indexing for nodes by default.
+ * - Time Complexity: O(V * E)
+ * - Space Complexity: O(V + E)
  */
 template <typename T = int>
 struct MinMeanCycle {

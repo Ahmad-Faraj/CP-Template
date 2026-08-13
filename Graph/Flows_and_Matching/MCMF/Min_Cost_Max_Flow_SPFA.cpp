@@ -1,9 +1,13 @@
 #include "../../../core.h"
 /*
- * Algorithm: Min-Cost Max-Flow (MCMF) via SPFA
- * Purpose: Finds min-cost max-flow using SPFA to handle negative costs. Fast but vulnerable to worst-case graphs.
- * Complexity: Time O(F * V * E) | Space O(V + E)
- * Verified: [CSES 2129 - Task Assignment](https://cses.fi/problemset/task/2129)
+ * Topic: Min-Cost Max-Flow (MCMF) via SPFA
+ * Description: Finds min-cost max-flow using SPFA to handle negative costs.
+ *              Fast but vulnerable to worst-case graphs.
+ * 
+ * Important Facts:
+ * - 0-based indexing for nodes by default.
+ * - Time Complexity: O(F * V * E)
+ * - Space Complexity: O(V + E)
  */
 using T = long long;
 

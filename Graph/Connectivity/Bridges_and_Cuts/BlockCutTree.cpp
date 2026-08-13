@@ -1,9 +1,13 @@
 #include "../../../core.h"
 /*
- * Algorithm: Block-Cut Tree (Biconnected Components)
- * Purpose: Constructs a tree where nodes are articulation points or biconnected components.
- * Complexity: Time O(V + E) | Space O(V + E)
- * Verified: ..........
+ * Topic: Block-Cut Tree (Biconnected Components)
+ * Description: Constructs a bipartite tree where nodes represent either
+ *              articulation points or biconnected components (blocks).
+ * 
+ * Important Facts:
+ * - 0-based indexing for nodes by default.
+ * - Time Complexity: O(V + E)
+ * - Space Complexity: O(V + E)
  */
 struct BlockCutTree {
     int n, timer;

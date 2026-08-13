@@ -1,9 +1,12 @@
 #include "../../../core.h"
 /*
- * Algorithm: Directed Edge Classifier
- * Purpose: Classifies edges (tree, back, forward, cross) during DFS on a directed graph.
- * Complexity: Time O(V + E) | Space O(V + E)
- * Verified: ..........
+ * Topic: Directed Edge Classifier
+ * Description: Classifies edges (tree, back, forward, cross) during DFS on a directed graph.
+ * 
+ * Important Facts:
+ * - 0-based indexing for nodes by default.
+ * - Time Complexity: O(V + E)
+ * - Space Complexity: O(V + E)
  */
 
 struct DirectedEdgeClassifier {

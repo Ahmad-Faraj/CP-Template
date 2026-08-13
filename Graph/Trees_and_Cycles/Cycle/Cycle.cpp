@@ -1,9 +1,12 @@
 #include "../../../core.h"
 /*
- * Algorithm: Eulerian Cycle
- * Purpose: Finds a cycle that traverses every edge exactly once.
- * Complexity: Time O(V + E) | Space O(V + E)
- * Verified: ..........
+ * Topic: Undirected Cycle Detection
+ * Description: Finds any simple cycle in an undirected graph using DFS.
+ * 
+ * Important Facts:
+ * - 0-based and 1-based indexing supported.
+ * - Time Complexity: O(V + E)
+ * - Space Complexity: O(V + E)
  */
 template <typename T = int>
 struct CycleUndirected {
@@ -28,9 +31,6 @@ struct CycleUndirected {
         adj[u].push_back(v);
         adj[v].push_back(u);
     }
-
-
-
 
     // Time Complexity: O(V + E)
     // Space Complexity: O(V)

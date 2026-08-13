@@ -1,9 +1,12 @@
 #include "../../../core.h"
 /*
- * Algorithm: Dijkstra's Algorithm
- * Purpose: Single-source shortest path for graphs with non-negative weights.
- * Complexity: Time O(E log V) | Space O(V + E)
- * Verified: [CSES 1671 - Shortest Routes I](https://cses.fi/problemset/task/1671)
+ * Topic: Dijkstra's Algorithm
+ * Description: Single-source shortest path for graphs with non-negative weights.
+ * 
+ * Important Facts:
+ * - 1-based indexing for nodes by default.
+ * - Time Complexity: O(E log V)
+ * - Space Complexity: O(V + E)
  */
 template <typename T = int>
 struct Dijkstra {

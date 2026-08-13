@@ -1,9 +1,12 @@
 #include "../../../core.h"
 /*
- * Algorithm: Floyd-Warshall with Path Reconstruction
- * Purpose: Finds shortest paths between all pairs and reconstructs the path.
- * Complexity: Time O(V^3) | Space O(V^2)
- * Verified: ..........
+ * Topic: Path Counting (Floyd-Warshall variant)
+ * Description: Counts the number of paths between all pairs.
+ * 
+ * Important Facts:
+ * - 0-based and 1-based indexing supported via template parameter.
+ * - Time Complexity: O(V^3)
+ * - Space Complexity: O(V^2)
  */
 template <typename T = int, int Base = 0>
 struct FloydPaths {

@@ -1,9 +1,12 @@
 #include "../../../core.h"
 /*
- * Algorithm: Edmonds-Karp Max Flow
- * Purpose: Uses BFS to find augmenting paths. Simple to code, good for small networks.
- * Complexity: Time O(V * E^2) | Space O(V + E)
- * Verified: [CSES 1694 - Download Speed](https://cses.fi/problemset/task/1694)
+ * Topic: Edmonds-Karp Max Flow
+ * Description: Uses BFS to find augmenting paths. Simple to code, good for small networks.
+ * 
+ * Important Facts:
+ * - Supports 0-based and 1-based indexing.
+ * - Time Complexity: O(V * E^2)
+ * - Space Complexity: O(V + E)
  */
 struct EdmondsKarp {
     struct Edge {

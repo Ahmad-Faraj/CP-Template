@@ -51,3 +51,19 @@ If you *must* use SPFA (e.g., Min-Cost Max-Flow where potentials aren't cleanly 
 *   **SPFA (Subtree Count):** Maintain the shortest-path tree structure. If the depth of a node in the tree exceeds $V$, a negative cycle exists. This is practically the fastest method.
 *   **DFS-SPFA:** Maintain a boolean array of nodes currently in the recursion stack. If we relax an edge to a node already in the stack, we found a negative cycle. Extremely fast for graphs with many small negative cycles.
 
+```cpp
+// Blueprint: Negative Cycle Recovery (Bellman-Ford / SPFA)
+// `parent` array tracks the relaxed edges. `last_updated_node` is the node updated on the V-th iteration.
+int y = last_updated_node;
+for (int i = 0; i < V; ++i) {
+    y = parent[y]; // walk back V times to guarantee we are inside the cycle
+}
+vector<int> path;
+for (int cur = y; ; cur = parent[cur]) {
+    path.push_back(cur);
+    if (cur == y && path.size() > 1) break;
+}
+reverse(path.begin(), path.end());
+// `path` now contains the negative cycle!
+```
+

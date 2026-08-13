@@ -1,18 +1,16 @@
 #include "../../../core.h"
 /*
- * Algorithm: 2-SAT (2-Satisfiability)
- * Purpose: Solves boolean satisfiability for clauses of size 2 using SCCs.
- * Complexity: Time O(V + E) | Space O(V + E)
- * Verified: ..........
+ * Topic: 2-Satisfiability (2-SAT)
+ * Description: Solves boolean satisfiability for clauses of size 2 using SCCs (Kosaraju's).
+ *              Finds if there is any assignment of variables such that formula F is true.
+ *              Formula F = (x_0 OP y_0) AND (x_1 OP y_1) AND ... (x_{n-1} OP y_{n-1})
+ *              where OP belongs to {OR, XOR}.
+ * 
+ * Important Facts:
+ * - 0-based indexing for variables.
+ * - Time Complexity: O(V + E)
+ * - Space Complexity: O(V + E)
  */
-/*
-zero Indexed
-we have vars variables
-F=(x_0 XXX y_0) and (x_1 XXX y_1) and ... (x_{vars-1} XXX y_{vars-1})
-here {x_i,y_i} are variables
-and XXX belongs to {OR,XOR}
-is there any assignment of variables such that F=true
-*/
 struct twosat {
     int n; // total size combining +, -. must be even.
     vector<vector<int>> g, gt;

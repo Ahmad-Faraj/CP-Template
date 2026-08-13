@@ -1,9 +1,12 @@
 #include "../../../core.h"
 /*
- * Algorithm: Bellman-Ford
- * Purpose: Single-source shortest path for graphs with negative weights. Detects negative cycles.
- * Complexity: Time O(V * E) | Space O(V + E)
- * Verified: ..........
+ * Topic: Bellman-Ford
+ * Description: Single-source shortest path for graphs with negative weights. Detects negative cycles.
+ * 
+ * Important Facts:
+ * - 1-based indexing for nodes by default.
+ * - Time Complexity: O(V * E)
+ * - Space Complexity: O(V + E)
  */
 template <typename T = int>
 struct BellmanFord {

@@ -1,9 +1,12 @@
 #include "../../core.h"
 /*
- * Algorithm: Strict Second Minimum Spanning Tree
- * Purpose: Finds the tree with strictly second minimum weight using binary lifting.
- * Complexity: Time O(E log V) | Space O(V log V)
- * Verified: ..........
+ * Topic: Strict Second Minimum Spanning Tree
+ * Description: Finds the tree with strictly second minimum weight using binary lifting.
+ * 
+ * Important Facts:
+ * - 0-based indexing for nodes by default.
+ * - Time Complexity: O(E log V)
+ * - Space Complexity: O(V log V)
  */
 #include <vector>
 #include <algorithm>

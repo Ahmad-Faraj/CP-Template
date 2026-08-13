@@ -1,9 +1,12 @@
 #include "../../../core.h"
 /*
- * Algorithm: Hopcroft-Karp Bipartite Matching
- * Purpose: Fast maximum bipartite matching using BFS and DFS.
- * Complexity: Time O(E * sqrt(V)) | Space O(V + E)
- * Verified: [CSES 1696 - School Dance](https://cses.fi/problemset/task/1696)
+ * Topic: Hopcroft-Karp Bipartite Matching
+ * Description: Fast maximum bipartite matching using BFS and DFS.
+ * 
+ * Important Facts:
+ * - 1-based indexing for nodes by default.
+ * - Time Complexity: O(E * sqrt(V))
+ * - Space Complexity: O(V + E)
  */
 
 struct HopcroftKarp {

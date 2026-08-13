@@ -1,9 +1,12 @@
 #include "../../../core.h"
 /*
- * Algorithm: Transitive Closure (Floyd-Warshall)
- * Purpose: Computes reachability between all pairs of nodes in a directed graph.
- * Complexity: Time O(V^3) | Space O(V^2)
- * Verified: ..........
+ * Topic: Transitive Closure (Floyd-Warshall)
+ * Description: Computes reachability between all pairs of nodes in a directed graph.
+ * 
+ * Important Facts:
+ * - 0-based and 1-based indexing supported via template parameter.
+ * - Time Complexity: O(V^3)
+ * - Space Complexity: O(V^2)
  */
 template <int Base = 0>
 struct FloydTransitiveClosure {

@@ -1,9 +1,13 @@
 #include "../../../core.h"
 /*
- * Algorithm: Min-Cost Max-Flow (MCMF)
- * Purpose: Finds the cheapest way to route maximum flow using Dijkstra with potentials.
- * Complexity: Time O(F * E log V) | Space O(V + E)
- * Verified: [CSES 2129 - Task Assignment](https://cses.fi/problemset/task/2129)
+ * Topic: Min-Cost Max-Flow (MCMF)
+ * Description: Finds the cheapest way to route maximum flow using Dijkstra with potentials.
+ *              Works for directed, undirected, and negative costs (no negative cycles).
+ * 
+ * Important Facts:
+ * - 0-based indexing for nodes by default.
+ * - Time Complexity: O(F * E log V)
+ * - Space Complexity: O(V + E)
  */
 // Complexity: O(min(E^2 *V log V, E logV * flow))
 // Works for both directed, undirected and with negative cost too

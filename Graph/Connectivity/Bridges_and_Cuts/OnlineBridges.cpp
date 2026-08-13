@@ -1,9 +1,13 @@
 #include "../../../core.h"
 /*
- * Algorithm: Online Bridges
- * Purpose: Dynamically tracks the number of bridges as edges are added using DSUs.
- * Complexity: Time O(log V) amortized per edge | Space O(V)
- * Verified: ..........
+ * Topic: Online Bridges
+ * Description: Dynamically tracks the number of bridges as edges are added.
+ *              Uses a combination of DSUs for 2-ECCs and connected components.
+ * 
+ * Important Facts:
+ * - 0-based indexing for nodes by default.
+ * - Time Complexity: O(log V) amortized per edge addition.
+ * - Space Complexity: O(V)
  */
 
 struct OnlineBridges {

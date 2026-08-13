@@ -1,9 +1,12 @@
 #include "../../core.h"
 /*
- * Algorithm: K-th Minimum Spanning Tree
- * Purpose: Finds the first K minimum spanning trees using Lawler's procedure (Edge Partitioning).
- * Complexity: Time O(K * V * E) | Space O(K * V)
- * Verified: ..........
+ * Topic: K-th Minimum Spanning Tree
+ * Description: Finds the first K minimum spanning trees using Lawler's procedure (Edge Partitioning).
+ * 
+ * Important Facts:
+ * - 0-based indexing for nodes by default.
+ * - Time Complexity: O(K * V * E)
+ * - Space Complexity: O(K * V)
  */
 #include <vector>
 #include <algorithm>
@@ -136,3 +139,28 @@ struct KMST {
         return results;
     }
 };
+
+/*
+ * Takes N (number of nodes), M (number of edges), and K (number of MSTs).
+ * Followed by M lines of undirected edges: u v w.
+ * Gives the weights of the K minimum spanning trees.
+ */
+int main() {
+    ios_base::sync_with_stdio(false);
+    cin.tie(NULL);
+    int n, m, k;
+    if (cin >> n >> m >> k) {
+        KMST kmst(n, m);
+        for (int i = 0; i < m; ++i) {
+            int u, v;
+            long long w;
+            cin >> u >> v >> w;
+            kmst.addEdge(u - 1, v - 1, w, i);
+        }
+        vector<long long> ans = kmst.solve(k);
+        for (long long cost : ans) {
+            cout << cost << "\n";
+        }
+    }
+    return 0;
+}

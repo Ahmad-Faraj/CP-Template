@@ -1,9 +1,12 @@
 #include "../../../core.h"
 /*
- * Algorithm: Push-Relabel Max Flow
- * Purpose: Fast max flow algorithm that pushes excess flow to neighbors. Great for dense graphs.
- * Complexity: Time O(V^3) | Space O(V + E)
- * Verified: [CSES 1694 - Download Speed](https://cses.fi/problemset/task/1694)
+ * Topic: Push-Relabel Max Flow
+ * Description: Fast max flow algorithm that pushes excess flow to neighbors. Great for dense graphs.
+ * 
+ * Important Facts:
+ * - Supports 0-based and 1-based indexing.
+ * - Time Complexity: O(V^3)
+ * - Space Complexity: O(V + E)
  */
 struct PushRelabel {
     struct Edge {

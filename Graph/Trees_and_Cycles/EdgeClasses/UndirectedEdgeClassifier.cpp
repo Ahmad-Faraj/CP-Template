@@ -1,9 +1,12 @@
 #include "../../../core.h"
 /*
- * Algorithm: Undirected Edge Classifier
- * Purpose: Classifies edges (tree, back) during DFS on an undirected graph.
- * Complexity: Time O(V + E) | Space O(V + E)
- * Verified: ..........
+ * Topic: Undirected Edge Classifier
+ * Description: Classifies edges (tree, back) during DFS on an undirected graph.
+ * 
+ * Important Facts:
+ * - 0-based indexing for nodes by default.
+ * - Time Complexity: O(V + E)
+ * - Space Complexity: O(V + E)
  */
 
 struct UndirectedEdgeClassifier {

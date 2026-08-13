@@ -1,9 +1,12 @@
 #include "../../../core.h"
 /*
- * Algorithm: Minimax Path (Floyd-Warshall)
- * Purpose: Finds a path between all pairs minimizing the maximum edge weight.
- * Complexity: Time O(V^3) | Space O(V^2)
- * Verified: ..........
+ * Topic: Minimax Path (Floyd-Warshall)
+ * Description: Finds a path between all pairs minimizing the maximum edge weight.
+ * 
+ * Important Facts:
+ * - 0-based and 1-based indexing supported via template parameter.
+ * - Time Complexity: O(V^3)
+ * - Space Complexity: O(V^2)
  */
 template <typename T = int, int Base = 0>
 struct FloydMinMaxEdge {

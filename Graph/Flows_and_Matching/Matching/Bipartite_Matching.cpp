@@ -1,9 +1,12 @@
 #include "../../../core.h"
 /*
- * Algorithm: Bipartite Matching (Kuhn's Algorithm)
- * Purpose: Finds maximum bipartite matching using simple DFS.
- * Complexity: Time O(V * E) | Space O(V + E)
- * Verified: [CSES 1696 - School Dance](https://cses.fi/problemset/task/1696)
+ * Topic: Bipartite Matching (Kuhn's Algorithm)
+ * Description: Finds maximum bipartite matching using simple DFS.
+ * 
+ * Important Facts:
+ * - 1-based indexing for nodes by default.
+ * - Time Complexity: O(V * E)
+ * - Space Complexity: O(V + E)
  */
 
 struct BipartiteMatching {

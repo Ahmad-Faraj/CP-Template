@@ -1,9 +1,13 @@
 #include "../../../core.h"
 /*
- * Algorithm: Tarjan's Strongly Connected Components (SCC)
- * Purpose: Finds SCCs in a directed graph using a single DFS pass.
- * Complexity: Time O(V + E) | Space O(V + E)
- * Verified: [CSES 1683 - Planets and Kingdoms](https://cses.fi/problemset/task/1683)
+ * Topic: Tarjan's Strongly Connected Components (SCC)
+ * Description: Finds SCCs in a directed graph using a single DFS pass.
+ *              Also builds the condensed DAG of SCCs.
+ * 
+ * Important Facts:
+ * - 1-based indexing for nodes by default.
+ * - Time Complexity: O(V + E)
+ * - Space Complexity: O(V + E)
  */
 template <typename T = int>
 struct Tarjan {
