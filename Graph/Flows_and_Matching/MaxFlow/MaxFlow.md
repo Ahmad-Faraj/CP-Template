@@ -1,5 +1,21 @@
 # Max Flow
 
+## 1.0 Cheat Sheet: Flow & Matching Selection Guide
+
+| Problem Type                                     | Graph Type               | Edge Weights | Goal                          | Recommended Algorithm         | Time Complexity            |
+|--------------------------------------------------|--------------------------|--------------|-------------------------------|-------------------------------|----------------------------|
+| Maximum matching                                 | Bipartite                | No           | Max number of matchings       | Hopcroft-Karp                 | $O(E \sqrt{V})$            |
+| Maximum matching (as max flow)                   | Bipartite or Directed    | No           | Max number of matchings       | Dinic                         | $O(E \sqrt{V})$ or $O(V^2 E)$ |
+| Maximum matching                                 | General (non-bipartite)  | No           | Max number of matchings       | Blossom (Edmonds' Algorithm)  | $O(V^3)$                   |
+| Minimum cost matching                            | Bipartite                | Yes          | Min total weight              | Hungarian (Kuhn–Munkres)      | $O(V^3)$                   |
+| Maximum weight matching                          | Bipartite                | Yes          | Max total weight              | Hungarian (Kuhn–Munkres)      | $O(V^3)$                   |
+| General matching with augmenting paths           | General (non-bipartite)  | No           | Max matching                  | Blossom                       | $O(V^3)$                   |
+| Assignment problem (e.g. task to worker)         | Bipartite ($N = M$)      | Yes          | Optimal assignment            | Hungarian                     | $O(V^3)$                   |
+| Online matching or dynamic graph                 | Bipartite                | Varies       | Real-time updates             | Greedy or Incremental Method  | $O(1)$ – $O(E)$ per update |
+| Edge-disjoint paths / max # of $S \to T$ paths   | Directed Bipartite       | No           | Max number of disjoint paths  | Dinic / Ford-Fulkerson        | $O(V^2 E)$ or $O(E \sqrt{V})$ |
+
+---
+
 ## Max-Flow Min-Cut Theorem & Core Algorithms
 
 The Max-Flow Min-Cut theorem is the cornerstone of flow theory: the maximum amount of flow passing from the source $S$ to the sink $T$ is equal to the total weight of the edges in the minimum cut that separates $S$ and $T$.
