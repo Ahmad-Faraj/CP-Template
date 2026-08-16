@@ -1,98 +1,66 @@
-/* Topic: String Trie
- * Description: Trie (Prefix Tree) is a tree-like data structure that stores strings or
- *   sequences character by character. Used for fast prefix matching, dictionary
- *   implementations, and string searching.
- * Usage: Trie tr; tr.insert(s); tr.count_prefix(s); tr.erase(s);
- */
-#include "../../core.h"
+template <int Mode = 0> struct Trie {
+    // Mode [lowercase, uppercase, digits]
+    static constexpr int sz[4] = {26, 26, 10};
 
-struct Trie {
-    Trie* arr[26];
-    int lst = 0;
-    int st = 0;
+    struct Node {
+
+        Node *child[sz[Mode]];
+        bool is_word;
+        int freq;
+
+        Node() {
+            memset(child, 0, sizeof(child));
+            is_word = false;
+            freq = 0;
+        }
+    };
+
+    Node *root;
+    char DEFAULT;
 
     Trie() {
-        for (int i = 0; i < 26; ++i) { arr[i] = nullptr; }
-        lst = 0;
-        st = 0;
+        root = new Node;
+        DEFAULT = "aA0"[Mode];
     }
 
-    ~Trie() {
-        for (int i = 0; i < 26; ++i) {
-            if (arr[i] != nullptr) {
-                delete arr[i];
-                arr[i] = nullptr;
-            }
+    void insert(const string &word) {
+        Node *curr = root;
+        for (auto &c : word) {
+            if (!curr->child[c - DEFAULT]) curr->child[c - DEFAULT] = new Node;
+            curr = curr->child[c - DEFAULT];
+            curr->freq++;
+        }
+        curr->is_word = true;
+    }
+
+    void erase(const string &word, int idx, Node *curr) {
+        if (idx == sz(word)) return void(curr->is_word = curr->freq > 1);
+        erase(word, idx + 1, curr->child[word[idx] - DEFAULT]);
+        if (--curr->child[word[idx] - DEFAULT]->freq == 0) {
+            delete curr->child[word[idx] - DEFAULT];
+            curr->child[word[idx] - DEFAULT] = nullptr;
         }
     }
 
-    void insert(const string& word, int idx = 0) {
-        // Time Complexity: O(|word|)
-        // Space Complexity: O(|word|)
-        if (idx == sz(word)) {
-            lst++;
-            st++;
-            return;
+    bool search(const string &word) {
+        Node *curr = root;
+        for (auto &c : word) {
+            if (!curr->child[c - DEFAULT]) return false;
+            curr = curr->child[c - DEFAULT];
         }
-        int ch = word[idx] - 'a';
-        if (arr[ch] == nullptr) { arr[ch] = new Trie(); }
-        if (idx != 0) st++;
-        arr[ch]->insert(word, idx + 1);
+        return curr->is_word;
     }
 
-    int count_equal(const string& word, int idx = 0) const {
-        // Time Complexity: O(|word|)
-        if (idx == sz(word)) { return lst; }
-        int ch = word[idx] - 'a';
-        if (arr[ch] == nullptr) { return 0; }
-        return arr[ch]->count_equal(word, idx + 1);
+    void erase(const string &word) {
+        if (search(word)) erase(word, 0, root);
     }
 
-    int count_prefix(const string& word, int idx = 0) const {
-        // Time Complexity: O(|word|)
-        if (idx == sz(word)) { return st; }
-        int ch = word[idx] - 'a';
-        if (arr[ch] == nullptr) { return 0; }
-        return arr[ch]->count_prefix(word, idx + 1);
-    }
-
-    bool erase(const string& word, int idx = 0) {
-        // Time Complexity: O(|word|)
-        if (idx == sz(word)) {
-            lst--;
-            st--;
-            return true;
-        }
-        int ch = word[idx] - 'a';
-        if (arr[ch] == nullptr) { return false; }
-        if (!arr[ch]->erase(word, idx + 1)) { return false; }
-        if (idx != 0) st--;
-        if (arr[ch]->st == 0) {
-            delete arr[ch];
-            arr[ch] = nullptr;
+    bool is_prefix(const string &word) {
+        Node *curr = root;
+        for (auto &c : word) {
+            if (!curr->child[c - DEFAULT]) return false;
+            curr = curr->child[c - DEFAULT];
         }
         return true;
-    }
-
-    bool GetProperPrefixTo(const string& s, string& temp, vector<string>& ans, int idx = 0) {
-        if (sz(s) > idx) {
-            int ch = s[idx] - 'a';
-            if (arr[ch] == nullptr) return false;
-            temp += s[idx];
-            return arr[ch]->GetProperPrefixTo(s, temp, ans, idx + 1);
-        } else {
-            for (int i = 0; idx != sz(s) && i < lst; i++) {
-                ans.emplace_back(temp);
-                break;
-            }
-            for (int i = 0; i < 26; i++) {
-                if (arr[i]) {
-                    temp += (char)(i + 'a');
-                    bool x = arr[i]->GetProperPrefixTo(s, temp, ans, idx + 1);
-                    temp.pop_back();
-                }
-            }
-            return true;
-        }
     }
 };
