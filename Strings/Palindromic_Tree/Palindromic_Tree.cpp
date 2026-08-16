@@ -1,5 +1,4 @@
-#include <bits/stdc++.h>
-using namespace std;
+#include "../../core.h"
 
 struct PalindromicTree {
     struct Node {
@@ -7,10 +6,11 @@ struct PalindromicTree {
         int link;           // suffix link
         int len;            // length of palindrome
         long long occ;      // occurrence count
-        int firstPos;       // ending position of first occurrence (1‐based)
+        int firstPos;       // ending position of first occurrence (1-based)
+        int num;            // number of palindromic suffixes ending at this node
 
         Node(int sigma = 0, int L = 0)
-          : next(sigma, 0), link(0), len(L), occ(0), firstPos(-1) {}
+          : next(sigma, 0), link(0), len(L), occ(0), firstPos(-1), num(0) {}
     };
 
     vector<Node> tree;
@@ -30,9 +30,11 @@ struct PalindromicTree {
         tree.emplace_back(sigma,  0);  // empty root     (len = 0)
         tree[0].link = 0;
         tree[1].link = 0;
+        tree[0].num = 0;
+        tree[1].num = 0;
     }
 
-    // Add s[pos]=ch (pos is 1‐based)
+    // Add s[pos]=ch (pos is 1-based)
     void addChar(char ch, int pos) {
         int c = ch - BASE;
         s.push_back(ch);
@@ -58,7 +60,7 @@ struct PalindromicTree {
 
         // 4) Set its suffix link:
         if (tree[last].len == 1) {
-            // single‐char palindrome always links to empty root
+            // single-char palindrome always links to empty root
             tree[last].link = 1;
         } else {
             int linkCandidate = tree[cur].link;
@@ -71,18 +73,17 @@ struct PalindromicTree {
                 linkCandidate = tree[linkCandidate].link;
             }
         }
+        
+        // 5) Set number of distinct palindromic suffixes
+        tree[last].num = tree[tree[last].link].num + 1;
     }
 
-    // After all addChar calls, propagate occ from longer to shorter palindromes
+    // After all addChar calls, propagate occ from longer to shorter palindromes.
+    // O(V) Optimization: Nodes are mathematically guaranteed to be created in topologically 
+    // increasing order of length! We can drop std::sort entirely and simply iterate backwards!
     void propagateOccurrences() {
-        int sz = tree.size();
-        vector<int> order(sz);
-        iota(order.begin(), order.end(), 0);
-        sort(order.begin(), order.end(),
-             [&](int a, int b){ return tree[a].len > tree[b].len; });
-        for (int v : order) {
-            if (v <= 1) continue;
-            tree[tree[v].link].occ += tree[v].occ;
+        for (int i = (int)tree.size() - 1; i > 1; i--) {
+            tree[tree[i].link].occ += tree[i].occ;
         }
     }
 
@@ -99,25 +100,3 @@ struct PalindromicTree {
         return sum;
     }
 };
-
-int main(){
-    ios::sync_with_stdio(false);
-    cin.tie(nullptr);
-
-    string S = "ababa";
-    int n = S.size();
-
-    // For lowercase letters: sigma=26, base='a'
-    PalindromicTree pt(n, 26, 'a');
-
-    for (int i = 0; i < n; i++)
-        pt.addChar(S[i], i+1);
-
-    pt.propagateOccurrences();
-
-    cout << "Distinct palindromes: " << pt.distinctCount() << "\n";
-    cout << "Total occurrences:   " << pt.totalOccurrences() << "\n";
-
-    return 0;
-}
-
