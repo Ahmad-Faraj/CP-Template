@@ -1,12 +1,13 @@
+#include "../../core.h"
+
 int nextNodeId = 0;
 
-#define nd Node *
 struct Aho
 {
     struct Node
     {
-        nd fail;
-        nd child[26];
+        Node* fail;
+        Node* child[26];
         vector<int> patIdx;
         vector<char> cahrs;
         int id;
@@ -25,7 +26,7 @@ struct Aho
         }
     };
 
-    nd root;
+    Node* root;
     Aho()
     {
         root = new Node();
@@ -47,7 +48,7 @@ struct Aho
 
     void insert(string &s, int idx)
     {
-        nd cur = root;
+        Node* cur = root;
         for (int i = 0; i < s.size(); i++)
         {
             int c = s[i] - 'a';
@@ -62,7 +63,7 @@ struct Aho
     }
     void build()
     {
-        queue<nd> q;
+        queue<Node*> q;
         for (int i = 0; i < 26; i++)
         {
             if (root->child[i])
@@ -75,13 +76,13 @@ struct Aho
         }
         while (q.size())
         {
-            nd cur = q.front();
+            Node* cur = q.front();
             q.pop();
             for (int i = 0; i < cur->cahrs.size(); i++)
             {
                 char c = cur->cahrs[i];
-                nd next = cur->child[c];
-                nd fail = cur->fail;
+                Node* next = cur->child[c];
+                Node* fail = cur->fail;
 
                 while (fail != root && !fail->child[c])
                 {
@@ -106,7 +107,7 @@ struct Aho
     vector<vector<int>> search(string &s)
     {
         vector<vector<int>> res(s.size());
-        nd cur = root;
+        Node* cur = root;
         for (int i = 0; i < s.size(); i++)
         {
             int c = s[i] - 'a';

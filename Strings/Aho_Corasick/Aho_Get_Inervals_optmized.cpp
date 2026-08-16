@@ -1,12 +1,13 @@
+#include "../../core.h"
+
 int nextNodeId = 0;
 
-#define nd Node *
 struct Aho
 {
     struct Node
     {
-        nd fail;
-        nd child[26];
+        Node* fail;
+        Node* child[26];
 
         // FIX 1: Replace vector<int> with a single int. A trie node represents one unique string!
         // Using a vector here and copying it in build() causes massive Memory Limit Exceeded.
@@ -29,7 +30,7 @@ struct Aho
         }
     };
 
-    nd root;
+    Node* root;
     Aho()
     {
         root = new Node();
@@ -51,7 +52,7 @@ struct Aho
 
     void insert(string &s, int idx)
     {
-        nd cur = root;
+        Node* cur = root;
         for (int i = 0; i < s.size(); i++)
         {
             int c = s[i] - 'a';
@@ -67,7 +68,7 @@ struct Aho
     }
     void build()
     {
-        queue<nd> q;
+        queue<Node*> q;
         for (int i = 0; i < 26; i++)
         {
             if (root->child[i])
@@ -80,13 +81,13 @@ struct Aho
         }
         while (q.size())
         {
-            nd cur = q.front();
+            Node* cur = q.front();
             q.pop();
             for (int i = 0; i < cur->cahrs.size(); i++)
             {
                 char c = cur->cahrs[i];
-                nd next = cur->child[c];
-                nd fail = cur->fail;
+                Node* next = cur->child[c];
+                Node* fail = cur->fail;
 
                 while (fail != root && !fail->child[c])
                 {
@@ -112,7 +113,7 @@ struct Aho
     vector<pair<long long, long long>> search(string &s, const vector<string> &pattens)
     {
         vector<pair<long long, long long>> intervals;
-        nd cur = root;
+        Node* cur = root;
         for (int i = 0; i < s.size(); i++)
         {
             int c = s[i] - 'a';
@@ -127,7 +128,7 @@ struct Aho
 
             // FIX 3: Traverse fail links to collect all matching patterns ending at position 'i'.
             // Because max pattern length is 20, this traverses at most 20 nodes, staying well within time limits.
-            nd temp = cur;
+            Node* temp = cur;
             while (temp != root)
             {
                 if (temp->patIdx != -1)
