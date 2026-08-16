@@ -1,4 +1,4 @@
-# 1. Aho-Corasick Automaton (Advanced IGM Implementations)
+# 1. Aho-Corasick Automaton
 
 The Aho-Corasick algorithm transforms a dictionary of strings into a Deterministic Finite Automaton (DFA). Because it is a DFA, it supports powerful graph algorithms (BFS, DFS, Matrix Exponentiation) and Dynamic Programming.
 
