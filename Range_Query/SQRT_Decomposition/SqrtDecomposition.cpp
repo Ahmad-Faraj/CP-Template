@@ -1,3 +1,4 @@
+#include "../../core.h"
 /*
     [1] Definition
     Square Root (SQRT) Decomposition dividing an array of size N into blocks of size O(sqrt(N)).
@@ -15,10 +16,7 @@
     Maintains prefix and range sums over generic type T with identity T(0).
 */
 
-#include "../../core.h"
-
-template <typename T>
-struct SQRT {
+template <typename T> struct SQRT {
     int n, SQ, BlocksNum;
     vector<T> arr, block;
 
@@ -30,7 +28,7 @@ struct SQRT {
         block.assign(BlocksNum, T(0));
     }
 
-    SQRT(const vector<T>& nums) {
+    SQRT(const vector<T> &nums) {
         n = nums.size();
         SQ = sqrt(n) + 1;
         BlocksNum = (n + SQ - 1) / SQ;

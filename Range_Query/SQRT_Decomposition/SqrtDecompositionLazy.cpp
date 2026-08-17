@@ -1,3 +1,5 @@
+#include "../../core.h"
+
 /*
     [1] Definition
     Square Root (SQRT) Decomposition with Lazy Propagation dividing an array into blocks of size O(sqrt(N)).
@@ -15,24 +17,23 @@
     Maintains lazy propagation tags to defer range addition updates across whole blocks.
 */
 
-#include "../../core.h"
-
-template <typename T>
-struct SQRT {
+// 0-based Indexing
+template <typename T> struct SQRT {
     int n, SQ, BlocksNum;
+
     vector<T> arr, block, lazy;
 
     SQRT(int N) {
         n = N;
-        SQ = sqrt(N) + 1;
+        SQ = sqrt(n) + 1;
         BlocksNum = (n + SQ - 1) / SQ;
 
-        arr.assign(N, T(0));
+        arr.assign(n, T(0));
         block.assign(BlocksNum, T(0));
         lazy.assign(BlocksNum, T(0));
     }
 
-    SQRT(vector<T>& nums) {
+    SQRT(const vector<T> &nums) {
         n = nums.size();
         SQ = sqrt(n) + 1;
         BlocksNum = (n + SQ - 1) / SQ;
@@ -41,108 +42,121 @@ struct SQRT {
         block.assign(BlocksNum, T(0));
         lazy.assign(BlocksNum, T(0));
 
-        for (int i = 0; i < n; i++) block[i / SQ] += arr[i];
+        for (int i = 0; i < n; i++) {
+            block[i / SQ] += arr[i];
+        }
     }
 
-    void init(int idx) {
-        block[idx] = T(0);
+    // Get number of elements inside block b
+    int block_size(int b) const {
+        int L = b * SQ;
+        int R = min(n, (b + 1) * SQ);
 
-        int l = idx * SQ;
-        int r = min(n - 1, l + SQ - 1);
-
-        for (int i = l; i <= r; i++) block[idx] += arr[i];
+        return R - L;
     }
 
-    // Push lazy tag
-    void propegate(int idx) {
-        if (lazy[idx] == T(0)) return;
+    // Rebuild block b
+    void rebuild(int b) {
+        block[b] = T(0);
 
-        int l = idx * SQ;
-        int r = min(n - 1, l + SQ - 1);
+        int L = b * SQ;
+        int R = min(n, (b + 1) * SQ);
 
-        for (int i = l; i <= r; i++) arr[i] += lazy[idx];
-
-        block[idx] += lazy[idx] * (r - l + 1);
-
-        lazy[idx] = T(0);
+        for (int i = L; i < R; i++) {
+            block[b] += arr[i];
+        }
     }
 
     // Range addition: a[i] += x for i in [l, r]
     void update(int l, int r, T x) {
-        int st = l / SQ;
-        int en = r / SQ;
+        if (l > r) return;
+
+        int bl = l / SQ;
+        int br = r / SQ;
 
         // Same block
-        if (st == en) {
-            propegate(st);
+        if (bl == br) {
+            for (int i = l; i <= r; i++) {
+                arr[i] += x;
+                block[bl] += x;
+            }
 
-            for (int i = l; i <= r && i < n; i++) arr[i] += x;
-
-            init(st);
             return;
         }
 
-        propegate(st);
-        propegate(en);
+        int left_end = min(n, (bl + 1) * SQ);
 
-        for (int i = l; i < (st + 1) * SQ; i++) arr[i] += x;
+        for (int i = l; i < left_end; i++) {
+            arr[i] += x;
+            block[bl] += x;
+        }
 
-        init(st);
+        for (int b = bl + 1; b < br; b++) {
+            lazy[b] += x;
+            block[b] += x * block_size(b);
+        }
 
-        for (int i = st + 1; i < en; i++) lazy[i] += x;
+        int right_start = br * SQ;
 
-        for (int i = en * SQ; i <= r && i < n; i++) arr[i] += x;
-
-        init(en);
+        for (int i = right_start; i <= r; i++) {
+            arr[i] += x;
+            block[br] += x;
+        }
     }
 
-    // Prefix sum [0, r]
-    T query(int r) {
+    T query(int r) const {
         if (r < 0) return T(0);
+        if (r >= n) r = n - 1;
 
         T ans = T(0);
 
         int b = r / SQ;
 
         for (int i = 0; i < b; i++) {
-            int l = i * SQ;
-            int rr = min(n - 1, (i + 1) * SQ - 1);
-            int len = rr - l + 1;
-
-            ans += block[i] + lazy[i] * len;
+            ans += block[i];
         }
 
-        for (int i = b * SQ; i <= r && i < n; i++) ans += arr[i] + lazy[b];
+        int L = b * SQ;
+
+        for (int i = L; i <= r; i++) {
+            ans += arr[i] + lazy[b];
+        }
 
         return ans;
     }
 
-    // Range sum [l, r]
-    T query(int l, int r) {
+    // Range Query
+    T query(int l, int r) const {
         if (l > r) return T(0);
 
-        int st = l / SQ;
-        int en = r / SQ;
+        int bl = l / SQ;
+        int br = r / SQ;
 
         T ans = T(0);
 
-        if (st == en) {
-            for (int i = l; i <= r; i++) ans += arr[i] + lazy[st];
+        if (bl == br) {
+            for (int i = l; i <= r; i++) {
+                ans += arr[i] + lazy[bl];
+            }
 
             return ans;
         }
 
-        for (int i = st + 1; i < en; i++) {
-            int L = i * SQ;
-            int R = min(n - 1, (i + 1) * SQ - 1);
-            int len = R - L + 1;
+        int left_end = min(n, (bl + 1) * SQ);
 
-            ans += block[i] + lazy[i] * len;
+        for (int i = l; i < left_end; i++) {
+            ans += arr[i] + lazy[bl];
         }
 
-        for (int i = l; i < (st + 1) * SQ && i < n; i++) ans += arr[i] + lazy[st];
+        for (int b = bl + 1; b < br; b++) {
+            ans += block[b];
+        }
 
-        for (int i = en * SQ; i <= r && i < n; i++) ans += arr[i] + lazy[en];
+        int right_start = br * SQ;
+
+        for (int i = right_start; i <= r; i++) {
+            ans += arr[i] + lazy[br];
+        }
 
         return ans;
     }
