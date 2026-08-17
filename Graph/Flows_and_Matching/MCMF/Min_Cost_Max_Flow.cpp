@@ -136,7 +136,7 @@ struct MCMF {
                         int id = g[u][k];
                         int v = e[id].v;
                         T cap = e[id].cap, w = e[id].cost;
-                        if (d[v] > d[u] + w && cap > 0) {
+                        if (d[u] < inf && d[v] > d[u] + w && cap > 0) {
                             d[v] = d[u] + w;
                             relax = true;
                         }
