@@ -48,11 +48,9 @@ template <typename T> class Treap {
         Node *ch[2];
         Node *par;
 
-        Node() : pri(INT_MIN), size(0), frq(0), ch{this, this}, par(this) {
-        }
+        Node() : pri(INT_MIN), size(0), frq(0), ch{this, this}, par(this) {}
 
-        Node(const T &val) : val(val), pri(rnd(eng)), size(1), frq(1), ch{EMPTY, EMPTY}, par(EMPTY) {
-        }
+        Node(const T &val) : val(val), pri(rnd(eng)), size(1), frq(1), ch{EMPTY, EMPTY}, par(EMPTY) {}
 
         void update() {
             size = ch[L]->size + frq + ch[R]->size;

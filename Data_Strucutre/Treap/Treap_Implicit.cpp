@@ -1,171 +1,331 @@
-#include "../../core.h"
+#include <bits/stdc++.h>
+using namespace std;
+
+#define ll long long
+#define sz(x) (int)x.size()
+#define nl '\n'
 
 /*
- * Topic: Data Structures - Implicit Treap
- * Description: A Treap where the keys are implicit (representing array indices).
- *              Useful for array manipulations like splitting, merging, and reversing 
- *              subarrays in O(log N).
- *              Don't forget to set the seed for the random number generator!
- */
+    [1] Definition
+    Implicit Treap = Randomized Balanced Binary Search Tree
+    where the key is implicit and determined by the subtree size.
+
+    Unlike a normal Treap:
+        - There is no explicit key.
+        - The position of a node is determined by its left subtree size.
+
+    Supports:
+        - Insert at position
+        - Erase at position
+        - Get / Set
+        - Split / Merge
+        - Reverse a range
+        - Range Sum Query
+
+    [2] Complexity
+    Expected:
+        Insert           : O(log N)
+        Erase            : O(log N)
+        Get              : O(log N)
+        Set              : O(log N)
+        Split            : O(log N)
+        Merge            : O(log N)
+        Reverse          : O(log N)
+        Range Query      : O(log N)
+
+    [3] Notes
+    - All indices are 0-based.
+    - Priority maintains the heap property.
+    - Subtree size determines the implicit position.
+    - lazy is used for range reversal.
+*/
+
 mt19937 eng(0);
-uniform_int_distribution<int> rnd{INT_MIN + 1, INT_MAX};
-// uniform_int_distribution<int> rnd{0, 99}; //! for testing
-template <typename DataType> struct Treap {
-    enum DIR { L, R };
-    // extern struct node *const EMPTY;
-    struct node {
-        DataType val;
-        int pri, size, frq;
-        node *ch[2], *par;
+uniform_int_distribution<int> rnd(INT_MIN + 1, INT_MAX);
 
-        node() : pri(INT_MIN), size(0), ch{this, this}, par(this), frq(0) {}
+template <typename T> class ImplicitTreap {
+  private:
+    struct Node {
+        T val;
+        T sum;
 
-        node(const DataType &val) : val(val), pri(rnd(eng)), size(1), ch{EMPTY, EMPTY}, par(EMPTY), frq(1) {}
+        int pri;
+        int size;
 
-        void update() { size = ch[L]->size + frq + ch[R]->size; }
+        bool lazy;
+
+        Node *ch[2];
+
+        Node() : pri(INT_MIN), size(0), lazy(false), ch{this, this} {}
+
+        Node(const T &val) : val(val), sum(val), pri(rnd(eng)), size(1), lazy(false), ch{EMPTY, EMPTY} {}
+
+        // customize your query here
+        void update() {
+            size = ch[0]->size + 1 + ch[1]->size;
+            sum = ch[0]->sum + val + ch[1]->sum;
+        }
+
+        void push() {
+            if (!lazy) return;
+
+            swap(ch[0], ch[1]);
+
+            if (ch[0] != EMPTY) ch[0]->lazy ^= 1;
+
+            if (ch[1] != EMPTY) ch[1]->lazy ^= 1;
+
+            lazy = false;
+        }
     };
-    static node *EMPTY;
-    node *root = EMPTY;
-    Treap() {}
-    void link(node *p, node *c, int dir) {
-        if (c != EMPTY) c->par = p;
-        if (p != EMPTY) {
-            p->ch[dir] = c;
-            p->update();
+
+    static Node *EMPTY;
+
+    Node *root = EMPTY;
+
+    int size(Node *root) {
+        return root->size;
+    }
+
+    T sum(Node *root) {
+        return root->sum;
+    }
+
+    void update(Node *root) {
+        if (root != EMPTY) root->update();
+    }
+
+    void push(Node *root) {
+        if (root != EMPTY) root->push();
+    }
+
+    Node *merge(Node *a, Node *b) {
+        if (a == EMPTY) return b;
+
+        if (b == EMPTY) return a;
+
+        if (a->pri > b->pri) {
+            push(a);
+
+            a->ch[1] = merge(a->ch[1], b);
+
+            update(a);
+
+            return a;
+        } else {
+            push(b);
+
+            b->ch[0] = merge(a, b->ch[0]);
+
+            update(b);
+
+            return b;
         }
     }
 
-    int getDir(node *p, node *c) { return p->ch[R] == c; }
+    // Split first k elements into a and b.
+    void split(Node *root, int k, Node *&a, Node *&b) {
+        if (root == EMPTY) {
+            a = b = EMPTY;
+            return;
+        }
 
-    void rotate(node *q) {
-        node *p = q->par;
-        int d = getDir(p, q);
-        node *gp = p->par;
-        int gd = getDir(gp, p);
-        node *b = q->ch[!d];
-        link(p, b, d);
-        link(q, p, !d);
-        link(gp, q, gd);
-    };
-    node *balance(node *root, int d) {
-        if (root->ch[d]->pri > root->pri) {
-            node *tmp = root->ch[d];
-            rotate(tmp);
-            return tmp;
-        }
-        return root;
-    };
-    node *insert(node *root, const DataType &val) {
-        if (root == EMPTY) return new node(val);
-        if (root->val == val) {
-            root->frq++;
-            root->update();
-            return root;
-        }
-        int d = val > root->val;
-        link(root, insert(root->ch[d], val), d);
-        return balance(root, d);
-    };
-    void insert(const DataType &val) { root = insert(root, val); };
+        push(root);
 
-    node *erase(node *root, const DataType &val) {
-        if (root == EMPTY) return root;
-        if (root->val == val) {
-            if (root->frq > 1) {
-                root->frq--;
-                root->update();
-                return root;
-            }
-            int mxcd = 0;
-            for (int d = 0; d < 2; d++)
-                if (root->ch[d] == EMPTY) {
-                    node *tmp = root->ch[!d];
-                    tmp->par = EMPTY;
-                    delete root;
-                    return tmp;
-                } else if (root->ch[d]->pri > root->ch[mxcd]->pri)
-                    mxcd = d;
-            node *tmp = root->ch[mxcd];
-            rotate(tmp);
-            link(tmp, erase(tmp->ch[!mxcd], val), !mxcd);
-            return tmp;
+        int leftSize = root->ch[0]->size;
+
+        if (k <= leftSize) {
+            split(root->ch[0], k, a, root->ch[0]);
+            b = root;
+            update(b);
+        } else {
+            split(root->ch[1], k - leftSize - 1, root->ch[1], b);
+            a = root;
+            update(a);
         }
-        int d = val > root->val;
-        link(root, erase(root->ch[d], val), d);
-        return root;
-    };
-    void erase(const DataType &val) { root = erase(root, val); };
-    // kth element 0-indexed
-    const DataType kth(node *root, int k) {
-        if (root == EMPTY) return -1;
-        if (k < root->ch[L]->size) return kth(root->ch[L], k);
-        if (k < root->ch[L]->size + root->frq) return root->val;
-        return kth(root->ch[R], k - root->ch[L]->size - root->frq);
-    };
-    const DataType kth(int k) { return kth(root, k); };
-    // lower_bound returns the index of the first element >= val
-    int lower_bound(node *root, const DataType &val) {
-        if (root == EMPTY) return 0;
-        if (val <= root->val) return lower_bound(root->ch[L], val);
-        return root->ch[L]->size + root->frq + lower_bound(root->ch[R], val);
-    };
-    int lower_bound(const DataType &val) { return lower_bound(root, val); };
-    // upper_bound returns the index of the first element > val
-    int upper_bound(const DataType &val) { return lower_bound(val + 1); };
-    // print
-    void print(node *root, int d = 0) {
+    }
+
+    T get(Node *root, int pos) {
+        push(root);
+
+        int leftSize = root->ch[0]->size;
+
+        if (pos < leftSize) return get(root->ch[0], pos);
+
+        if (pos == leftSize) return root->val;
+
+        return get(root->ch[1], pos - leftSize - 1);
+    }
+
+    void set(Node *root, int pos, const T &val) {
+        push(root);
+
+        int leftSize = root->ch[0]->size;
+
+        if (pos < leftSize) {
+            set(root->ch[0], pos, val);
+        } else if (pos == leftSize) {
+            root->val = val;
+        } else {
+            set(root->ch[1], pos - leftSize - 1, val);
+        }
+
+        update(root);
+    }
+
+    void reverse(Node *root) {
         if (root == EMPTY) return;
-        print(root->ch[L], d + 1);
-        cout << root->val << sp << root->pri << sp << root->frq << sp << d << '\n';
-        print(root->ch[R], d + 1);
-    };
-    void print() { print(root); };
 
-    void clear(node *root) {
+        root->lazy ^= 1;
+    }
+
+    T query(Node *root, int l, int r) {
+        if (root == EMPTY || l > r) return T();
+
+        Node *a;
+        Node *b;
+        Node *c;
+
+        split(root, l, a, b);
+        split(b, r - l + 1, b, c);
+
+        T ans = b->sum;
+
+        root = merge(a, merge(b, c));
+
+        return ans;
+    }
+
+    void clear(Node *root) {
         if (root == EMPTY) return;
-        clear(root->ch[L]);
-        clear(root->ch[R]);
+
+        clear(root->ch[0]);
+        clear(root->ch[1]);
+
         delete root;
-    };
+    }
+
+    void print(Node *root) {
+        if (root == EMPTY) return;
+
+        push(root);
+
+        print(root->ch[0]);
+
+        cout << root->val << ' ';
+
+        print(root->ch[1]);
+    }
+
+  public:
+    ImplicitTreap() {
+    }
+
+    // split treap to two parts a contains first k element and b contains the remaining elements
+    void split(int k, ImplicitTreap &left, ImplicitTreap &right) {
+        split(root, k, left.root, right.root);
+
+        root = EMPTY;
+    }
+
+    // insert with idx - 0-based indexing
+    void insert(int pos, const T &val) {
+        Node *a;
+        Node *b;
+
+        split(root, pos, a, b);
+
+        root = merge(merge(a, new Node(val)), b);
+    }
+
+    // erase by idx - 0-based indexing
+    void erase(int pos) {
+        Node *a;
+        Node *b;
+        Node *c;
+
+        split(root, pos, a, b);
+        split(b, 1, b, c);
+
+        delete b;
+
+        root = merge(a, c);
+    }
+
+    // get element by idx - 0-based indexing
+    T get(int pos) {
+        return get(root, pos);
+    }
+
+    // set element by idx - 0-based indexing
+    void set(int pos, const T &val) {
+        set(root, pos, val);
+    }
+
+    // reverse the range [l, r]
+    void reverse(int l, int r) {
+        Node *a;
+        Node *b;
+        Node *c;
+
+        split(root, l, a, b);
+        split(b, r - l + 1, b, c);
+
+        reverse(b);
+
+        root = merge(a, merge(b, c));
+    }
+
+    // sum query by default and to customize it from node metadata
+    T query(int l, int r) {
+        return query(root, l, r);
+    }
+
+    int size() {
+        return root->size;
+    }
+
+    bool empty() {
+        return root == EMPTY;
+    }
+
+    void print() {
+        print(root);
+        cout << nl;
+    }
+
     void clear() {
         clear(root);
         root = EMPTY;
-    };
-    ~Treap() {
+    }
+
+    ~ImplicitTreap() {
         clear(root);
+
         if (EMPTY != nullptr) {
             delete EMPTY;
             EMPTY = nullptr;
         }
-    };
-};
-template <typename DataType>
-typename Treap<DataType>::node *Treap<DataType>::EMPTY = new typename Treap<DataType>::node();
-// end of treap
-// !==========================================================================
-void solve(int tc) {
-    int q;
-    cin >> q;
-    Treap<int> tp;
-    while (q--) {
-        char op;
-        int x;
-        cin >> op >> x;
-        if (op == 'I') {
-            int idx = tp.lower_bound(x);
-            if (idx == tp.root->size || idx == tp.upper_bound(x)) {
-                tp.insert(x);
-            }
-        } else if (op == 'D') {
-            tp.erase(x);
-        } else if (op == 'K') {
-            if (x > tp.root->size) {
-                cout << "invalid" << endl;
-            } else {
-                cout << tp.kth(x - 1) << endl;
-            }
-        } else {
-            cout << tp.lower_bound(x) << endl;
-        }
     }
+};
+
+template <typename T> typename ImplicitTreap<T>::Node *ImplicitTreap<T>::EMPTY = new typename ImplicitTreap<T>::Node();
+
+int main() {
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
+
+    ImplicitTreap<ll> tp;
+
+    int n;
+    cin >> n;
+
+    for (int i = 0; i < n; i++) {
+        ll x;
+        cin >> x;
+
+        tp.insert(i, x);
+    }
+
+    return 0;
 }
