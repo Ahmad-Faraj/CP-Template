@@ -32,16 +32,16 @@ struct SingleHash {
     SingleHash(string s) : h1(sz(s) + 1), p1(sz(s) + 1, 1) {
         if (B1 == 0) reassign();
         for (int i = 0; i < sz(s); i++) {
-            h1[i + 1] = (h1[i] * B1 + s[i]) % M1;
-            p1[i + 1] = (p1[i] * B1) % M1;
+            h1[i + 1] = (1LL * h1[i] * B1 + s[i]) % M1;
+            p1[i + 1] = (1LL * p1[i] * B1) % M1;
         }
     }
 
     int query(int l, int r) {  // 0-indexed, inclusive
-        return (h1[r + 1] - (h1[l] * p1[r - l + 1]) % M1 + M1) % M1;
+        return (h1[r + 1] - (1LL * h1[l] * p1[r - l + 1]) % M1 + M1) % M1;
     }
 
-    int merge(int h_left, int h_right, int len_right) { return (h_left * p1[len_right] % M1 + h_right) % M1; }
+    int merge(int h_left, int h_right, int len_right) { return (1LL * h_left * p1[len_right] % M1 + h_right) % M1; }
 
     int merge(int l1, int r1, int l2, int r2) { return merge(query(l1, r1), query(l2, r2), r2 - l2 + 1); }
 };

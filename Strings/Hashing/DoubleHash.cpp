@@ -35,22 +35,22 @@ struct DoubleHash {
     DoubleHash(string s) : h1(sz(s) + 1), h2(sz(s) + 1), p1(sz(s) + 1, 1), p2(sz(s) + 1, 1) {
         if (B1 == 0) reassign();
         for (int i = 0; i < sz(s); i++) {
-            h1[i + 1] = (h1[i] * B1 + s[i]) % M1;
-            h2[i + 1] = (h2[i] * B2 + s[i]) % M2;
-            p1[i + 1] = (p1[i] * B1) % M1;
-            p2[i + 1] = (p2[i] * B2) % M2;
+            h1[i + 1] = (1LL * h1[i] * B1 + s[i]) % M1;
+            h2[i + 1] = (1LL * h2[i] * B2 + s[i]) % M2;
+            p1[i + 1] = (1LL * p1[i] * B1) % M1;
+            p2[i + 1] = (1LL * p2[i] * B2) % M2;
         }
     }
 
     pair<int, int> query(int l, int r) {  // 0-indexed, inclusive
-        int v1 = (h1[r + 1] - (h1[l] * p1[r - l + 1]) % M1 + M1) % M1;
-        int v2 = (h2[r + 1] - (h2[l] * p2[r - l + 1]) % M2 + M2) % M2;
+        int v1 = (h1[r + 1] - (1LL * h1[l] * p1[r - l + 1]) % M1 + M1) % M1;
+        int v2 = (h2[r + 1] - (1LL * h2[l] * p2[r - l + 1]) % M2 + M2) % M2;
         return {v1, v2};
     }
 
     pair<int, int> merge(pair<int, int> h_left, pair<int, int> h_right, int len_right) {
-        int v1 = (h_left.first * p1[len_right] % M1 + h_right.first) % M1;
-        int v2 = (h_left.second * p2[len_right] % M2 + h_right.second) % M2;
+        int v1 = (1LL * h_left.first * p1[len_right] % M1 + h_right.first) % M1;
+        int v2 = (1LL * h_left.second * p2[len_right] % M2 + h_right.second) % M2;
         return {v1, v2};
     }
 

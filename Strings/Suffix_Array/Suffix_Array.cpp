@@ -98,13 +98,13 @@ struct SuffixArray {
 
     inline int lower(const string &pattern) {
         return lower_bound(p.begin(), p.end(), pattern, [&](int i, const string &pat) {
-            return s.substr(i, pat.size()) < pat;
+            return s.compare(i, pat.size(), pat) < 0;
         }) - p.begin();
     }
 
     inline int upper(const string &pattern) {
         return upper_bound(p.begin(), p.end(), pattern, [&](const string &pat, int i) {
-            return s.substr(i, pat.size()) > pat;
+            return s.compare(i, pat.size(), pat) > 0;
         }) - p.begin() - 1;
     }
 
