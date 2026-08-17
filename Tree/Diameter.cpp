@@ -1,97 +1,121 @@
 #include <bits/stdc++.h>
-
 using namespace std;
-#define PI acos(-1)
-#define sz(s) (int)(s.size())
-#define rall(s) s.rbegin(), s.rend()
-#define ceill(x, y) ((x + y - 1) / y)
-#define all(vec) vec.begin(), vec.end()
-#define Time cerr << "Time elapsed: " << 1.0 * clock() / CLOCKS_PER_SEC << " s.\n";
 
-int tt, tc;
-typedef long long ll;
-typedef long double ld;
-const ll INF = 1LL << 60;
-const int mod = 1e9 + 7, N = 1e6 + 5;
+#define int long long
 
-template <typename T = int>
-istream &operator>>(istream &in, vector<T> &v)
-{
-    for (auto &x : v)
-        in >> x;
-    return in;
+/*
+    [1] Definition:
+    - Tree Diameter: Maximum distance between any two nodes. Solved by 2 DFSs.
+    - Tree Distances I: Max distance from each node to any other node.
+      The farthest node from any node 'u' is ALWAYS one of the two diameter endpoints (A or B).
+    - Tree Distances II: Sum of distances from each node to all others.
+      Solved using Rerooting DP (In-Out DP).
+
+    [2] Time & Space Complexity:
+    - Time: O(N) for all variations (just a few DFS traversals).
+    - Space: O(N)
+
+    [3] Important Notes:
+    - Uses 1-based indexing.
+    - 'distA' stores distances from diameter endpoint A.
+    - 'distB' stores distances from diameter endpoint B.
+    - 'sum_dist' MUST be long long as sums can exceed 2^31-1.
+*/
+
+const int N = 2e5 + 5;
+vector<int> adj[N];
+
+int distA[N], distB[N];
+int endA, endB, diameter_len;
+
+void dfs_dist(int u, int p, int d, int *current_dist) {
+    current_dist[u] = d;
+    for (int v : adj[u]) {
+        if (v == p) continue;
+        dfs_dist(v, u, d + 1, current_dist);
+    }
 }
 
-template <typename T = int>
-ostream &operator<<(ostream &out, const vector<T> &v)
-{
-    for (const T &x : v)
-        out << x << ' ';
-    return out;
+void find_diameter_endpoints() {
+    dfs_dist(1, 0, 0, distA);
+    endA = 1;
+    for (int i = 1; i <= N - 5; i++) {
+        if (distA[i] > distA[endA]) endA = i;
+    }
+
+    dfs_dist(endA, 0, 0, distA);
+    endB = 1;
+    for (int i = 1; i <= N - 5; i++) {
+        if (distA[i] > distA[endB]) endB = i;
+    }
+
+    diameter_len = distA[endB];
+
+    dfs_dist(endB, 0, 0, distB);
 }
 
-template <typename T = int>
-struct Tree_Diameter
-{
+// For Tree Distances II
+int sz[N];
+long long sum_dist[N];
+int total_nodes;
+
+// Precalculate subtree sizes and the answer for the root (node 1)
+void dfs_sz(int u, int p, int d) {
+    sz[u] = 1;
+    sum_dist[1] += d;
+
+    for (int v : adj[u]) {
+        if (v == p) continue;
+        dfs_sz(v, u, d + 1);
+        sz[u] += sz[v];
+    }
+}
+
+// Rerooting technique: calculate answer for children using parent's answer
+void dfs_reroot(int u, int p) {
+    for (int v : adj[u]) {
+        if (v == p) continue;
+        sum_dist[v] = sum_dist[u] + total_nodes - 2LL * sz[v];
+
+        dfs_reroot(v, u);
+    }
+}
+signed main() {
+    ios_base::sync_with_stdio(false);
+    cin.tie(NULL);
 
     int n;
-    vector<T> dist, parent;
-    vector<vector<T>> adj;
+    if (!(cin >> n)) return 0;
 
-    Tree_Diameter(int _n = 0) : n(_n), adj(n + 1), dist(n + 1), parent(n + 1) {}
+    total_nodes = n;
 
-    void add_edge(int u, int v)
-    {
+    for (int i = 0; i < n - 1; i++) {
+        int u, v;
+        cin >> u >> v;
         adj[u].push_back(v);
         adj[v].push_back(u);
     }
 
-    void dfs(int u, int p = -1, T d = 0)
-    {
-        dist[u] = d;
-        parent[u] = p;
-        for (auto v : adj[u])
-            if (v != p)
-                dfs(v, u, d + 1);
-    }
+    // -- [PROBLEM 1] Tree Diameter
+    // find_diameter_endpoints();
+    // cout << diameter_len << "\n";
 
-    pair<T, int> diameter()
-    {
-        dfs(1);
-        int farthest = 1;
-        for (int i = 1; i <= n; i++)
-        {
-            if (dist[i] > dist[farthest])
-                farthest = i;
-        }
+    // -- [PROBLEM 2] Tree Distances I
+    // find_diameter_endpoints();
+    // for (int i = 1; i <= n; i++) {
+    //       // The farthest node is always one of the diameter's endpoints (A or B)
+    //       cout << max(distA[i], distB[i]) << (i == n ? "" : " ");
+    // }
+    // cout << "\n";
 
-        dfs(farthest);
-        T diameter = 0;
-        for (int i = 1; i <= n; i++)
-            diameter = max(diameter, dist[i]);
-        return {diameter, farthest};
-    }
-};
+    // [-- PROBLEM 3] Tree Distances II
+    // dfs_sz(1, 0, 0);
+    // dfs_reroot(1, 0);
 
-void Accepted()
-{
-}
+    // for (int i = 1; i <= n; i++) {
+    //       cout << sum_dist[i] << (i == n ? "" : " ");
+    // }
+    // cout << "\n";
 
-int main()
-{
-
-    ios::sync_with_stdio(0);
-    cin.tie(0);
-    cout.tie(0);
-    if (fopen("input.txt", "r"))
-    {
-        freopen("input.txt", "r", stdin), freopen("output.txt", "w", stdout);
-    }
-
-    tt = tc = 1; // cin >> tt;
-    while (tt--)
-        Accepted(), ++tc;
-
-    Time;
     return 0;
 }
