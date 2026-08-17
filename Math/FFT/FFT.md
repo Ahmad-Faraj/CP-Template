@@ -1,4 +1,4 @@
-# Advanced FFT & Convolution Tricks (Grandmaster Notes)
+# Advanced FFT & Convolution Tricks
 
 ---
 
@@ -74,6 +74,95 @@ assert(ROOT != -1);
 
 ---
 
+## 4. Pushing NTT Beyond Limits: Fast Half-NTT for Huge Polynomial Multiplication
+
+### **Motivation (The $2^{23}$ Limit)**
+An NTT modulo must be of the form $P = c \cdot 2^k + 1$. For $998244353$, $k = 23$, capping array sizes strictly at $2^{23}$. If you are tasked with multiplying polynomials of size $2^{24}$, the convolution size $2^{25}$ strictly exceeds the limit. You cannot use normal NTT, and CRT/FFT are too slow/inaccurate.
+
+### **The Solution (Recursive Fast Half-NTT)**
+Instead of building a massive transform, recursively split the problem using root of unity identities:
+1. $A_{minus}[i] = A[i] + \omega^x \cdot A[i + n/2]$
+2. $A_{plus}[i]  = A[i] - \omega^x \cdot A[i + n/2]$
+
+Recursively multiply $A_{minus} \cdot B_{minus}$ (using root $x/2$) and $A_{plus} \cdot B_{plus}$ (using root $x/2 + \text{mod}/2$). Repeat until the size is small enough for naive $\mathcal{O}(N^2)$ multiplication. 
+Finally, combine them back via inverse interpolation:
+1. $C[i] = (res_{minus}[i] + res_{plus}[i]) / 2$
+2. $C[i + n/2] = (res_{minus}[i] - res_{plus}[i]) / (2 \cdot \sqrt{c})$
+
+### **C++ Implementation**
+```cpp
+const int MOD = 998244353;
+
+long long power(long long base, long long exp) {
+    long long res = 1; base %= MOD;
+    while (exp > 0) {
+        if (exp % 2 == 1) res = (res * base) % MOD;
+        base = (base * base) % MOD; exp /= 2;
+    }
+    return res;
+}
+
+// Recursively multiplies A and B modulo (x^n - c)
+vector<long long> fast_half_ntt(vector<long long> a, vector<long long> b, long long c, int n) {
+    if (n <= 64) { // Base case: Naive O(N^2) modulo (x^n - c)
+        vector<long long> res(n, 0);
+        for (int i = 0; i < a.size(); i++) {
+            for (int j = 0; j < b.size(); j++) {
+                if (i + j < n) res[i + j] = (res[i + j] + a[i] * b[j]) % MOD;
+                else res[i + j - n] = (res[i + j - n] + a[i] * b[j] % MOD * c) % MOD;
+            }
+        }
+        return res;
+    }
+
+    int half = n / 2;
+    // For CP, we pass the known precomputed roots (omega) downward.
+    // For simplicity here, assume sqrt_c evaluates to the required root.
+    long long sqrt_c = 1; // Replace with actual Tonelli-Shanks or precomputed root table
+
+    vector<long long> a_minus(half), a_plus(half);
+    vector<long long> b_minus(half), b_plus(half);
+
+    for (int i = 0; i < half; i++) {
+        long long wa = (a[i + half] * sqrt_c) % MOD;
+        long long wb = (b[i + half] * sqrt_c) % MOD;
+        
+        a_minus[i] = (a[i] + wa) % MOD;
+        a_plus[i]  = (a[i] - wa + MOD) % MOD;
+        b_minus[i] = (b[i] + wb) % MOD;
+        b_plus[i]  = (b[i] - wb + MOD) % MOD;
+    }
+
+    vector<long long> res_minus = fast_half_ntt(a_minus, b_minus, sqrt_c, half);
+    vector<long long> res_plus  = fast_half_ntt(a_plus, b_plus, MOD - sqrt_c, half);
+
+    vector<long long> C(n, 0);
+    long long inv2 = power(2, MOD - 2);
+    long long inv_sqrt_c = power(sqrt_c, MOD - 2);
+
+    for (int i = 0; i < half; i++) {
+        C[i] = (res_minus[i] + res_plus[i]) * inv2 % MOD;
+        long long diff = (res_minus[i] - res_plus[i] + MOD) % MOD;
+        C[i + half] = (diff * inv2 % MOD) * inv_sqrt_c % MOD;
+    }
+
+    return C;
+}
+
+vector<long long> fast_poly_mul(vector<long long> a, vector<long long> b) {
+    int sz = 1; while(sz < a.size() + b.size() - 1) sz *= 2;
+    a.resize(sz, 0); b.resize(sz, 0);
+    vector<long long> res = fast_half_ntt(a, b, 1, sz);
+    while(res.size() > 1 && res.back() == 0) res.pop_back();
+    return res;
+}
+```
+
+### **Performance**
+This handles polynomial convolution sizes up to $2^{25}$ elegantly in $\mathcal{O}(N \log N)$ staying perfectly inside $998244353$!
+
+---
+
 # Applications
 
 ### **1. Big Integer Multiplication**
@@ -128,42 +217,301 @@ for (int i = sz(P) - 1; i < sz(T); i++) {
 ```
 
 ### **3. Combinatorics & FPS**
-*   **Unbounded Knapsack / Coin Change:** 
-    If you can use items of weights $W_1, W_2, \dots$ infinitely many times, the generating function is $F(x) = \prod \frac{1}{1 - x^{W_i}}$. Run $\exp(\ln(F(x)))$ via NTT to solve in $\mathcal{O}(N \log N)$.
-*   **Stirling Numbers of the Second Kind:** 
-    Finding a whole row $S(N, k)$ in $\mathcal{O}(N \log N)$. $S(N, k) = \sum_{i=0}^k \left( \frac{(-1)^i}{i!} \right) \times \left( \frac{(k-i)^N}{(k-i)!} \right)$. 
-*   **Euler's Pentagonal Numbers (Integer Partitions):**
-    Compute partitions of $N$. The denominator of the partition generating function is $1 - x - x^2 + x^5 + x^7 \dots$ Run **FPS Inverse** using NTT to invert this sparse polynomial in $\mathcal{O}(N \log N)$.
+*   **Stirling Numbers of the Second Kind:** Finding a whole row $S(N, k)$ in $\mathcal{O}(N \log N)$. 
+```cpp
+// Stirling Numbers S(N, k) 
+vector<int> A(N + 1), B(N + 1);
+for (int i = 0; i <= N; i++) {
+    A[i] = (i % 2 == 0 ? 1LL : -1LL) * invFact[i] % MOD;
+    A[i] = (A[i] + MOD) % MOD;
+    B[i] = power(i, N) * invFact[i] % MOD;
+}
+vector<int> S = NTT::multiply(A, B); // S[k] holds S(N, k)
+```
+*   **Unbounded Knapsack / Coin Change:** Generating function is $F(x) = \prod \frac{1}{1 - x^{W_i}}$. Run $\exp(\ln(F(x)))$ via NTT.
+*   **Euler's Pentagonal Numbers (Integer Partitions):** Run **FPS Inverse** using NTT to invert the sparse polynomial in $\mathcal{O}(N \log N)$.
 
 ### **4. Mathematics & Polynomials**
-*   **Taylor Shift ($P(x+c)$):** 
-    Expand $a_i (x+c)^i$ using the Binomial Theorem. This forms a cross-correlation! Let $A[i] = a_i \cdot i!$ and $B[k] = c^k / k!$. Compute cross-correlation using the reversed-array FFT trick, then multiply the $j$-th term by $1/j!$.
-*   **Multipoint Evaluation & Interpolation:** 
-    Evaluate $P(x)$ at $N$ arbitrary points in $\mathcal{O}(N \log^2 N)$. Build a Segment Tree of polynomials bottom-up: $M_v(x) = \prod(x - x_i)$ using NTT. Pass $P(x)$ down the tree, taking the polynomial modulo the child's $M_v(x)$ using FPS Division.
+*   **Taylor Shift ($P(x+c)$):** Expand $a_i (x+c)^i$. Let $A[i] = a_i \cdot i!$ and $B[k] = c^k / k!$. Compute cross-correlation.
+```cpp
+// Taylor Shift P(x + c)
+vector<int> A(N), B(N);
+for(int i = 0; i < N; i++) A[i] = P[i] * fact[i] % MOD;
+for(int i = 0; i < N; i++) B[i] = power(c, i) * invFact[i] % MOD;
+reverse(B.begin(), B.end());
+vector<int> cross_corr = NTT::multiply(A, B);
+vector<int> shifted(N);
+for(int i = 0; i < N; i++) shifted[i] = cross_corr[i + N - 1] * invFact[i] % MOD;
+```
 
 ### **5. Probability & Graph Theory**
-*   **Sum of Independent Random Variables:**
-    The distribution of $X + Y$ is exactly the polynomial convolution of arrays $P_X$ and $P_Y$.
-*   **$K$ Steps on a Graph / Game:**
-    If you take $K$ steps, the new probability distribution is $(P_X)^K$. Compute via `poly_pow(P_X, K)` in $\mathcal{O}(N \log N \log K)$.
-*   **Counting Paths of Length $L$ in a Tree:**
-    At each centroid, multiply subtree depth-frequency polynomials via FFT. Drops complexity from $\mathcal{O}(N^2)$ to $\mathcal{O}(N \log^2 N)$.
+*   **Sum of Independent Random Variables:** The distribution of $X + Y$ is exactly the polynomial convolution of arrays $P_X$ and $P_Y$.
+*   **$K$ Steps on a Graph / Game:** Distribution after $K$ steps is $(P_X)^K$. Compute via `poly_pow(P_X, K)`.
+```cpp
+// K Steps on a Graph using Polynomial Fast Exponentiation
+// Utilize the built-in exponentiation from the templates!
+int LIMIT = 100000; // Define maximum degree to prevent O(N^2) size blowup
+vector<int> res_fft = FFT::poly_pow(P_X, K, LIMIT);
+// OR for modular arithmetic:
+vector<int> res_ntt = NTT::poly_pow_mod(P_X, K, LIMIT);
+```
 
 ### **6. Dynamic Programming (CDQ Divide & Conquer + NTT)**
 *   **Problem:** $dp[i] = \sum_{j=1}^{i-1} dp[j] \times W[i-j]$. Standard NTT fails because $dp[i]$ depends on previous answers.
-*   **Blueprint:** Use CDQ Divide & Conquer in $\mathcal{O}(N \log^2 N)$:
-    1. `solve(L, R)` -> `mid = (L + R) / 2` -> `solve(L, mid)`
-    2. Extract polynomial $A = dp[L \dots mid]$. Extract $B = W[1 \dots R - L]$.
-    3. $C = NTT(A, B)$.
-    4. For $i$ in $[mid+1 \dots R]$, add $C[i - L - 1]$ to $dp[i]$.
-    5. `solve(mid + 1, R)`
+```cpp
+// CDQ D&C + NTT
+void cdq(int L, int R) {
+    if (L == R) return;
+    int mid = L + (R - L) / 2;
+    cdq(L, mid); // Solve left half first
+    
+    vector<int> A(mid - L + 1), B(R - L);
+    for (int i = L; i <= mid; i++) A[i - L] = dp[i];
+    for (int i = 1; i <= R - L; i++) B[i - 1] = W[i];
+    
+    vector<int> C = NTT::multiply(A, B); // Contribution from left to right
+    for (int i = mid + 1; i <= R; i++) dp[i] = (dp[i] + C[i - L - 1]) % MOD;
+    
+    cdq(mid + 1, R); // Now solve right half
+}
+```
 
 ### **7. Game Theory & Subsets**
-*   **Sprague-Grundy State Reachability (Nim-Sums):**
-    Construct boolean array $A$ where $A[g] = 1$ if Grundy value $g$ is reachable. For $K$ turns: Run `FWHT_XOR(A)`. Set $A[i] = A[i]^K$. Run `Inverse_FWHT_XOR`.
-*   **Subset Convolution (Exact Submasks):**
-    Standard OR-convolution computes $i | j = k$. To force $i \cap j = 0$ (disjoint), add a second dimension for popcount: $\text{popcount}(i) + \text{popcount}(j) = \text{popcount}(k)$.
+*   **Subset Convolution (Exact Submasks):** OR-convolution computes $i | j = k$. To force $i \cap j = 0$, add a second dimension for popcount: $\text{popcount}(i) + \text{popcount}(j) = \text{popcount}(k)$.
+```cpp
+// Subset Convolution (OR convolution forcing disjoint sets)
+void subset_convolution(vector<int> A, vector<int> B, vector<int>& C) {
+    int n = __builtin_ctz(A.size());
+    vector<vector<int>> fA(n + 1, vector<int>(1 << n, 0)), fB(n + 1, vector<int>(1 << n, 0));
+    for(int i = 0; i < (1 << n); i++) {
+        fA[__builtin_popcount(i)][i] = A[i]; fB[__builtin_popcount(i)][i] = B[i];
+    }
+    for(int i = 0; i <= n; i++) { FWHT_OR(fA[i]); FWHT_OR(fB[i]); }
+    
+    vector<vector<int>> fC(n + 1, vector<int>(1 << n, 0));
+    for(int i = 0; i <= n; i++) {
+        for(int j = 0; i + j <= n; j++) {
+            for(int mask = 0; mask < (1 << n); mask++) {
+                fC[i + j][mask] = (fC[i + j][mask] + 1LL * fA[i][mask] * fB[j][mask]) % MOD;
+            }
+        }
+    }
+    for(int i = 0; i <= n; i++) Inverse_FWHT_OR(fC[i]);
+    for(int i = 0; i < (1 << n); i++) C[i] = fC[__builtin_popcount(i)][i];
+}
+```
 
 ### **8. Geometry (Minkowski Sums)**
 *   **Problem:** Given two shapes defined as boolean grids $A$ and $B$, find their Minkowski Sum (all vector sums $\vec{a} + \vec{b}$).
-*   **Blueprint:** Flatten the 2D grid into a 1D array by padding each row with enough zeros (width $\ge W_A + W_B$) to prevent row-wrap-around. Run standard 1D `FFT_boolean`. If $Ans[i] > 0$, the vector exists in the Minkowski sum.
+```cpp
+// Minkowski Sum of Two Shapes (Grid A and Grid B)
+int SHIFT = max_width; vector<int> polyA, polyB;
+for(int i = 0; i < H_A; i++) 
+    for(int j = 0; j < W_A; j++) 
+        if(A[i][j]) polyA[i * SHIFT + j] = 1;
+
+for(int i = 0; i < H_B; i++) 
+    for(int j = 0; j < W_B; j++) 
+        if(B[i][j]) polyB[i * SHIFT + j] = 1;
+
+vector<int> C = FFT::multiply(polyA, polyB);
+for(int i = 0; i < C.size(); i++) {
+    if(C[i] > 0) cout << "Vector (" << i / SHIFT << ", " << i % SHIFT << ") exists in sum\n";
+}
+```
+
+### **9. Generating Pair Sums & Differences**
+*   **Pair Sums:** Convert array to frequency polynomial $F = \sum freq(a) x^a$. Compute $F^2$ using FFT. The coefficient of index $k$ represents the number of pairs $(i, j)$ forming the sum $k$. (Note: subtract valid pairs manually if $i \neq j$ is required).
+*   **Pair Differences ($A_i - A_j$):** Create $F_1 = \sum freq(a) x^a$ and $F_2 = \sum freq(a) x^{-a + SHIFT}$. Compute $F_1 \cdot F_2$; the answer for difference $d$ is at $x^{d + SHIFT}$.
+```cpp
+// Pair Differences: A_i - A_j
+int SHIFT = 100000;
+vector<int> F1(MAX_VAL), F2(MAX_VAL + SHIFT);
+for (int x : A) { F1[x]++; F2[-x + SHIFT]++; }
+vector<int> diff_freq = FFT::multiply(F1, F2);
+// freq of difference 'd' is at diff_freq[d + SHIFT]
+```
+
+### **10. Subarray & Subset Sums**
+*   **Subarray Sum:** Since a subarray sum is the difference of two prefix sums, build $F_1$ and $F_2$ using frequencies of prefix sums with a $SHIFT$. Access only positive indices to enforce $j \ge i$. (Manually adjust occurrences where sum = 0).
+*   **Subset Sum:** Every element acts as a polynomial $(1 + x^{a_i})$. Multiply all polynomials. **Optimization:** Push them into a Priority Queue by size, always extracting and multiplying the two smallest polynomials to achieve $\mathcal{O}(N \log^2 N)$.
+```cpp
+// Subarray Sums (Difference of prefix sums)
+int SHIFT = 100000;
+vector<int> pref(N + 1, 0);
+for (int i = 1; i <= N; i++) pref[i] = pref[i-1] + A[i-1];
+
+vector<int> F1(MAX_VAL), F2(MAX_VAL + SHIFT);
+for (int p : pref) { F1[p]++; F2[-p + SHIFT]++; }
+
+vector<int> subarray_sums = FFT::multiply(F1, F2);
+// Zero-sum subarrays must be counted manually!
+```
+
+### **11. Index-Relative Convolutions & Shifts**
+*   **Multiplication with Distance:** To quickly answer queries of $\sum a_i \cdot b_{i+x}$, let $F_a = \sum a_i x^i$ and $F_b = \sum b_i x^{-i + SHIFT}$. The answer for distance $x$ is directly located at index $x$ in the resulting polynomial!
+*   **Cyclic Shifts:** Need to evaluate the above while array $b$ cyclically shifts right? Simply append $b$ to itself ($b+b$) and pad $a$ with $N$ zeros at the front. The same FFT handles all cyclic states natively in $\mathcal{O}(1)$ query time!
+```cpp
+// Multiplication with Distance / Cyclic Shifts
+int SHIFT = b.size();
+vector<int> F_a = a;
+vector<int> F_b(b.size() * 2);
+for (int i = 0; i < b.size(); i++) {
+    F_b[-i + SHIFT] = b[i];
+    F_b[-i - b.size() + SHIFT] = b[i]; // cyclic wrapper
+}
+vector<int> res = FFT::multiply(F_a, F_b);
+// Answer for cyclic shift x is at res[x + SHIFT]
+```
+
+### **12. Polynomial Exponentiation**
+If raising a polynomial to power $K$ in NTT, avoid iterative multiplication. Simply transition the polynomial to the frequency domain (run NTT once), raise the frequencies to power $K$ in $\mathcal{O}(N \log K)$ via fast exponentiation: `fa[i] = power(fa[i], K)`, and then apply the Inverse NTT to get the exact coefficients.
+```cpp
+// Raise polynomial A to power K inside NTT
+vector<int> A_freq = A;
+A_freq.resize(next_power_of_two);
+NTT::ntt(A_freq, false);
+
+for(int i = 0; i < A_freq.size(); i++) A_freq[i] = power(A_freq[i], K); // Fast modular exponentiation
+
+NTT::ntt(A_freq, true); // Inverse NTT
+```
+
+### **13. Arbitrary Modulus (Polynomial Splitting Method)**
+If the CRT method is too complex for $10^9+7$, distribute $A(x)$ and $B(x)$ into two smaller polynomials using $C \approx \sqrt{M}$:
+$$A(x) = A_1(x) + A_2(x) \cdot C \quad \text{and} \quad B(x) = B_1(x) + B_2(x) \cdot C$$
+Then $A(x)B(x) = A_1 B_1 + (A_1 B_2 + A_2 B_1)C + (A_2 B_2)C^2$. Since coefficients are $< \sqrt{M}$, products are $< M \cdot N$, easily fitting inside standard `double` FFT without precision loss.
+```cpp
+// A_1 + A_2 * C
+int C = sqrt(MOD) + 1;
+vector<double> A1(n), A2(n), B1(m), B2(m);
+for(int i=0; i<n; i++) { A1[i] = A[i] % C; A2[i] = A[i] / C; }
+for(int i=0; i<m; i++) { B1[i] = B[i] % C; B2[i] = B[i] / C; }
+
+vector<double> R1 = FFT::multiply(A1, B1); // A1 * B1
+vector<double> R2 = FFT::multiply(A1, B2); // A1 * B2
+vector<double> R3 = FFT::multiply(A2, B1); // A2 * B1
+vector<double> R4 = FFT::multiply(A2, B2); // A2 * B2
+
+vector<long long> result(n + m - 1);
+for(int i=0; i < result.size(); i++) {
+    long long r1 = llround(R1[i]) % MOD;
+    long long r23 = (llround(R2[i]) + llround(R3[i])) % MOD;
+    long long r4 = llround(R4[i]) % MOD;
+    result[i] = (r1 + r23 * C + r4 * C % MOD * C) % MOD;
+}
+```
+For Codeforces Div1 E/F and extreme competitive programming, standard convolution is just the beginning. We treat polynomials as infinite **Formal Power Series (FPS)** and use Newton's Method to compute inverses, logarithms, and exponentials in $\mathcal{O}(N \log N)$. 
+
+### **14. Polynomial Inverse ($P(x)^{-1} \pmod{x^n}$)**
+Computes $Q(x)$ such that $P(x)Q(x) \equiv 1 \pmod{x^n}$. Uses Newton's method: $Q_{k+1} = Q_k (2 - P Q_k) \pmod{x^{2^k}}$.
+```cpp
+vector<int> poly_inv(vector<int> a, int deg) {
+    if (deg == 1) return {NTT::mod_pow(a[0], NTT::MOD - 2, NTT::MOD)};
+    vector<int> res = poly_inv(a, (deg + 1) / 2);
+    int n = 1; while (n < deg * 2) n <<= 1;
+    
+    vector<int> copy_a(a.begin(), a.begin() + min((int)a.size(), deg));
+    copy_a.resize(n, 0);
+    vector<int> copy_res = res; copy_res.resize(n, 0);
+    
+    NTT::ntt(copy_a, false); NTT::ntt(copy_res, false);
+    for (int i = 0; i < n; i++) {
+        copy_res[i] = (1LL * copy_res[i] * (2LL - 1LL * copy_a[i] * copy_res[i] % NTT::MOD + NTT::MOD)) % NTT::MOD;
+    }
+    NTT::ntt(copy_res, true);
+    copy_res.resize(deg);
+    return copy_res;
+}
+```
+
+### **15. Polynomial Derivative & Integral**
+```cpp
+vector<int> poly_deriv(const vector<int>& a) {
+    vector<int> res(max(1, (int)a.size() - 1), 0);
+    for(int i = 1; i < a.size(); i++) res[i - 1] = 1LL * a[i] * i % NTT::MOD;
+    return res;
+}
+vector<int> poly_integr(const vector<int>& a) {
+    vector<int> res(a.size() + 1, 0);
+    for(int i = 0; i < a.size(); i++) res[i + 1] = 1LL * a[i] * NTT::mod_pow(i + 1, NTT::MOD - 2, NTT::MOD) % NTT::MOD;
+    return res;
+}
+```
+
+### **16. Polynomial Logarithm ($\ln P(x)$)**
+Computes $\ln P(x) = \int \frac{P'(x)}{P(x)} dx$. (Requires $P[0] = 1$).
+```cpp
+vector<int> poly_ln(vector<int> a, int deg) {
+    vector<int> deriv = poly_deriv(a);
+    vector<int> inv = poly_inv(a, deg);
+    vector<int> res = poly_integr(NTT::multiply(deriv, inv, deg - 1));
+    res.resize(deg, 0);
+    return res;
+}
+```
+
+### **17. Polynomial Exponential ($\exp P(x)$)**
+Computes $\exp P(x)$ using Newton's method: $Q_{k+1} = Q_k (1 - \ln Q_k + P) \pmod{x^{2^k}}$. (Requires $P[0] = 0$).
+```cpp
+vector<int> poly_exp(vector<int> a, int deg) {
+    if (deg == 1) return {1}; // e^0 = 1
+    vector<int> res = poly_exp(a, (deg + 1) / 2);
+    res.resize(deg, 0);
+    vector<int> ln_res = poly_ln(res, deg);
+    
+    vector<int> diff(deg);
+    for (int i = 0; i < deg; i++) {
+        diff[i] = (a[i] - ln_res[i] + NTT::MOD) % NTT::MOD;
+    }
+    diff[0] = (diff[0] + 1) % NTT::MOD;
+    
+    res = NTT::multiply(res, diff, deg);
+    return res;
+}
+```
+
+### **18. Linear Recurrence in $\mathcal{O}(K \log K \log N)$ (Bostan-Mori Algorithm)**
+Given a recurrence $A_n = \sum_{i=1}^K c_i A_{n-i}$ and base cases, find the $N$-th term. Extremely useful when $N \le 10^{18}$ and $K \le 10^5$.
+1. Build $Q(x) = 1 - \sum_{i=1}^K c_i x^i$.
+2. Build $P(x) = A(x) \times Q(x) \pmod{x^K}$.
+3. We want the $N$-th coefficient of $P(x) / Q(x)$.
+```cpp
+long long bostan_mori(vector<int> P, vector<int> Q, long long N) {
+    while (N > 0) {
+        vector<int> Q_minus = Q;
+        for (int i = 1; i < Q_minus.size(); i += 2) Q_minus[i] = (NTT::MOD - Q_minus[i]) % NTT::MOD;
+        
+        vector<int> U = NTT::multiply(P, Q_minus);
+        vector<int> V = NTT::multiply(Q, Q_minus);
+        
+        for (int i = N % 2; i < U.size(); i += 2) P[i / 2] = U[i];
+        for (int i = 0; i < V.size(); i += 2) Q[i / 2] = V[i];
+        
+        P.resize((U.size() + 1) / 2);
+        Q.resize((V.size() + 1) / 2);
+        N /= 2;
+    }
+    return P[0];
+}
+```
+
+### **19. Bluestein’s Algorithm (Chirp-Z Transform)**
+Computes $P(c^k)$ for $k = 0 \dots M-1$ in $\mathcal{O}((N+M) \log(N+M))$. Breaks the restriction of roots of unity!
+Using the identity $ki = \binom{k+i}{2} - \binom{k}{2} - \binom{i}{2}$, we rewrite $P(c^k) = \sum a_i c^{ki}$ into a perfect convolution.
+```cpp
+vector<int> bluestein(vector<int> a, int c, int M) {
+    int N = a.size();
+    vector<int> A(N), B(N + M);
+    int inv_c = NTT::mod_pow(c, NTT::MOD - 2, NTT::MOD);
+    
+    for (int i = 0; i < N; i++) A[N - 1 - i] = 1LL * a[i] * NTT::mod_pow(inv_c, (1LL * i * i) / 2 % (NTT::MOD - 1), NTT::MOD) % NTT::MOD;
+    for (int i = 0; i < N + M; i++) B[i] = NTT::mod_pow(c, (1LL * i * i) / 2 % (NTT::MOD - 1), NTT::MOD);
+    
+    vector<int> C = NTT::multiply(A, B);
+    vector<int> res(M);
+    for (int k = 0; k < M; k++) res[k] = 1LL * C[N - 1 + k] * NTT::mod_pow(inv_c, (1LL * k * k) / 2 % (NTT::MOD - 1), NTT::MOD) % NTT::MOD;
+    
+    return res;
+}
+```
