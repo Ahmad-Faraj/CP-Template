@@ -1,45 +1,33 @@
+// Offline Dynamic Connectivity: component count over time while edges are added and removed.
+// Use when: edges appear and disappear and you must answer connectivity at given moments, all queries known up front.
+// Handles: edge add, edge remove, component count at any time step. Offline only. Duplicate edges are not tracked.
+// Time: O(m log m * alpha) over m operations
+// Indexing: 1-based nodes, 1-based time steps
+// Note: rollback DSU, so root() must never path-compress. Call run() once - it answers every query in one sweep.
+
 #include <bits/stdc++.h>
 using namespace std;
 
-const int N = 3e5 + 9;
-
-struct persistent_dsu {
+struct RollbackDSU {
     struct state {
         int u, v, rnku, rnkv;
-        state() {
-            u = -1;
-            v = -1;
-            rnkv = -1;
-            rnku = -1;
-        }
-        state(int _u, int _rnku, int _v, int _rnkv) {
-            u = _u;
-            rnku = _rnku;
-            v = _v;
-            rnkv = _rnkv;
-        }
+        state() : u(-1), v(-1), rnku(-1), rnkv(-1) {}
+        state(int _u, int _rnku, int _v, int _rnkv) : u(_u), v(_v), rnku(_rnku), rnkv(_rnkv) {}
     };
 
     stack<state> st;
-    int par[N], depth[N];
-    int comp;
-    persistent_dsu() {
-        comp = 0;
-        memset(par, -1, sizeof(par));
-        memset(depth, 0, sizeof(depth));
-    }
-
-    int root(int x) {
-        if (x == par[x]) return x;
-        return root(par[x]);
-    }
+    vector<int> par, depth;
+    int comp = 0;
 
     void init(int n) {
         comp = n;
-        for (int i = 0; i <= n; i++) {
-            par[i] = i;
-            depth[i] = 1;
-        }
+        par.resize(n + 1), depth.resize(n + 1);
+        for (int i = 0; i <= n; i++) par[i] = i, depth[i] = 1;
+    }
+
+    int root(int x) { // no path compression - rollback depends on the parent array staying as written
+        while (x != par[x]) x = par[x];
+        return x;
     }
 
     bool connected(int x, int y) { return root(x) == root(y); }
@@ -54,15 +42,13 @@ struct persistent_dsu {
             par[rx] = ry;
         else if (depth[ry] < depth[rx])
             par[ry] = rx;
-        else {
-            par[rx] = ry;
-            depth[rx]++;
-        }
+        else
+            par[rx] = ry, depth[rx]++;
         comp--;
         st.push(state(rx, depth[rx], ry, depth[ry]));
     }
-    /// how many last added edges you want to erase
-    void backtrack(int c) {
+
+    void backtrack(int c) { // undo the last c unions
         while (!st.empty() && c) {
             if (st.top().u == -1) {
                 st.pop();
@@ -79,75 +65,87 @@ struct persistent_dsu {
         }
     }
 };
-persistent_dsu d;
-vector<pair<int, int>> alive[4 * N];
-void upd(int n, int b, int e, int i, int j, pair<int, int> &p) {
-    if (b > j || e < i) return;
-    if (b >= i && e <= j) {
-        alive[n].push_back(p); /// this edge was alive in this time range
-        return;
+
+struct DynamicConnectivity {
+    int n, m;
+    RollbackDSU d;
+    vector<vector<pair<int, int>>> alive; // edges alive over each time segment
+    vector<int> ans;
+    vector<bool> isquery;
+    map<pair<int, int>, int> since; // edge -> the time it was added
+    set<pair<int, int>> open;
+
+    DynamicConnectivity(int nodes, int steps)
+        : n(nodes), m(steps), alive(4 * steps + 4), ans(steps + 1), isquery(steps + 1) {
+        d.init(n);
     }
-    int l = 2 * n, r = l + 1, mid = b + e >> 1;
-    upd(l, b, mid, i, j, p);
-    upd(r, mid + 1, e, i, j, p);
-}
-int ans[N];
-void query(int n, int b, int e) {
-    if (b > e) return;
-    int prevsz = d.st.size();
-    /// add edges which were alive in this range
-    for (auto p : alive[n]) d.unite(p.first, p.second);
-    if (b == e) {
-        ans[b] = d.comp;
-        d.backtrack(d.st.size() - prevsz);
-        return;
+
+    void seg_add(int node, int b, int e, int i, int j, pair<int, int> &p) {
+        if (b > j || e < i) return;
+        if (b >= i && e <= j) {
+            alive[node].push_back(p);
+            return;
+        }
+        int mid = (b + e) >> 1;
+        seg_add(2 * node, b, mid, i, j, p);
+        seg_add(2 * node + 1, mid + 1, e, i, j, p);
     }
-    int l = 2 * n, r = l + 1, mid = b + e >> 1;
-    query(l, b, mid);
-    query(r, mid + 1, e);
-    d.backtrack(d.st.size() - prevsz);
-}
-struct HASH {
-    size_t operator()(const pair<int, int> &x) const {
-        return hash<long long>()(((long long)x.first) ^ (((long long)x.second) << 32));
+
+    pair<int, int> norm(int u, int v) { return u < v ? make_pair(u, v) : make_pair(v, u); }
+
+    void add_edge(int t, int u, int v) { since[norm(u, v)] = t, open.insert(norm(u, v)); } // edge appears at time t
+
+    void remove_edge(int t, int u, int v) { // edge disappears at time t
+        auto p = norm(u, v);
+        open.erase(p);
+        seg_add(1, 1, m, since[p], t - 1, p);
+    }
+
+    void add_query(int t) { isquery[t] = true; } // ask the component count at time t
+
+    void sweep(int node, int b, int e) {
+        if (b > e) return;
+        int prev = (int)d.st.size();
+        for (auto p : alive[node]) d.unite(p.first, p.second);
+        if (b == e) {
+            ans[b] = d.comp;
+            d.backtrack((int)d.st.size() - prev);
+            return;
+        }
+        int mid = (b + e) >> 1;
+        sweep(2 * node, b, mid);
+        sweep(2 * node + 1, mid + 1, e);
+        d.backtrack((int)d.st.size() - prev);
+    }
+
+    vector<int> run() { // ans[t] = component count at time t, for every t marked by add_query
+        for (auto p : open) seg_add(1, 1, m, since[p], m, p);
+        open.clear();
+        sweep(1, 1, m);
+        return ans;
     }
 };
-set<pair<int, int>> se;
-bool isquery[N];
-unordered_map<pair<int, int>, int, HASH> st;
-int main() {
-    ios_base::sync_with_stdio(0);
-    cin.tie(0);
-    freopen("connect.in", "r", stdin);
-    freopen("connect.out", "w", stdout);
-    st.reserve(1 << 20);
-    int i, j, k, n, m, u, v;
+
+// Standard problem: "+ u v" adds an edge, "- u v" removes one, "?" asks the component count (CF Gym 100551A)
+void solve() {
+    int n, m;
     cin >> n >> m;
-    d.init(n);
-    for (i = 1; i <= m; i++) {
+    DynamicConnectivity dc(n, m);
+    for (int i = 1; i <= m; i++) {
         string ty;
         cin >> ty;
         if (ty == "?") {
-            isquery[i] = 1;
-        } else if (ty == "+") {
-            cin >> u >> v;
-            if (u > v) swap(u, v);
-            pair<int, int> p = {u, v};
-            se.insert(p);
-            st[p] = i;
+            dc.add_query(i);
         } else {
+            int u, v;
             cin >> u >> v;
-            if (u > v) swap(u, v);
-            pair<int, int> p = {u, v};
-            se.erase(p);
-            upd(1, 1, m, st[p], i - 1, p); /// in this time range this edge was in the DSU
+            if (ty == "+")
+                dc.add_edge(i, u, v);
+            else
+                dc.remove_edge(i, u, v);
         }
     }
-    for (auto p : se) upd(1, 1, m, st[p], m, p); /// update rest of the edges
-    se.clear();
-    query(1, 1, m);
-    for (i = 1; i <= m; i++)
-        if (isquery[i]) cout << ans[i] << endl;
-    return 0;
+    auto ans = dc.run();
+    for (int i = 1; i <= m; i++)
+        if (dc.isquery[i]) cout << ans[i] << '\n';
 }
-// https://codeforces.com/gym/100551/problem/A

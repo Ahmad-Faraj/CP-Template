@@ -148,3 +148,19 @@ Thus, when $\text{pow} = 0$, setting it to $\phi(k)$ ensures the exponentiation 
 * The Chicken McNugget Theorem states that for any two relatively prime positive integers $m$ and $n$, the greatest integer that $\bf{cannot}$ be written in the form $am + bn$ for $\bf{nonnegative}$ integers $a$ and $b$ is $mn - m - n$.
 * A consequence of the theorem is that there are exactly $\frac{(m - 1)(n - 1)}{2}$ positive integers which cannot be expressed in the form $am + bn$.
 * The Generalized form of the Chicken McNugget Theorem states that for any two positive integers $m$ and $n$, all multiples of $\gcd(m, n)$ greater than $\textrm{lcm}(m, n)-m-n$ are representable in the form $am+bn$ for some positive integers $a, b$.
+
+## Arithmetic series
+
+All three take a **limit** $x$, not a count — mixing the two conventions is the easy mistake here.
+
+| Sum | Formula |
+| --- | --- |
+| $1 + 2 + \dots + x$ | $\dfrac{x(x+1)}{2}$ |
+| odd numbers $\le x$ | $\left\lfloor \dfrac{x+1}{2} \right\rfloor^{2}$ |
+| even numbers $\le x$ | $\left\lfloor \dfrac{x}{2} \right\rfloor \left(\left\lfloor \dfrac{x}{2} \right\rfloor + 1\right)$ |
+
+The sum of the **first** $k$ even numbers is $k(k+1)$ — that is a different question from the
+sum of even numbers up to a limit, and the two agree only when $x = 2k$.
+
+For $\log_b a$ on integers, do not use `log(a) / log(b)`: it is off by one near exact powers.
+Loop, or compute a candidate and correct it by comparing $b^{\text{candidate}}$ against $a$.

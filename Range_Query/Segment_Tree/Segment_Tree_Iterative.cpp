@@ -1,0 +1,69 @@
+// Iterative Segment Tree: range query over any associative merge, with point assignment.
+// Use when: "range sum/min/max on [l, r] with point updates" and you want the shortest, fastest segment tree.
+// Handles: any associative merge with an identity; point assign, range query. No lazy, no range updates.
+// Time: build O(n) | update O(log n) | query O(log n)
+// Indexing: 0-based, query range inclusive
+// Note: change merge() and none together - none must be the identity element of merge().
+
+#include <bits/stdc++.h>
+using namespace std;
+using ll = long long;
+
+struct SegTree {
+    int n;
+    vector<ll> seg;
+    ll none = 0;
+    ll merge(ll a, ll b) { return a + b; }
+
+    SegTree(int m) {
+        n = 1;
+        while (n < m) n <<= 1;
+        seg.assign(n << 1, none);
+    }
+
+    void build(const vector<ll> &a) { // O(n) fill, instead of n calls to update()
+        for (int i = 0; i < (int)a.size(); i++) seg[n + i] = a[i];
+        for (int i = n - 1; i >= 1; i--) seg[i] = merge(seg[i << 1], seg[i << 1 | 1]);
+    }
+
+    void update(int idx, ll val) { // a[idx] = val
+        idx += n;
+        seg[idx] = val;
+        for (idx >>= 1; idx >= 1; idx >>= 1) seg[idx] = merge(seg[idx << 1], seg[idx << 1 | 1]);
+    }
+
+    ll query(int l, int r) { // merge over a[l .. r]
+        l += n, r += n;
+        ll ret = none;
+        while (l <= r) {
+            if (l & 1) ret = merge(ret, seg[l++]);
+            if (!(r & 1)) ret = merge(ret, seg[r--]);
+            l >>= 1, r >>= 1;
+        }
+        return ret;
+    }
+};
+
+// Standard problem: point assignment and range sum (CSES 1648 - Dynamic Range Sum Queries)
+void solve() {
+    int n, q;
+    cin >> n >> q;
+    vector<ll> a(n);
+    for (auto &x : a) cin >> x;
+    SegTree st(n);
+    st.build(a);
+    while (q--) {
+        int type;
+        cin >> type;
+        if (type == 1) {
+            int k;
+            ll u;
+            cin >> k >> u;
+            st.update(k - 1, u);
+        } else {
+            int l, r;
+            cin >> l >> r;
+            cout << st.query(l - 1, r - 1) << '\n';
+        }
+    }
+}

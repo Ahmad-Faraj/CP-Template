@@ -1,31 +1,54 @@
+// Sparse Table: range query on a static array - no updates, ever.
+// Use when: "min/max/gcd on [l, r]" with no updates and many queries; RMQ in O(1) after an O(n log n) build.
+// Handles: idempotent merges in O(1) via query(); any associative merge in O(log n) via query_any(). Static only.
+// Time: build O(n log n) | query O(1) | query_any O(log n) | memory O(n log n)
+// Indexing: 0-based, ranges inclusive
+// Note: change merge() and none together - none is the identity. query() is valid only for idempotent merges.
+
 #include <bits/stdc++.h>
 using namespace std;
+using ll = long long;
 
-// 0-based indexing
-// O(nlogn) preprocessing // O(1) query // O(nlogn) memory
-// used for range (sum, min, max, gcd, lcm, xor, and, or)
+template <typename T> struct SparseTable {
+    int n, k;
+    vector<vector<T>> table;
 
-vector<vector<int>> sparse_table;
-vector<int> arr;
-int LOG = 20;
+    T none = numeric_limits<T>::max();
+    T merge(T a, T b) { return min(a, b); }
+
+    SparseTable(const vector<T> &a) {
+        n = (int)a.size();
+        k = n ? 32 - __builtin_clz(n) : 1;
+        table.assign(k, vector<T>(n));
+        for (int i = 0; i < n; i++) table[0][i] = a[i];
+        for (int j = 1; j < k; j++)
+            for (int i = 0; i + (1 << j) <= n; i++)
+                table[j][i] = merge(table[j - 1][i], table[j - 1][i + (1 << (j - 1))]);
+    }
+
+    T query(int l, int r) { // merge over a[l .. r], idempotent merges only
+        int j = 31 - __builtin_clz(r - l + 1);
+        return merge(table[j][l], table[j][r - (1 << j) + 1]);
+    }
+
+    T query_any(int l, int r) { // merge over a[l .. r] for any associative merge
+        T ret = none;
+        for (int j = k - 1; j >= 0; j--)
+            if (l + (1 << j) - 1 <= r) ret = merge(ret, table[j][l]), l += 1 << j;
+        return ret;
+    }
+};
+
+// Standard problem: static range minimum queries (CSES 1647)
 void solve() {
-    int n;
-    cin >> n;
-    LOG = log2(n) + 1;
-    arr.resize(n);
-    sparse_table.resize(n, vector<int>(LOG));
-    for (int i = 0; i < n; ++i) cin >> arr[i];
-    for (int i = 0; i < n; ++i) sparse_table[i][0] = arr[i];
-    for (int j = 1; j < LOG; ++j)
-        for (int i = 0; i + (1 << j) <= n; ++i)
-            sparse_table[i][j] = min(sparse_table[i][j - 1], sparse_table[i + (1 << (j - 1))][j - 1]);
-    int q;
-    cin >> q;
+    int n, q;
+    cin >> n >> q;
+    vector<ll> a(n);
+    for (auto &x : a) cin >> x;
+    SparseTable<ll> st(a);
     while (q--) {
         int l, r;
         cin >> l >> r;
-        int len = r - l + 1;
-        int k = log2(len);
-        cout << min(sparse_table[l][k], sparse_table[r - (1 << k) + 1][k]) << endl;
+        cout << st.query(l - 1, r - 1) << '\n';
     }
 }

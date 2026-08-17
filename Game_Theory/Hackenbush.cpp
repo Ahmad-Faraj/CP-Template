@@ -1,96 +1,79 @@
+// Hackenbush: the Grundy value of green Hackenbush - cut an edge, and anything no longer joined to ground falls off.
+// Use when: "cut edges off a graph rooted at the ground", tree-cutting games, Sprague-Grundy over a rooted graph.
+// Handles: trees, cycles, multi-edges, self loops at ANY node, several ground nodes, and pieces already detached.
+// Time: O(n + m)
+// Indexing: 1-based nodes; mark every ground node with set_ground before calling grundy()
+// Note: two principles - a tree XORs its child subtrees, and any cycle contracts to a point without changing the value.
+
 #include <bits/stdc++.h>
 using namespace std;
-const int N = 3e5 + 9;
 
-/**
-Consider a two player game on a graph with a specified vertex (root).
-In each turn, a player eliminates one edge.
-Then, if a subgraph that is disconnected from the root, it is removed.
-If a player cannot select an edge (i.e., the graph is singleton),
-he will lose.
-Compute the Grundy number of the given graph.
+struct Hackenbush {
+    int n, timer = 0, root = 1;
+    vector<vector<int>> adj;
+    vector<int> tin, low;
+    vector<char> is_ground;
 
-We will use two principles:
-1. Colon Principle:
-    Grundy number of a tree is the xor of
-    Grundy number of child subtrees.
+    Hackenbush(int n) : n(n), adj(n + 1), tin(n + 1, 0), low(n + 1, 0), is_ground(n + 1, 0) {}
 
-2. Fusion Principle:
-    Consider a pair of adjacent vertices u, v
-    that has another path (i.e., they are in a cycle). Then,
-    we can contract u and v without changing Grundy number.
-
-We first decompose graph into two-edge connected components.
-Then, by contracting each components by using Fusion Principle,
-we obtain a tree (and many self loops) that has the same Grundy
-number to the original graph. By using Colon Principle, we can
-compute the Grundy number.
-
-Complexity: O(m + n).
-
-Verified:
-SPOJ 1477: Play with a Tree
-IPSC 2003 G: Got Root?
-**/
-
-vector<int> g[N];
-int n, T, low[N], dis[N];
-int dfs(int u, int pre = 0) {
-    dis[u] = low[u] = ++T;
-    int ans = 0;
-    for (auto v : g[u]) {
-        if (v == pre) {
-            pre += 2 * n;
-            continue;
-        }
-        if (dis[v] == 0) {
-            int res = dfs(v, u);
-            low[u] = min(low[u], low[v]);
-            if (low[v] > dis[u])
-                ans ^= (1 + res) ^ 1; /// bridge
-            else
-                ans ^= res; /// non bridge
-        } else
-            low[u] = min(low[u], dis[v]);
+    void set_ground(int v) { // every ground node is really the same node
+        is_ground[v] = 1;
+        if (root == 1 || v < root) root = v;
     }
-    if (pre > n) pre -= 2 * n;
-    for (auto v : g[u])
-        if (v != pre && dis[u] <= dis[v]) ans ^= 1;
-    return ans;
-}
-int ground[N]; /// set 1 for the ground nodes
-int32_t main() {
-    // freopen("green2.txt", "r", stdin);
-    // freopen("green2out.txt", "w", stdout);
-    int t;
-    scanf("%d", &t);
-    while (t--) {
-        int m;
-        scanf("%d%d", &n, &m);
-        for (int i = 1; i <= n; i++) ground[i] = 0;
-        int root = 1; /// if there are multiple ground nodes set any ground node as a root
-        ground[root] = 1;
-        int ans = 0;
-        T = 0;
-        for (int i = 0; i < m; ++i) {
-            int u, v;
-            scanf("%d %d", &u, &v);
-            if (ground[u]) u = root;
-            if (ground[v]) v = root;
-            int dummy;
-            if (u == v)
-                ans ^= 1;
-            else {
-                g[u].push_back(v);
-                g[v].push_back(u);
+
+    // A self loop is kept in the adjacency rather than counted separately, so that a loop
+    // hanging off a deep node is folded into THAT node's value and then carried up through
+    // the bridge above it. Counting loops globally is wrong for any node but the ground.
+    void add_edge(int u, int v) {
+        if (is_ground[u]) u = root;
+        if (is_ground[v]) v = root;
+        adj[u].push_back(v);
+        if (u != v) adj[v].push_back(u);
+    }
+
+    int dfs(int u, int parent) {
+        tin[u] = low[u] = ++timer;
+        int value = 0;
+        for (int v : adj[u]) {
+            if (v == parent) { // consume ONE edge back to the parent; a parallel one is a real cycle
+                parent += 2 * n;
+                continue;
             }
+            if (tin[v] == 0) {
+                int above = dfs(v, u);
+                low[u] = min(low[u], low[v]);
+                if (low[v] > tin[u])
+                    value ^= (1 + above) ^ 1; // a bridge: the edge plus whatever hangs above it
+                else
+                    value ^= above; // inside a cycle, so the edge contracts away
+            } else
+                low[u] = min(low[u], tin[v]);
         }
-        ans ^= dfs(root);
-        if (ans)
-            puts("Alice");
-        else
-            puts("Bob");
-        for (int i = 1; i <= n; i++) g[i].clear(), low[i] = dis[i] = 0;
+        if (parent > n) parent -= 2 * n;
+        for (int v : adj[u])
+            if (v != parent && tin[u] <= tin[v]) value ^= 1; // each cycle closed here fuses to one loop
+        return value;
     }
-    return 0;
+
+    int grundy() { // 0 means the player to move loses
+        fill(tin.begin(), tin.end(), 0);
+        fill(low.begin(), low.end(), 0);
+        timer = 0;
+        return dfs(root, 0);
+    }
+
+    bool first_player_wins() { return grundy() != 0; }
+};
+
+// Standard problem: SPOJ PLAYTREE - a graph grounded at node 1, report who wins
+void solve() {
+    int n, m;
+    cin >> n >> m;
+    Hackenbush h(n);
+    h.set_ground(1);
+    for (int i = 0, u, v; i < m; i++) {
+        cin >> u >> v;
+        h.add_edge(u, v);
+    }
+    cout << (h.first_player_wins() ? "Alice" : "Bob") << '\n';
 }

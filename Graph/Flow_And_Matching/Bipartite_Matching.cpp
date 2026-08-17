@@ -1,0 +1,101 @@
+// Bipartite Matching: the largest set of pairs with no shared endpoint, between a left and a right side, by Kuhn.
+// Use when: "assign each worker one task", "maximum pairs formed", minimum vertex cover, maximum independent set.
+// Handles: unequal side sizes, unmatched nodes, multi-edges, isolated nodes. Bipartite graphs only.
+// Time: O(V * E)
+// Indexing: 1-based on both sides, left 1..n and right 1..m, numbered independently
+// Note: for large graphs use Bipartite_Matching_Hopcroft_Karp.cpp. By Konig, min vertex cover size == matching size.
+
+#include <bits/stdc++.h>
+using namespace std;
+
+struct Bipartite_Matching {
+    int n, m, stamp = 0;
+    vector<vector<int>> adj;      // adj[left] = the right nodes it can take
+    vector<int> match_left, match_right, seen; // 0 means unmatched
+
+    Bipartite_Matching(int n, int m)
+        : n(n), m(m), adj(n + 1), match_left(n + 1, 0), match_right(m + 1, 0), seen(n + 1, 0) {}
+
+    void add_edge(int u, int v) { adj[u].push_back(v); } // left u, right v
+
+    bool try_match(int u) {
+        if (seen[u] == stamp) return false; // a per-left-node stamp, so nothing needs clearing
+        seen[u] = stamp;
+        for (int v : adj[u])
+            if (!match_right[v] || try_match(match_right[v])) {
+                match_right[v] = u;
+                match_left[u] = v;
+                return true;
+            }
+        return false;
+    }
+
+    int maximum_matching() { // also fills match_left and match_right
+        fill(match_left.begin(), match_left.end(), 0);
+        fill(match_right.begin(), match_right.end(), 0);
+        int total = 0;
+        for (int u = 1; u <= n; u++) {
+            ++stamp;
+            if (try_match(u)) total++;
+        }
+        return total;
+    }
+
+    vector<pair<int, int>> pairs() { // the matched (left, right) pairs
+        vector<pair<int, int>> out;
+        for (int u = 1; u <= n; u++)
+            if (match_left[u]) out.push_back({u, match_left[u]});
+        return out;
+    }
+
+    // Konig: a minimum vertex cover, as (left nodes, right nodes). Its size equals the matching size.
+    pair<vector<int>, vector<int>> minimum_vertex_cover() {
+        vector<char> visL(n + 1, 0), visR(m + 1, 0);
+        vector<int> stack_;
+        for (int u = 1; u <= n; u++)
+            if (!match_left[u]) visL[u] = 1, stack_.push_back(u); // start from unmatched left nodes
+        while (!stack_.empty()) {
+            int u = stack_.back();
+            stack_.pop_back();
+            for (int v : adj[u]) {
+                if (v == match_left[u] || visR[v]) continue; // walk non-matching edges rightward
+                visR[v] = 1;
+                int back = match_right[v];
+                if (back && !visL[back]) visL[back] = 1, stack_.push_back(back);
+            }
+        }
+        vector<int> L, R;
+        for (int u = 1; u <= n; u++)
+            if (!visL[u]) L.push_back(u);
+        for (int v = 1; v <= m; v++)
+            if (visR[v]) R.push_back(v);
+        return {L, R};
+    }
+
+    // the complement of a minimum vertex cover: a maximum independent set
+    pair<vector<int>, vector<int>> maximum_independent_set() {
+        auto [cl, cr] = minimum_vertex_cover();
+        vector<char> inL(n + 1, 0), inR(m + 1, 0);
+        for (int x : cl) inL[x] = 1;
+        for (int x : cr) inR[x] = 1;
+        vector<int> L, R;
+        for (int u = 1; u <= n; u++)
+            if (!inL[u]) L.push_back(u);
+        for (int v = 1; v <= m; v++)
+            if (!inR[v]) R.push_back(v);
+        return {L, R};
+    }
+};
+
+// Standard problem: n left nodes, m right nodes, k allowed pairs - report the matching size and the pairs
+void solve() {
+    int n, m, k;
+    cin >> n >> m >> k;
+    Bipartite_Matching bm(n, m);
+    for (int i = 0, u, v; i < k; i++) {
+        cin >> u >> v;
+        bm.add_edge(u, v);
+    }
+    cout << bm.maximum_matching() << '\n';
+    for (auto [u, v] : bm.pairs()) cout << u << ' ' << v << '\n';
+}

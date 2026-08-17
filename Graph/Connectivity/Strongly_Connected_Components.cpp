@@ -1,0 +1,87 @@
+// Strongly Connected Components: groups a digraph into maximal sets where every node reaches every other, by Tarjan.
+// Use when: "collapse the cycles", 2-SAT, "can everyone reach everyone", running a DAG algorithm on a cyclic graph.
+// Handles: self loops, multi-edges, disconnected graphs. Also builds the condensation DAG and answers ancestor queries.
+// Time: O(n + m)
+// Indexing: 1-based nodes; component ids run 1..count
+// Note: run() is recursive, so ~1e5 deep needs a bigger stack. Component ids come out in reverse topological order.
+
+#include <bits/stdc++.h>
+using namespace std;
+
+struct Strongly_Connected_Components {
+    int n, timer = 0, count = 0;
+    vector<vector<int>> adj, components;
+    vector<int> tin, low, tout, comp;
+    vector<char> on_stack;
+    stack<int> st;
+
+    Strongly_Connected_Components(int n)
+        : n(n), adj(n + 1), tin(n + 1, 0), low(n + 1, 0), tout(n + 1, 0), comp(n + 1, 0), on_stack(n + 1, 0) {}
+
+    void add_edge(int u, int v, bool bidirectional = false) {
+        adj[u].push_back(v);
+        if (bidirectional) adj[v].push_back(u);
+    }
+
+    void dfs(int u) {
+        tin[u] = low[u] = ++timer;
+        st.push(u);
+        on_stack[u] = 1;
+        for (int v : adj[u]) {
+            if (!tin[v]) {
+                dfs(v);
+                low[u] = min(low[u], low[v]);
+            } else if (on_stack[v])
+                low[u] = min(low[u], tin[v]);
+        }
+        tout[u] = ++timer;
+        if (low[u] == tin[u]) {
+            ++count;
+            components.push_back({});
+            while (true) {
+                int x = st.top();
+                st.pop();
+                on_stack[x] = 0;
+                comp[x] = count;
+                components.back().push_back(x);
+                if (x == u) break;
+            }
+        }
+    }
+
+    void run() { // call once, after every add_edge
+        for (int i = 1; i <= n; i++)
+            if (!tin[i]) dfs(i);
+    }
+
+    int component_count() { return count; }
+    int component_of(int u) { return comp[u]; }
+    bool same_component(int u, int v) { return comp[u] == comp[v]; }
+
+    vector<vector<int>> condensation() { // the DAG over component ids, no duplicate edges
+        vector<set<int>> uniq(count + 1);
+        for (int u = 1; u <= n; u++)
+            for (int v : adj[u])
+                if (comp[u] != comp[v]) uniq[comp[u]].insert(comp[v]);
+        vector<vector<int>> dag(count + 1);
+        for (int c = 1; c <= count; c++) dag[c].assign(uniq[c].begin(), uniq[c].end());
+        return dag;
+    }
+
+    // true if u is an ancestor of v in the DFS forest; uses entry/exit times, not low-links
+    bool is_ancestor(int u, int v) { return tin[u] <= tin[v] && tout[v] <= tout[u]; }
+};
+
+// Standard problem: CSES Planets and Kingdoms - report the component count and each node's component id
+void solve() {
+    int n, m;
+    cin >> n >> m;
+    Strongly_Connected_Components scc(n);
+    for (int i = 0, u, v; i < m; i++) {
+        cin >> u >> v;
+        scc.add_edge(u, v);
+    }
+    scc.run();
+    cout << scc.component_count() << '\n';
+    for (int i = 1; i <= n; i++) cout << scc.component_of(i) << " \n"[i == n];
+}

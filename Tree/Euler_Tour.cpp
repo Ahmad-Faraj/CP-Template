@@ -1,274 +1,100 @@
+// Euler Tour: flattens a tree so that every subtree becomes one contiguous range of an array.
+// Use when: "sum / min over the subtree of u" with point updates - pair it with any range structure.
+// Handles: subtree ranges via start[u]..finish[u], point updates on nodes. Subtrees only, never paths.
+// Time: build O(n), then whatever the range structure costs
+// Indexing: 1-based nodes; start[u] and finish[u] are 1-based positions in the flattened array
+// Note: this gives subtree ranges only. For path queries use HLD.cpp. build() is recursive.
+
 #include <bits/stdc++.h>
-#include <ext/pb_ds/assoc_container.hpp>
-#include <ext/pb_ds/tree_policy.hpp>
-
 using namespace std;
-using namespace __gnu_pbds;
+using ll = long long;
 
-#define int long long
+struct EulerTour {
+    int n, timer = 0;
+    vector<vector<int>> adj;
+    vector<int> start, finish; // u's subtree is exactly the range [start[u], finish[u]]
 
-#define debug(x) cout << #x << ": " << (x) << "\n";
-#define ull unsigned long long int
-#define ld long double
-#define ll long long
-#define PI acos(-1)
-#define endl "\n"
-#define sz(x) (int)x.size()
-#define all(x) x.begin(), x.end()
-#define fixed(n) cout << fixed << setprecision(n)
-#define loop(i, n) for (int i = 0; i < (int)n; i++)
-#define ordered_set tree<ll, null_type, less_equal<>, rb_tree_tag, tree_order_statistics_node_update>
+    EulerTour(int n) : n(n), adj(n + 1), start(n + 1), finish(n + 1) {}
 
-const int N = 500005;
-const double EPS = 1e-9;
-const int MOD = 1e9 + 7;
-const int OO = 0x3f3f3f3f;
-const ll INF = LLONG_MAX;
-int dx[] = {1, -1, 0, 0};
-int dy[] = {0, 0, 1, -1};
-
-void Ahmed_Faraj()
-{
-    ios_base::sync_with_stdio(false);
-    cin.tie(nullptr);
-    cout.tie(nullptr);
-#ifndef ONLINE_JUDGE
-    freopen("input.txt", "r", stdin);
-    freopen("output.txt", "w", stdout);
-#endif
-}
-
-template <typename T = int>
-istream &operator>>(istream &in, vector<T> &v)
-{
-    for (auto &x : v)
-        in >> x;
-    return in;
-}
-
-template <typename T = int>
-ostream &operator<<(ostream &out, const vector<T> &v)
-{
-    for (const T &x : v)
-        out << x << ' ';
-    return out;
-}
-
-template <typename T = int, int Base = 0>
-struct Segment_Tree
-{
-
-    struct Node
-    {
-        T val;
-        Node(T V = 0) : val(V) {}
-        Node operator=(const T rhs)
-        {
-            val = rhs;
-            return *this;
-        }
-    };
-
-    int size;
-    Node DEFAULT;
-    vector<Node> tree;
-#define LEFT (idx << 1)
-#define RIGHT ((idx << 1) | 1)
-#define VAL val
-
-    Segment_Tree(int n = 0)
-    {
-        size = 1, DEFAULT = 0;
-        while (size < n)
-            size *= 2;
-        tree = vector<Node>(2 * size, DEFAULT);
+    void add_edge(int u, int v) {
+        adj[u].push_back(v);
+        adj[v].push_back(u);
     }
 
-    Segment_Tree(int n, const vector<T> &nums)
-    {
-        size = 1, DEFAULT = 0;
-        while (size < n)
-            size *= 2;
-        tree = vector<Node>(2 * size, DEFAULT);
-        build(nums);
+    void dfs(int u, int par) {
+        start[u] = ++timer;
+        for (int v : adj[u])
+            if (v != par) dfs(v, u);
+        finish[u] = timer;
     }
 
-    Node operation(const Node &a, const Node &b)
-    {
-        return a.val + b.val;
-    }
+    void build(int root = 1) { dfs(root, -1); } // call once, after every add_edge
 
-    void build(const vector<T> &nums, int idx, int lx, int rx)
-    {
-        if (Base ? lx >= sz(nums) : lx > sz(nums))
-            return;
-        if (rx == lx)
-            tree[idx] = nums[lx - !Base];
-        else
-        {
-            int mx = (rx + lx) / 2;
-            build(nums, LEFT, lx, mx);
-            build(nums, RIGHT, mx + 1, rx);
-            tree[idx] = operation(tree[LEFT], tree[RIGHT]);
-        }
-    }
-
-    void build(const vector<T> &nums)
-    {
-        build(nums, 1, 1, size);
-    }
-
-    void update(int index, T v, int idx, int lx, int rx)
-    {
-        if (rx == lx)
-            tree[idx] = v;
-        else
-        {
-            int mx = (rx + lx) / 2;
-            if (index <= mx)
-                update(index, v, LEFT, lx, mx);
-            else
-                update(index, v, RIGHT, mx + 1, rx);
-            tree[idx] = operation(tree[LEFT], tree[RIGHT]);
-        }
-    }
-
-    void update(const int index, const T v)
-    {
-        update(index, v, 1, 1, size);
-    }
-
-    Node query(int l, int r, int idx, int lx, int rx)
-    {
-        if (lx > r || l > rx)
-            return DEFAULT;
-        if (lx >= l && rx <= r)
-            return tree[idx];
-        int mx = (lx + rx) / 2;
-        return operation(query(l, r, LEFT, lx, mx), query(l, r, RIGHT, mx + 1, rx));
-    }
-
-    Node query_Node(const int l, const int r)
-    {
-        return query(l, r, 1, 1, size);
-    }
-
-    T query(const int l, const int r)
-    {
-        return query_Node(l, r).VAL;
-    }
-
-    T query(T num)
-    {
-        return query(num + 1, size);
-    }
-
-    T get(const int idx)
-    {
-        return query_Node(idx, idx).VAL;
-    }
-
-    friend ostream &operator<<(ostream &out, const Node &node)
-    {
-        out << node.VAL << ' ';
+    vector<ll> flatten(const vector<ll> &val) { // val[u] laid out at position start[u]
+        vector<ll> out(n + 1, 0);
+        for (int u = 1; u <= n; u++) out[start[u]] = val[u];
         return out;
     }
-
-    void print(int idx, int lx, int rx)
-    {
-        if (lx == rx)
-            cout << tree[idx] << ' ';
-        else
-        {
-            int mx = (lx + rx) / 2;
-            print(LEFT, lx, mx);
-            print(RIGHT, mx + 1, rx);
-        }
-    }
-
-    void print()
-    {
-        print(1, 1, size);
-        cout << '\n';
-    }
-
-#undef LEFT
-#undef RIGHT
-#undef VAL
 };
 
-vector<vector<int>> adj;
-int timer = 0;
-int start[N];
-int endd[N];
+struct SegTree {
+    int size;
+    vector<ll> tree;
 
-void euler_tour(int src, int par)
-{
-    start[src] = ++timer;
-    for (int child : adj[src])
-    {
-        if (child != par)
-        {
-            euler_tour(child, src);
-        }
+    SegTree(int n) {
+        size = 1;
+        while (size < n) size *= 2;
+        tree.assign(2 * size, 0);
     }
-    endd[src] = timer; // Fix this to properly end the subtree range.
-}
 
-void solve()
-{
+    void build(const vector<ll> &a) { // a is 1-based, a[1..n]
+        for (int i = 1; i < (int)a.size(); i++) tree[size + i - 1] = a[i];
+        for (int i = size - 1; i >= 1; i--) tree[i] = tree[2 * i] + tree[2 * i + 1];
+    }
+
+    void update(int pos, ll v) { // a[pos] = v
+        int i = size + pos - 1;
+        tree[i] = v;
+        for (i >>= 1; i >= 1; i >>= 1) tree[i] = tree[2 * i] + tree[2 * i + 1];
+    }
+
+    ll query(int l, int r) { // sum over a[l .. r]
+        ll res = 0;
+        for (int lo = l + size - 1, hi = r + size - 1; lo <= hi; lo >>= 1, hi >>= 1) {
+            if (lo & 1) res += tree[lo++];
+            if (!(hi & 1)) res += tree[hi--];
+        }
+        return res;
+    }
+};
+
+// Standard problem: type 1 sets a node's value, type 2 asks the sum over that node's whole subtree
+void solve() {
     int n, q;
     cin >> n >> q;
-    adj.resize(n + 1); // Fix: Initialize adjacency list for the nodes
-    vector<int> v(n);
-    cin >> v;
-
-    for (int i = 0; i < n - 1; i++)
-    {
-        int u, v;
+    vector<ll> val(n + 1);
+    for (int i = 1; i <= n; i++) cin >> val[i];
+    EulerTour et(n);
+    for (int i = 1, u, v; i < n; i++) {
         cin >> u >> v;
-        adj[u].emplace_back(v);
-        adj[v].emplace_back(u);
+        et.add_edge(u, v);
     }
+    et.build(1);
 
-    euler_tour(1, -1); // Generate the Euler Tour
-
-    vector<int> euler_values(n + 1);
-    for (int i = 1; i <= n; i++)
-    {
-        euler_values[start[i]] = v[i - 1]; // Reassign the values based on the Euler tour
-    }
-
-    Segment_Tree<int, 1> tree(n, euler_values); // Build the Segment Tree with Euler values
-
-    while (q--)
-    {
+    SegTree seg(n);
+    seg.build(et.flatten(val));
+    while (q--) {
         int type;
         cin >> type;
-        if (type == 1)
-        {
-            int s, x;
+        if (type == 1) {
+            int s;
+            ll x;
             cin >> s >> x;
-            tree.update(start[s], x); // Update the tree
-        }
-        else
-        {
+            seg.update(et.start[s], x);
+        } else {
             int s;
             cin >> s;
-            cout << tree.query(start[s], endd[s]) << endl; // Query the subtree range
+            cout << seg.query(et.start[s], et.finish[s]) << '\n';
         }
     }
-}
-
-signed main()
-{
-    Ahmed_Faraj();
-    int test = 1;
-    // cin >> test;
-    for (int tc = 1; tc <= test; tc++)
-    {
-        // cout << "Case " << tc << ":";
-        solve();
-    }
-    return 0;
 }

@@ -1,115 +1,88 @@
+// 2 SAT: decides whether boolean variables can satisfy clauses of two literals, and produces one assignment.
+// Use when: every constraint pairs two things with two states each - "at most one of", "these differ", "if A then B".
+// Handles: OR, XOR, implication, equality and forcing a variable. Reports unsatisfiable rather than guessing.
+// Time: O(n + m)
+// Indexing: 1-based variables 1..n; value[v] is filled by satisfiable()
+// Note: satisfiable() is recursive over 2n implication nodes. Call it once - it does not reset between calls.
+
 #include <bits/stdc++.h>
 using namespace std;
 
-const int N = 3e5 + 9;
-
-/*
-zero Indexed
-we have vars variables
-F=(x_0 XXX y_0) and (x_1 XXX y_1) and ... (x_{vars-1} XXX y_{vars-1})
-here {x_i,y_i} are variables
-and XXX belongs to {OR,XOR}
-is there any assignment of variables such that F=true
-*/
-struct twosat {
-    int n; // total size combining +, -. must be even.
+struct Two_SAT {
+    int n, lits;
     vector<vector<int>> g, gt;
-    vector<bool> vis, res;
-    vector<int> comp;
-    stack<int> ts;
-    twosat(int vars = 0) {
-        n = vars << 1;
-        g.resize(n);
-        gt.resize(n);
+    vector<char> vis;
+    vector<int> comp, order;
+    vector<char> value; // value[v] is variable v's assignment, valid after satisfiable() returns true
+
+    Two_SAT(int n) : n(n), lits(2 * n), g(2 * n), gt(2 * n), vis(2 * n, 0), comp(2 * n, -1), value(n + 1, 0) {}
+
+    int lit(int v, bool want) { return 2 * (v - 1) + (want ? 0 : 1); } // node for "variable v equals want"
+
+    void add_implication(int a, bool af, int b, bool bf) { // a == af forces b == bf
+        int x = lit(a, af), y = lit(b, bf);
+        g[x].push_back(y);
+        gt[y].push_back(x);
+        g[y ^ 1].push_back(x ^ 1); // the contrapositive
+        gt[x ^ 1].push_back(y ^ 1);
     }
 
-    // zero indexed, be careful
-    // if you want to force variable a to be true in OR or XOR combination
-    // add addOR (a,1,a,1);
-    // if you want to force variable a to be false in OR or XOR combination
-    // add addOR (a,0,a,0);
+    void add_or(int a, bool af, int b, bool bf) { // (a == af) OR (b == bf)
+        add_implication(a, !af, b, bf);
+    }
 
-    //(x_a or (not x_b))-> af=1,bf=0
-    void addOR(int a, bool af, int b, bool bf) {
-        a += a + (af ^ 1);
-        b += b + (bf ^ 1);
-        g[a ^ 1].push_back(b); // !a => b
-        g[b ^ 1].push_back(a); // !b => a
-        gt[b].push_back(a ^ 1);
-        gt[a].push_back(b ^ 1);
+    void add_xor(int a, bool af, int b, bool bf) { // exactly one of the two holds
+        add_or(a, af, b, bf);
+        add_or(a, !af, b, !bf);
     }
-    //(!x_a xor !x_b)-> af=0, bf=0
-    void addXOR(int a, bool af, int b, bool bf) {
-        addOR(a, af, b, bf);
-        addOR(a, !af, b, !bf);
-    }
-    void _add(int a, bool af, int b, bool bf) {
-        a += a + (af ^ 1);
-        b += b + (bf ^ 1);
-        g[a].push_back(b);
-        gt[b].push_back(a);
-    }
-    // add this type of condition->
-    // add(a,af,b,bf) means if a is af then b must need to be bf
-    void add(int a, bool af, int b, bool bf) {
-        _add(a, af, b, bf);
-        _add(b, !bf, a, !af);
-    }
+
+    void force(int a, bool af) { add_or(a, af, a, af); }        // a must equal af
+    void add_equal(int a, int b) { add_xor(a, true, b, false); } // a == b
+    void add_not_equal(int a, int b) { add_xor(a, true, b, true); }
+    void at_most_one_true(int a, int b) { add_or(a, false, b, false); }
+
     void dfs1(int u) {
-        vis[u] = true;
+        vis[u] = 1;
         for (int v : g[u])
             if (!vis[v]) dfs1(v);
-        ts.push(u);
+        order.push_back(u);
     }
+
     void dfs2(int u, int c) {
         comp[u] = c;
         for (int v : gt[u])
             if (comp[v] == -1) dfs2(v, c);
     }
-    bool ok() {
-        vis.resize(n, false);
-        for (int i = 0; i < n; ++i)
+
+    bool satisfiable() { // false when some variable and its negation land in one component
+        for (int i = 0; i < lits; i++)
             if (!vis[i]) dfs1(i);
-        int scc = 0;
-        comp.resize(n, -1);
-        while (!ts.empty()) {
-            int u = ts.top();
-            ts.pop();
-            if (comp[u] == -1) dfs2(u, scc++);
-        }
-        res.resize(n / 2);
-        for (int i = 0; i < n; i += 2) {
-            if (comp[i] == comp[i + 1]) return false;
-            res[i / 2] = (comp[i] > comp[i + 1]);
+        int c = 0;
+        for (int i = lits - 1; i >= 0; i--)
+            if (comp[order[i]] == -1) dfs2(order[i], c++);
+        for (int v = 1; v <= n; v++) {
+            int t = lit(v, true), f = lit(v, false);
+            if (comp[t] == comp[f]) return false;
+            value[v] = comp[t] > comp[f]; // later in topological order wins
         }
         return true;
     }
 };
 
-int main() {
+// Standard problem: m clauses of the form (literal OR literal); print an assignment or report impossibility
+void solve() {
     int n, m;
     cin >> n >> m;
-    twosat ts(n);
-    for (int i = 0; i < m; i++) {
-        int u, v, k;
-        cin >> u >> v >> k;
-        --u;
-        --v;
-        if (k)
-            ts.add(u, 0, v, 0), ts.add(u, 1, v, 1), ts.add(v, 0, u, 0), ts.add(v, 1, u, 1);
-        else
-            ts.add(u, 0, v, 1), ts.add(u, 1, v, 0), ts.add(v, 0, u, 1), ts.add(v, 1, u, 0);
+    Two_SAT sat(n);
+    for (int i = 0; i < m; i++) { // each clause: sign var sign var, with + meaning true and - meaning false
+        char s1, s2;
+        int a, b;
+        cin >> s1 >> a >> s2 >> b;
+        sat.add_or(a, s1 == '+', b, s2 == '+');
     }
-    int k = ts.ok();
-    if (!k)
-        cout << "Impossible\n";
-    else {
-        vector<int> v;
-        for (int i = 0; i < n; i++)
-            if (ts.res[i]) v.push_back(i);
-        cout << (int)v.size() << '\n';
-        for (auto x : v) cout << x + 1 << ' ';
-        cout << '\n';
+    if (!sat.satisfiable()) {
+        cout << "IMPOSSIBLE\n";
+        return;
     }
-    return 0;
+    for (int v = 1; v <= n; v++) cout << (sat.value[v] ? '+' : '-') << " \n"[v == n];
 }

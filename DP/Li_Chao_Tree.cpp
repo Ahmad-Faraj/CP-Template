@@ -1,3 +1,10 @@
+// Li Chao Tree: minimum over a set of lines / segments at a query x, inserted online.
+// Use when: CHT but a line is only valid on a sub-range of x, or you want the query bounded to a range.
+// Handles: arbitrary slope and query order, lines restricted to [l, r], negative m/c/x. No deletion, not persistent.
+// Time: add_line O(log C) | add_segment O(log^2 C) | query O(log C), C = R - L
+// Indexing: 0-based (x is any integer inside the [L, R] passed to the constructor)
+// Note: min-tree. For maximum insert {-m, -c} and negate the answer. Returns inf when no line covers x.
+
 #include <bits/stdc++.h>
 using namespace std;
 
@@ -8,6 +15,7 @@ struct Line {
     ll m, c;
     ll eval(ll x) { return m * x + c; }
 };
+
 struct node {
     Line line;
     node *left = nullptr;
@@ -70,26 +78,21 @@ struct node {
 struct LiChaoTree {
     int L, R;
     node *root;
-    LiChaoTree() : L(numeric_limits<int>::min() / 2), R(numeric_limits<int>::max() / 2), root(nullptr) {}
     LiChaoTree(int L, int R) : L(L), R(R) { root = new node({0, inf}); }
-    void add_line(Line line) { root->add_segment(line, L, R, L, R); }
-    // y = mx + b: x in [l, r]
-    void add_segment(Line line, int l, int r) { root->add_segment(line, L, R, l, r); }
-    ll query(ll x) { return root->query_segment(x, L, R, L, R); }
-    ll query_segment(ll x, int l, int r) { return root->query_segment(x, l, r, L, R); }
+    void add_line(Line line) { root->add_segment(line, L, R, L, R); }                     // y = mx + c for every x
+    void add_segment(Line line, int l, int r) { root->add_segment(line, L, R, l, r); }    // y = mx + c for x in [l, r]
+    ll query(ll x) { return root->query_segment(x, L, R, L, R); }                         // min over all inserted at x
+    ll query_segment(ll x, int l, int r) { return root->query_segment(x, l, r, L, R); } // min over those on [l, r]
 };
 
-int32_t main() {
-    ios_base::sync_with_stdio(0);
-    cin.tie(0);
-    LiChaoTree t = LiChaoTree((int)-1e9, (int)1e9);
+void solve() {
+    LiChaoTree t((int)-1e9, (int)1e9);
     int n, q;
     cin >> n >> q;
     for (int i = 0; i < n; i++) {
         ll l, r, a, b;
         cin >> l >> r >> a >> b;
-        r--;
-        t.add_segment({a, b}, l, r);
+        t.add_segment({a, b}, l, r - 1);
     }
     while (q--) {
         int ty;
@@ -97,8 +100,7 @@ int32_t main() {
         if (ty == 0) {
             ll l, r, a, b;
             cin >> l >> r >> a >> b;
-            r--;
-            t.add_segment({a, b}, l, r);
+            t.add_segment({a, b}, l, r - 1);
         } else {
             ll x;
             cin >> x;
@@ -109,5 +111,4 @@ int32_t main() {
                 cout << ans << '\n';
         }
     }
-    return 0;
 }
