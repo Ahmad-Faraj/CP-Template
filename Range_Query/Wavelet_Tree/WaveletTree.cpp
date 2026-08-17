@@ -1,4 +1,9 @@
-#include "../../core.h"
+#include <bits/stdc++.h>
+using namespace std;
+
+#define ll long long
+#define sz(x) (int)x.size()
+#define nl '\n'
 
 /*
     [1] Definition
@@ -205,23 +210,23 @@ wavelet_tree wt;
 
 int arr[MAXN];
 
-// signed main() {
-//     ios_base::sync_with_stdio(false);
-//     cin.tie(nullptr);
-//
-//    int n, q;
-//    cin >> n;
-//
-//  for (int i = 1; i <= n; i++) cin >> arr[i];
-//
-//  wt.init(arr + 1, arr + n + 1, 0, MAXV);
-// cin >> q;
-// while (q--) {
-//  int l, r, k;
-// cin >> l >> r >> k;
-//
-//      cout << wt.sum_LTE(l, r, k) << nl;
-//}
-//
-//   return 0;
-//}
+signed main() {
+    ios_base::sync_with_stdio(false);
+    cin.tie(nullptr);
+
+    int n, q;
+    cin >> n;
+
+    for (int i = 1; i <= n; i++) cin >> arr[i];
+
+    wt.init(arr + 1, arr + n + 1, 0, MAXV);
+    cin >> q;
+    while (q--) {
+        int l, r, k;
+        cin >> l >> r >> k;
+
+        cout << wt.sum_LTE(l, r, k) << nl;
+    }
+
+    return 0;
+}
