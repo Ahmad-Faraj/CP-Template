@@ -90,7 +90,7 @@ int main() {
     cin.tie(NULL);
 
     int n;
-    if (!(cin >> n)) return 0;
+    cin >> n ;
 
     vector<int> original_colors(n);
     for (int i = 1; i <= n; i++) {
