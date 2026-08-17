@@ -9,39 +9,8 @@
 using namespace std;
 
 typedef long long ll;
-typedef long double ld;
-const ld PI = acos(-1.L);
-
-template <class T> struct cplx {
-    T x, y;
-    cplx() {
-        x = 0.0;
-        y = 0.0;
-    }
-    cplx(T nx, T ny = 0) {
-        x = nx;
-        y = ny;
-    }
-    cplx operator+(const cplx &c) const { return {x + c.x, y + c.y}; }
-    cplx operator-(const cplx &c) const { return {x - c.x, y - c.y}; }
-    cplx operator*(const cplx &c) const { return {x * c.x - y * c.y, x * c.y + y * c.x}; }
-    cplx &operator*=(const cplx &c) { return *this = {x * c.x - y * c.y, x * c.y + y * c.x}; }
-    inline T real() const { return x; }
-    inline T imag() const { return y; }
-    // Only supports right scalar multiplication like p*c
-    template <class U> cplx operator*(const U &c) const { return {x * c, y * c}; }
-    template <class U> cplx operator/(const U &c) const { return {x / c, y / c}; }
-    template <class U> void operator/=(const U &c) {
-        x /= c;
-        y /= c;
-    }
-};
-#define polar(r, a)                                                                                                    \
-    (cplx<ld>) { r *cos(a), r *sin(a) }
-
-const int DIG = 9, FDIG = 4;
-const int BASE = 1e9, FBASE = 1e4;
-typedef cplx<ld> Cplx;
+const int DIG = 9;
+const int BASE = 1e9;
 
 // use mulmod when taking mod by int v and v>2e9
 // you can use mod by bigint in that case too
@@ -169,31 +138,8 @@ struct BigInt {
         return *this;
     }
 
-    template <typename L, typename R>
-    typename enable_if<is_convertible<L, BigInt>::value && is_convertible<R, BigInt>::value &&
-                           is_lvalue_reference<R &&>::value,
-                       BigInt>::type friend
-    operator+(L &&l, R &&r) {
-        BigInt result(forward<L>(l));
-        result += r;
-        return result;
-    }
-    template <typename L, typename R>
-    typename enable_if<is_convertible<L, BigInt>::value && is_convertible<R, BigInt>::value &&
-                           is_rvalue_reference<R &&>::value,
-                       BigInt>::type friend
-    operator+(L &&l, R &&r) {
-        BigInt result(move(r));
-        result += l;
-        return result;
-    }
-    template <typename L, typename R>
-    typename enable_if<is_convertible<L, BigInt>::value && is_convertible<R, BigInt>::value, BigInt>::type friend
-    operator-(L &&l, R &&r) {
-        BigInt result(forward<L>(l));
-        result -= r;
-        return result;
-    }
+    friend BigInt operator+(BigInt a, const BigInt &b) { a += b; return a; }
+    friend BigInt operator-(BigInt a, const BigInt &b) { a -= b; return a; }
 
     friend pair<BigInt, BigInt> divmod(const BigInt &a1, const BigInt &b1) {
         ll norm = BASE / (b1.a.back() + 1);
@@ -220,165 +166,10 @@ struct BigInt {
     }
     BigInt operator/(const BigInt &v) const { return divmod(*this, v).first; }
     BigInt operator%(const BigInt &v) const { return divmod(*this, v).second; }
-    void operator/=(int v) {
-        if (llabs(v) >= BASE) {
-            *this /= BigInt(v);
-            return;
-        }
-        if (v < 0) sgn = -sgn, v = -v;
-        for (int i = (int)a.size() - 1, rem = 0; i >= 0; --i) {
-            ll cur = a[i] + rem * (ll)BASE;
-            a[i] = (int)(cur / v);
-            rem = (int)(cur % v);
-        }
-        trim();
-    }
-    BigInt operator/(int v) const {
-        if (llabs(v) >= BASE) return *this / BigInt(v);
-        BigInt res = *this;
-        res /= v;
-        return res;
-    }
     void operator/=(const BigInt &v) { *this = *this / v; }
-    ll operator%(ll v) const {
-        int m = 0;
-        for (int i = a.size() - 1; i >= 0; --i) m = (a[i] + m * (ll)BASE) % v;
-        return m * sgn;
-    }
-    void operator*=(int v) {
-        if (llabs(v) >= BASE) {
-            *this *= BigInt(v);
-            return;
-        }
-        if (v < 0) sgn = -sgn, v = -v;
-        for (int i = 0, carry = 0; i < (int)a.size() || carry; ++i) {
-            if (i == (int)a.size()) a.push_back(0);
-            ll cur = a[i] * (ll)v + carry;
-            carry = (int)(cur / BASE);
-            a[i] = (int)(cur % BASE);
-        }
-        trim();
-    }
-    BigInt operator*(int v) const {
-        if (llabs(v) >= BASE) return *this * BigInt(v);
-        BigInt res = *this;
-        res *= v;
-        return res;
-    }
 
-    static vector<int> convert_base(const vector<int> &a, int old_digits, int new_digits) {
-        vector<ll> p(max(old_digits, new_digits) + 1);
-        p[0] = 1;
-        for (int i = 1; i < (int)p.size(); i++) p[i] = p[i - 1] * 10;
-        vector<int> res;
-        ll cur = 0;
-        int cur_digits = 0;
-        for (int i = 0; i < (int)a.size(); i++) {
-            cur += a[i] * p[cur_digits];
-            cur_digits += old_digits;
-            while (cur_digits >= new_digits) {
-                res.push_back((ll)(cur % p[new_digits]));
-                cur /= p[new_digits];
-                cur_digits -= new_digits;
-            }
-        }
-        res.push_back((int)cur);
-        while (!res.empty() && !res.back()) res.pop_back();
-        return res;
-    }
-
-    void fft(vector<Cplx> &a, bool invert) const {
-        int n = a.size();
-        for (int i = 1, j = 0; i < n; ++i) {
-            int bit = n / 2;
-            for (; j >= bit; bit /= 2) j -= bit;
-            j += bit;
-            if (i < j) swap(a[i], a[j]);
-        }
-        for (int len = 2; len <= n; len *= 2) {
-            ld ang = 2 * PI / len * (invert ? -1 : 1);
-            Cplx wlen = polar(1, ang);
-            for (int i = 0; i < n; i += len) {
-                Cplx w(1);
-                for (int j = 0; j < len / 2; ++j) {
-                    Cplx u = a[i + j], v = a[i + j + len / 2] * w;
-                    a[i + j] = u + v;
-                    a[i + j + len / 2] = u - v;
-                    w *= wlen;
-                }
-            }
-        }
-        if (invert)
-            for (int i = 0; i < n; ++i) a[i] /= n;
-    }
-    void multiply_fft(const vector<int> &a, const vector<int> &b, vector<int> &res) const {
-        vector<Cplx> fa(a.begin(), a.end()), fb(b.begin(), b.end());
-        int n = 1;
-        while (n < (int)max(a.size(), b.size())) n *= 2;
-        n *= 2;
-        fa.resize(n);
-        fb.resize(n);
-        fft(fa, 0);
-        fft(fb, 0);
-        for (int i = 0; i < n; ++i) fa[i] *= fb[i];
-        fft(fa, 1);
-        res.resize(n);
-        ll carry = 0;
-        for (int i = 0; i < n; i++) {
-            ll t = (ll)(fa[i].real() + 0.5) + carry;
-            carry = t / FBASE;
-            res[i] = t % FBASE;
-        }
-    }
-    static inline int rev_incr(int a, int n) {
-        int msk = n / 2, cnt = 0;
-        while (a & msk) {
-            cnt++;
-            a <<= 1;
-        }
-        a &= msk - 1;
-        a |= msk;
-        while (cnt--) a >>= 1;
-        return a;
-    }
-    static vector<Cplx> FFT(vector<Cplx> v, int dir = 1) {
-        Cplx wm, w, u, t;
-        int n = v.size();
-        vector<Cplx> V(n);
-        for (int k = 0, a = 0; k < n; ++k, a = rev_incr(a, n)) V[a] = v[k] / ld(dir > 0 ? 1 : n);
-        for (int m = 2; m <= n; m <<= 1) {
-            wm = polar((ld)1, dir * 2 * PI / m);
-            for (int k = 0; k < n; k += m) {
-                w = 1;
-                for (int j = 0; j < m / 2; ++j, w *= wm) {
-                    u = V[k + j];
-                    t = w * V[k + j + m / 2];
-                    V[k + j] = u + t;
-                    V[k + j + m / 2] = u - t;
-                }
-            }
-        }
-        return V;
-    }
-    static void convolution(const vector<int> &a, const vector<int> &b, vector<int> &c) {
-        int sz = a.size() + b.size() - 1;
-        int n = 1 << int(ceil(log2(sz)));
-        vector<Cplx> av(n, 0), bv(n, 0), cv;
-        for (int i = 0; i < (int)a.size(); i++) av[i] = a[i];
-        for (int i = 0; i < (int)b.size(); i++) bv[i] = b[i];
-        cv = FFT(bv);
-        bv = FFT(av);
-        for (int i = 0; i < n; i++) av[i] = bv[i] * cv[i];
-        cv = FFT(av, -1);
-        c.resize(n);
-        ll carry = 0;
-        for (int i = 0; i < n; i++) {
-            ll t = ll(cv[i].real() + 0.5) + carry;
-            carry = t / FBASE;
-            c[i] = t % FBASE;
-        }
-    }
-    BigInt mul_simple(const BigInt &v) const {
+    void operator*=(const BigInt &v) { *this = *this * v; }
+    BigInt operator*(const BigInt &v) const {
         BigInt res;
         res.sgn = sgn * v.sgn;
         res.a.resize(a.size() + v.a.size());
@@ -392,18 +183,50 @@ struct BigInt {
         res.trim();
         return res;
     }
-    BigInt mul_fft(const BigInt &v) const {
-        BigInt res;
-        res.sgn = sgn * v.sgn;
-        convolution(convert_base(a, DIG, FDIG), convert_base(v.a, DIG, FDIG), res.a);
-        res.a = convert_base(res.a, FDIG, DIG);
-        res.trim();
+
+    void div2() {
+        for (int i = (int)a.size() - 1, rem = 0; i >= 0; --i) {
+            ll cur = a[i] + rem * (ll)BASE;
+            a[i] = (int)(cur / 2);
+            rem = (int)(cur % 2);
+        }
+        trim();
+    }
+    bool is_odd() const { return !a.empty() && (a[0] % 2 != 0); }
+    
+    BigInt operator&(const BigInt &v) const {
+        BigInt x = this->abs(), y = v.abs(), res = 0, p = 1;
+        while (!x.zero() && !y.zero()) {
+            if (x.is_odd() & y.is_odd()) res += p;
+            x.div2(); y.div2(); p *= 2;
+        }
         return res;
     }
-    void operator*=(const BigInt &v) { *this = *this * v; }
-    BigInt operator*(const BigInt &v) const {
-        if (1LL * a.size() * v.a.size() <= 1000111) return mul_simple(v);
-        return mul_fft(v);
+    BigInt operator|(const BigInt &v) const {
+        BigInt x = this->abs(), y = v.abs(), res = 0, p = 1;
+        while (!x.zero() || !y.zero()) {
+            if (x.is_odd() | y.is_odd()) res += p;
+            x.div2(); y.div2(); p *= 2;
+        }
+        return res;
+    }
+    BigInt operator^(const BigInt &v) const {
+        BigInt x = this->abs(), y = v.abs(), res = 0, p = 1;
+        while (!x.zero() || !y.zero()) {
+            if (x.is_odd() ^ y.is_odd()) res += p;
+            x.div2(); y.div2(); p *= 2;
+        }
+        return res;
+    }
+
+    BigInt pow(ll k) const {
+        BigInt ans = 1, base = *this;
+        while (k > 0) {
+            if (k & 1) ans *= base;
+            base *= base;
+            k >>= 1;
+        }
+        return ans;
     }
 
     BigInt abs() const {
@@ -415,28 +238,6 @@ struct BigInt {
         while (!a.empty() && !a.back()) a.pop_back();
     }
     bool zero() const { return a.empty() || (a.size() == 1 && !a[0]); }
-    friend BigInt gcd(const BigInt &a, const BigInt &b) { return b.zero() ? a : gcd(b, a % b); }
-};
-BigInt power(BigInt a, ll k) {
-    BigInt ans = 1;
-    while (k > 0) {
-        if (k & 1) ans *= a;
-        a *= a;
-        k >>= 1;
-    }
-    return ans;
-}
 
-// Standard problem: two big integers a and b - print a+b, a-b, a*b, a/b and a%b
-void solve() {
-    string x, y;
-    cin >> x >> y;
-    BigInt a(x), b(y);
-    cout << a + b << '\n';
-    cout << a - b << '\n';
-    cout << a * b << '\n';
-    if (b != BigInt(0)) {
-        cout << a / b << '\n';
-        cout << a % b << '\n';
-    }
-}
+};
+
