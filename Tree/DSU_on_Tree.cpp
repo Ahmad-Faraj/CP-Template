@@ -1,126 +1,68 @@
+// DSU on Tree (Sack): answers a question about every subtree in O(n log n), reusing one global counter.
+// Use when: "for each subtree, how many distinct colours / the most frequent value / the count of colour c".
+// Handles: any statistic you can add and remove one node at a time. Subtrees only - not paths.
+// Time: O(n log n) calls to add / remove
+// Indexing: 1-based nodes
+// Note: the problem-specific parts are add()'s body and the line recording ans[u]. Everything else is fixed.
+
 #include <bits/stdc++.h>
 using namespace std;
 
-/*
-    [1] Definition:
-    DSU on Tree (Sack) is a technique to answer offline subtree queries.
+const int N = 1e5 + 9;
 
-    [2] Time & Space Complexity:
-    - Time: O(N log N) -> Each node is added/removed at most O(log N) times.
-    - Space: O(N) memory for tree and frequency arrays.
-
-    [3] Important Notes:
-    - Uses 1-based indexing.
-    - If node values/colors are large (e.g., up to 10^9), you MUST use
-    Coordinate Compression before passing them to the struct.
-
-    [4] Solves the number of distinct colors in a subtree.
-*/
-
-const int N = 2e5 + 5;
-
-vector<int> adj[N];
-int col[N], sz[N], ans[N];
+vector<int> g[N];
+int ans[N], col[N], sz[N], cnt[N];
 bool big[N];
+int cur = 0; // the statistic over the nodes currently counted; here, distinct colours
 
-int cnt[N]; // Frequency array for colors
-int current_distinct = 0;
-
-void addNode(int u) {
-    if (cnt[col[u]] == 0) current_distinct++;
-    cnt[col[u]]++;
-}
-
-void removeNode(int u) {
-    cnt[col[u]]--;
-    if (cnt[col[u]] == 0) current_distinct--;
-}
-
-void dfs_sz(int u, int p) {
+void dfs(int u, int p) {
     sz[u] = 1;
-    for (int v : adj[u]) {
+    for (auto v : g[u]) {
         if (v == p) continue;
-        dfs_sz(v, u);
+        dfs(v, u);
         sz[u] += sz[v];
     }
 }
 
-void updateSubtree(int u, int p, int val) {
-    if (val == 1) addNode(u);
-    else removeNode(u);
-
-    for (int v : adj[u]) {
+void add(int u, int p, int x) { // fold u's subtree in (x = 1) or back out (x = -1), skipping the kept big child
+    if (x == 1) {
+        if (cnt[col[u]]++ == 0) cur++;
+    } else {
+        if (--cnt[col[u]] == 0) cur--;
+    }
+    for (auto v : g[u]) {
         if (v == p || big[v]) continue;
-        updateSubtree(v, u, val);
+        add(v, u, x);
     }
 }
 
-void dfs_dsu(int u, int p, bool keep) {
-    int mx = -1, bigChild = -1;
-    
-    for (int v : adj[u]) {
+void dsu(int u, int p, bool keep) {
+    int bigchild = -1, mx = -1;
+    for (auto v : g[u]) {
         if (v == p) continue;
-        if (sz[v] > mx) {
-            mx = sz[v];
-            bigChild = v;
-        }
+        if (sz[v] > mx) mx = sz[v], bigchild = v;
     }
-
-    for (int v : adj[u]) {
-        if (v == p || v == bigChild) continue;
-        dfs_dsu(v, u, 0);
+    for (auto v : g[u]) {
+        if (v == p || v == bigchild) continue;
+        dsu(v, u, 0);
     }
-
-    if (bigChild != -1) {
-        dfs_dsu(bigChild, u, 1);
-        big[bigChild] = 1; 
-    }
-
-    updateSubtree(u, p, 1);
-    
-    // Answer the subtree of node 'u' here.
-    ans[u] = current_distinct;
-
-    if (bigChild != -1) big[bigChild] = 0;
-    if (!keep) updateSubtree(u, p, -1);
+    if (bigchild != -1) dsu(bigchild, u, 1), big[bigchild] = 1;
+    add(u, p, 1);
+    ans[u] = cur; // <- record the answer for u's subtree here
+    if (bigchild != -1) big[bigchild] = 0;
+    if (keep == 0) add(u, p, -1);
 }
 
-int main() {
-    ios_base::sync_with_stdio(false);
-    cin.tie(NULL);
-
+// Standard problem: for every node, how many distinct colours appear in its subtree
+void solve() {
     int n;
-    cin >> n ;
-
-    vector<int> original_colors(n);
-    for (int i = 1; i <= n; i++) {
-        cin >> col[i];
-        original_colors[i - 1] = col[i];
-    }
-
-    // --- Coordinate Compression ---
-    sort(original_colors.begin(), original_colors.end());
-    original_colors.erase(unique(original_colors.begin(), original_colors.end()), original_colors.end());
-    
-    for (int i = 1; i <= n; i++) {
-        col[i] = lower_bound(original_colors.begin(), original_colors.end(), col[i]) - original_colors.begin() + 1;
-    }
-
-    for (int i = 0; i < n - 1; i++) {
-        int u, v;
+    cin >> n;
+    for (int i = 1; i <= n; i++) cin >> col[i];
+    for (int i = 1, u, v; i < n; i++) {
         cin >> u >> v;
-        adj[u].push_back(v);
-        adj[v].push_back(u);
+        g[u].push_back(v), g[v].push_back(u);
     }
-
-    dfs_sz(1, 0);
-
-    dfs_dsu(1, 0, 1);
-
-    for (int i = 1; i <= n; i++) {
-        cout << ans[i] << (i == n ? "" : " ");
-    }
-    cout << "\n";
-
-    return 0;
+    dfs(1, 0);
+    dsu(1, 0, 1);
+    for (int i = 1; i <= n; i++) cout << ans[i] << " \n"[i == n];
 }
