@@ -1,3 +1,4 @@
+#include "../../core.h"
 /*
     [1] Definition
     Persistent Segment Tree with Lazy Propagation maintaining multiple versions
@@ -16,34 +17,33 @@
     Default value (0) is the identity for sum queries.
 */
 
-#include "../../core.h"
-
 // 1-based indexing
-template <typename T = int>
-class PersistentSegTree {
-   private:
-    // Tree node
+template <typename T = int> class PST {
+  private:
     struct Node {
         T val, lazy;
         Node *l, *r;
 
-        Node() : val(0), lazy(0), l(this), r(this) {}
+        Node() : val(0), lazy(0), l(this), r(this) {
+        }
 
-        Node(T v) : val(v), lazy(0), l(DEFAULT), r(DEFAULT) {}
+        Node(T v) : val(v), lazy(0), l(DEFAULT), r(DEFAULT) {
+        }
 
-        Node(const Node& o) : val(o.val), lazy(o.lazy), l(o.l), r(o.r) {}
+        Node(const Node &o) : val(o.val), lazy(o.lazy), l(o.l), r(o.r) {
+        }
     };
 
-    static Node* DEFAULT;
+    static Node *DEFAULT;
 
     int N;
-    vector<Node*> roots;  // Root pointers for each version
+    vector<Node *> roots; // Root pointers for each version
 
     // Build initial version recursively
-    Node* build(int L, int R, vector<int>& nums) {
+    Node *build(int L, int R, vector<int> &nums) {
         if (L == R) return new Node(nums[L - 1]);
         int M = (L + R) >> 1;
-        Node* node = new Node();
+        Node *node = new Node();
         node->l = build(L, M, nums);
         node->r = build(M + 1, R, nums);
         node->val = node->l->val + node->r->val;
@@ -51,7 +51,7 @@ class PersistentSegTree {
     }
 
     // Push lazy tag down to children by cloning them
-    void push(Node* node, int L, int R) {
+    void push(Node *node, int L, int R) {
         if (node->lazy && L < R) {
             int M = (L + R) >> 1;
             node->l = new Node(*node->l);
@@ -65,7 +65,7 @@ class PersistentSegTree {
     }
 
     // Query range [i, j] on a version
-    T query(Node* node, int L, int R, int i, int j) {
+    T query(Node *node, int L, int R, int i, int j) {
         if (j < L || R < i) return 0;
         if (i <= L && R <= j) return node->val;
         push(node, L, R);
@@ -74,9 +74,9 @@ class PersistentSegTree {
     }
 
     // Create new path with updated range [i, j]
-    Node* update(Node* cur, int L, int R, int i, int j, T v) {
+    Node *update(Node *cur, int L, int R, int i, int j, T v) {
         if (j < L || R < i) return cur;
-        Node* node = new Node(*cur);
+        Node *node = new Node(*cur);
         if (i <= L && R <= j) {
             node->lazy += v;
             node->val += v * (R - L + 1);
@@ -90,8 +90,8 @@ class PersistentSegTree {
         return node;
     }
 
-   public:
-    PersistentSegTree(int n, vector<int> nums) : N(n) {
+  public:
+    PST(int n, vector<int> nums) : N(n) {
         if (DEFAULT == nullptr) {
             DEFAULT = new Node();
             DEFAULT->l = DEFAULT->r = DEFAULT;
@@ -100,20 +100,29 @@ class PersistentSegTree {
     }
 
     // Range update on a specific version
-    void update(int l, int r, int v) { roots.push_back(update(roots.back(), 1, N, l, r, v)); }
+    void update(int l, int r, int v) {
+        roots.push_back(update(roots.back(), 1, N, l, r, v));
+    }
 
     // Overwrite to update specific version
-    void update(int l, int r, int v, int version) { roots.push_back(update(roots[version], 1, N, l, r, v)); }
+    void update(int l, int r, int v, int version) {
+        roots.push_back(update(roots[version], 1, N, l, r, v));
+    }
 
     // normal query [l , r]
-    T query(int l, int r) { return query(roots.back(), 1, N, l, r); }
+    T query(int l, int r) {
+        return query(roots.back(), 1, N, l, r);
+    }
 
     // Query version for range [l, r]
-    T query(int ver, int l, int r) { return query(roots[ver], 1, N, l, r); }
+    T query(int ver, int l, int r) {
+        return query(roots[ver], 1, N, l, r);
+    }
 
     // resize root
-    void reSize(int k) { roots.resize(k + 1); }
+    void reSize(int k) {
+        roots.resize(k + 1);
+    }
 };
 
-template <typename T>
-typename PersistentSegTree<T>::Node* PersistentSegTree<T>::DEFAULT = nullptr;
+template <typename T> typename PST<T>::Node *PST<T>::DEFAULT = nullptr;
