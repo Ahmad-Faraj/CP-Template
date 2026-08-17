@@ -90,7 +90,7 @@ vector<string> duval_factorization(string const& s) {
 // Minimal Rotation via Duval's Algorithm (Alternative to Booth's)
 // Concatenate s + s and run Duval's. The last Lyndon factor boundary found 
 // before or at index N gives the start of the lexicographically minimal rotation!
-// Many Grandmasters prefer Duval's because it's cleaner to implement and requires O(1) space.
+// it's cleaner to implement and requires O(1) space.
 int duval_min_rotation_index(string s) {
     int n = s.size();
     s += s;

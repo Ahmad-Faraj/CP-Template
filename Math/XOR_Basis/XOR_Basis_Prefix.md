@@ -1,4 +1,4 @@
-# Prefix XOR Basis (Range Queries) - Grandmaster Notes
+# Prefix XOR Basis (Range Queries) 
 
 A specialized linear algebra structure. Instead of maintaining a static basis, we maintain the "latest possible index" (`pos`) for each bit in the basis. This allows us to answer offline and online queries of the form: "What is the maximum XOR subset in the range $A[L \dots R]$?"
 
@@ -147,7 +147,7 @@ int min_xor_bounded(int min_val, int max_val, int l, int start = 0) const {
 ```
 ---
 
-## 2. Grandmaster CP Applications
+## 2. CP Applications
 
 ### **A. Offline Subsegment Maximum XOR $[L, R]$**
 **Problem:** Given an array $A$ of size $N$ and $Q$ queries of the form $(L, R)$, find the maximum XOR subset inside $A[L \dots R]$. 
