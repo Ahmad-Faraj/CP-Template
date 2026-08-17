@@ -1,4 +1,4 @@
-# 3. Nim and its Variations (Grandmaster Level)
+# 3. Nim and its Variations
 
 Nim is the atomic unit of combinatorial game theory. A massive portion of CP Game Theory problems are simply disguised versions of Nim.
 
@@ -31,7 +31,7 @@ bool misere_nim_winner(const vector<int>& piles) {
 
 ## 3.2 Staircase Nim (Extremely Common in CP)
 **Game Rules:** There are stones on steps $1$ to $N$ of a staircase. A move consists of moving $K > 0$ stones from step $i$ to step $i-1$. Stones moved from step $1$ fall into step $0$ and are removed from the game.
-- **Grandmaster Trick:** Only look at the stones on the **ODD numbered steps**.
+- **Trick:** Only look at the stones on the **ODD numbered steps**.
 - **Proof:** Treat stones on odd steps as regular Nim piles. Moving stones from Odd to Even is like removing them from a Nim pile. Moving stones from Even to Odd increases an Odd pile. However, if Player 1 moves stones from Even to Odd, Player 2 can just immediately push those exact same stones from the new Odd step down to the next Even step! The Even steps act as "garbage/buffer" spaces that don't affect the true game state.
 - **Formula:** XOR sum of all pile sizes on indices $1, 3, 5, \dots$
 
@@ -191,7 +191,7 @@ pair<int, int> find_nim_cycle(const vector<int>& arr) {
 
 ## 3.10 Non-Decreasing Nim (Sorted Piles)
 **Game Rules:** A Nim game where the piles must ALWAYS remain sorted in non-decreasing order: $A_1 \le A_2 \le \dots \le A_n$. A move consists of decreasing $A_i$, as long as $A_{i-1} \le A_i$ is maintained.
-- **The Grandmaster Reduction:** Transform the array into a difference array! Let $D_i = A_i - A_{i-1}$.
+- Transform the array into a difference array! Let $D_i = A_i - A_{i-1}$.
 - When you decrease $A_i$ by $X$, you:
   - Decrease $D_i$ by $X$.
   - Increase $D_{i+1}$ by $X$.

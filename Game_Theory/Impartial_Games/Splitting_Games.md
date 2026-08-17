@@ -1,4 +1,4 @@
-# 5. Splitting Games & Octal Games (Grandmaster Level)
+# 5. Splitting Games & Octal Games
 
 Splitting Games occur when a single move takes one component (pile/row) and splits it into two or more independent components. The Grundy value of the new state is the XOR sum of the Grundy values of the resulting components.
 

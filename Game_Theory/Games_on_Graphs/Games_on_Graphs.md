@@ -1,4 +1,4 @@
-# 7. General Games on Graphs (Grandmaster Level)
+# 7. General Games on Graphs
 
 When games are played by moving a single token on a directed graph, we cannot always use Sprague-Grundy (especially if the graph has cycles, meaning draws are possible, or if the game is Partisan).
 

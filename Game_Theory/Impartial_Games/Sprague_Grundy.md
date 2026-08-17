@@ -1,4 +1,4 @@
-# 1. Fundamentals & Sprague-Grundy Theorem (Grandmaster Level)
+# 1. Fundamentals & Sprague-Grundy Theorem
 
 ## Impartial vs Partisan Games
 - **Impartial Games:** The set of valid moves from any given position is exactly the same for both players. (CP almost exclusively deals with impartial games).

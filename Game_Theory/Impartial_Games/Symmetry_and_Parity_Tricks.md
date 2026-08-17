@@ -1,4 +1,4 @@
-# General Game Theory Heuristics (Grandmaster Level)
+# General Game Theory Heuristics
 
 While Sprague-Grundy handles impartial games under normal play perfectly, many Codeforces Div. 1 C/D/E problems cannot be solved with direct SG DP due to state explosion ($10^5$ to $10^9$ states). Instead, they rely on profound mathematical observations, strategy stealing, parity invariants, or mirroring.
 
@@ -35,7 +35,7 @@ bool parity_of_spaces_game(long long empty_cells) {
 
 ## 4. The Bipartite Matching Trick (Tartan Theorem)
 A token is on a starting vertex $S$ of an undirected graph. Players take turns moving it to an adjacent, strictly UNVISITED vertex. The last player to move wins.
-- **The Grandmaster Reduction:** Find the Maximum Bipartite Matching of the graph.
+- Find the Maximum Bipartite Matching of the graph.
 - **Winning Condition:** If the starting vertex $S$ is strictly required for **ALL** maximum matchings (i.e., removing $S$ strictly decreases the maximum matching size), then the **First Player Wins**. 
   - *Strategy:* The First Player just moves the token along the matching edge. Since $S$ is essential, the new vertex $V$ must NOT be essential, so the Second Player is forced to move to another essential vertex, allowing the First Player to use the matching edge again.
 - **Losing Condition:** If there exists at least one maximum matching that does NOT use $S$, the **Second Player Wins**.
