@@ -3,118 +3,81 @@
 /*
  * Topic: DP - Li Chao Tree
  * Description: A data structure used to maintain a set of lines or line segments
- * and query the minimum/maximum value among them at any given x.
- * Useful for optimizing DP transitions of the form dp[i] = min/max(m[j] * x[i] + b[j]).
- * Input: Lines / line segments to insert, and x-coordinates to query.
- * Output: Minimum/maximum y-value at queried x-coordinate.
+ * and query the minimum value among them at any given x.
+ * 
+ * To convert to a MAXIMUM query Li Chao Tree:
+ * 1. Change all 'inf' defaults to '-inf' in node creation and null returns.
+ * 2. Change '<' to '>' in both `eval()` comparisons inside `add_segment`.
+ * 3. Change `min` to `max` in the `query` function.
  */
 
 const ll inf = 2e18;
 
-struct Line {
-    ll m, c;
-    ll eval(ll x) { return m * x + c; }
-};
-struct node {
-    Line line;
-    node *left = nullptr;
-    node *right = nullptr;
-    node(Line line) : line(line) {}
-    void add_segment(Line nw, int l, int r, int L, int R) {
-        if (l > r || r < L || l > R) return;
-        int m = (l + 1 == r ? l : (l + r) / 2);
-        if (l >= L and r <= R) {
-            bool lef = nw.eval(l) < line.eval(l);
-            bool mid = nw.eval(m) < line.eval(m);
-            if (mid) swap(line, nw);
+struct LiChaoTree {
+    struct node {
+        ll m, c;
+        node *left = nullptr;
+        node *right = nullptr;
+        node(ll m, ll c) : m(m), c(c) {}
+        ll eval(ll x) { return m * x + c; }
+    };
+
+    int L, R;
+    node *root;
+
+    LiChaoTree(int L = -2e9, int R = 2e9) : L(L), R(R) { 
+        root = new node(0, inf); // change inf to -inf for max
+    }
+
+    void add_segment(ll nw_m, ll nw_c, int l, int r, int L_query, int R_query, node*& cur) {
+        if (l > r || r < L_query || l > R_query) return;
+        if (cur == nullptr) cur = new node(0, inf); // change inf to -inf for max
+        int mid = l + (r - l) / 2; 
+        
+        if (l >= L_query && r <= R_query) {
+            bool lef = (nw_m * l + nw_c) < cur->eval(l); // change < to > for max
+            bool m_mid = (nw_m * mid + nw_c) < cur->eval(mid); // change < to > for max
+            if (m_mid) {
+                swap(cur->m, nw_m);
+                swap(cur->c, nw_c);
+            }
             if (l == r) return;
-            if (lef != mid) {
-                if (left == nullptr)
-                    left = new node(nw);
-                else
-                    left->add_segment(nw, l, m, L, R);
+            if (lef != m_mid) {
+                add_segment(nw_m, nw_c, l, mid, L_query, R_query, cur->left);
             } else {
-                if (right == nullptr)
-                    right = new node(nw);
-                else
-                    right->add_segment(nw, m + 1, r, L, R);
+                add_segment(nw_m, nw_c, mid + 1, r, L_query, R_query, cur->right);
             }
             return;
         }
-        if (max(l, L) <= min(m, R)) {
-            if (left == nullptr) left = new node({0, inf});
-            left->add_segment(nw, l, m, L, R);
+        
+        if (max(l, L_query) <= min(mid, R_query)) {
+            add_segment(nw_m, nw_c, l, mid, L_query, R_query, cur->left);
         }
-        if (max(m + 1, L) <= min(r, R)) {
-            if (right == nullptr) right = new node({0, inf});
-            right->add_segment(nw, m + 1, r, L, R);
+        if (max(mid + 1, L_query) <= min(r, R_query)) {
+            add_segment(nw_m, nw_c, mid + 1, r, L_query, R_query, cur->right);
         }
     }
-    ll query_segment(ll x, int l, int r, int L, int R) {
-        if (l > r || r < L || l > R) return inf;
-        int m = (l + 1 == r ? l : (l + r) / 2);
-        if (l >= L and r <= R) {
-            ll ans = line.eval(x);
-            if (l < r) {
-                if (x <= m && left != nullptr) ans = min(ans, left->query_segment(x, l, m, L, R));
-                if (x > m && right != nullptr) ans = min(ans, right->query_segment(x, m + 1, r, L, R));
-            }
-            return ans;
-        }
-        ll ans = inf;
-        if (max(l, L) <= min(m, R)) {
-            if (left == nullptr) left = new node({0, inf});
-            ans = min(ans, left->query_segment(x, l, m, L, R));
-        }
-        if (max(m + 1, L) <= min(r, R)) {
-            if (right == nullptr) right = new node({0, inf});
-            ans = min(ans, right->query_segment(x, m + 1, r, L, R));
-        }
+
+    void add_line(ll m, ll c) { 
+        add_segment(m, c, L, R, L, R, root); 
+    }
+
+    // y = mx + c restricted to segment [l_query, r_query]
+    void add_segment(ll m, ll c, int l_query, int r_query) { 
+        add_segment(m, c, L, R, l_query, r_query, root); 
+    }
+
+    ll query(ll x, int l, int r, node* cur) {
+        if (cur == nullptr) return inf; // change inf to -inf for max
+        ll ans = cur->eval(x);
+        if (l == r) return ans;
+        int mid = l + (r - l) / 2;
+        if (x <= mid) ans = min(ans, query(x, l, mid, cur->left)); // change min to max
+        else ans = min(ans, query(x, mid + 1, r, cur->right)); // change min to max
         return ans;
     }
-};
 
-struct LiChaoTree {
-    int L, R;
-    node *root;
-    LiChaoTree() : L(numeric_limits<int>::min() / 2), R(numeric_limits<int>::max() / 2), root(nullptr) {}
-    LiChaoTree(int L, int R) : L(L), R(R) { root = new node({0, inf}); }
-    void add_line(Line line) { root->add_segment(line, L, R, L, R); }
-    // y = mx + b: x in [l, r]
-    void add_segment(Line line, int l, int r) { root->add_segment(line, L, R, l, r); }
-    ll query(ll x) { return root->query_segment(x, L, R, L, R); }
-    ll query_segment(ll x, int l, int r) { return root->query_segment(x, l, r, L, R); }
+    ll query(ll x) { 
+        return query(x, L, R, root); 
+    }
 };
-
-int32_t main() {
-    ios_base::sync_with_stdio(0);
-    cin.tie(0);
-    LiChaoTree t = LiChaoTree((int)-1e9, (int)1e9);
-    int n, q;
-    cin >> n >> q;
-    for (int i = 0; i < n; i++) {
-        ll l, r, a, b;
-        cin >> l >> r >> a >> b;
-        r--;
-        t.add_segment({a, b}, l, r);
-    }
-    while (q--) {
-        int ty;
-        cin >> ty;
-        if (ty == 0) {
-            ll l, r, a, b;
-            cin >> l >> r >> a >> b;
-            r--;
-            t.add_segment({a, b}, l, r);
-        } else {
-            ll x;
-            cin >> x;
-            ll ans = t.query(x);
-            if (ans >= inf)
-                cout << "INFINITY\n";
-            else
-                cout << ans << '\n';
-        }
-    }
-    return 0;
-}
