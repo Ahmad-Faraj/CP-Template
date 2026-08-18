@@ -30,7 +30,7 @@ A directory subdivides only once it passes ~15 files. Everything is `Title_Snake
 | [Strings](Strings/) | ■ | 18 | `Hashing` `Aho_Corasick` |
 | [Data_Structure](Data_Structure/) | ■ | 15 | |
 | [DP](DP/) | ■ | 12 | |
-| [Tree](Tree/) | ■ | 9 | |
+| [Tree](Tree/) | ■ | 10 | |
 | [Graph](Graph/) | ■ | 19 | `Shortest_Path` `Connectivity` `Flow_And_Matching` |
 | [Geometry](Geometry/) | ■ | 6 | |
 | [Math](Math/) | ■ | 30 | `Number_Theory` `Combinatorics` `Polynomial` `Linear_Algebra` `Diophantine` `Calculus` |
@@ -122,6 +122,7 @@ Per-file listings appear here as each directory is normalized.
 | [Small_To_Large.cpp](Tree/Small_To_Large.cpp) | variant | the same, when you want the shortest code that works |
 | [Diameter.cpp](Tree/Diameter.cpp) | | longest path, tree centre or radius |
 | [Tree_Isomorphism.cpp](Tree/Tree_Isomorphism.cpp) | | "same shape?", counting distinct subtree shapes |
+| [Rerooting.cpp](Tree/Rerooting.cpp) | ⚠ | "for each node, the answer if the tree were rooted there" — one pass, not n |
 
 `HLD.cpp` covers paths, `Euler_Tour.cpp` covers subtrees. Reach for `LCT.cpp` only when the
 tree's shape actually changes — it is the heaviest file here.
@@ -256,12 +257,14 @@ particular `norm` is the length *squared*, which is the usual misread.
 connectivity. Reach for `Bridges.cpp` for critical edges and `Articulation_Points.cpp` for critical
 vertices; the two are easy to confuse and solve different questions.
 
-⚠ `Interval_Set.cpp` and `Expression_Parsing.cpp` are unproven: tier-5 sources, verified locally
-against brute-force references but not yet by a judge. Ready-to-submit files sit in `verify/`.
+⚠ `Interval_Set.cpp`, `Expression_Parsing.cpp` and `Rerooting.cpp` are unproven: tier-5 sources,
+verified locally against brute-force references but not yet by a judge. Ready-to-submit files sit in
+`verify/`. `Rerooting.cpp` is the strongest case of the three - no rerooting implementation exists in
+`other/` or in any of the four reference libraries, so it was written from the standard formulation.
 
-`Slope_Trick.cpp` is the only other template here not derived from the team's repos — no source in
-this codebase or the reference libraries has it. It was therefore submitted to a judge to prove
-it: **CSES 2132 "Increasing Array II", ACCEPTED on 2026-08-17**, all 8 tests, slowest 0.07 s.
+`Slope_Trick.cpp` was in exactly that position — no source in this codebase or the reference
+libraries has it either — and is the worked example of how a flag comes off. It was submitted to a
+judge to prove it: **CSES 2132 "Increasing Array II", ACCEPTED on 2026-08-17**, all 8 tests, slowest 0.07 s.
 The submitted file embeds the template byte for byte; it is kept in `verify/Slope_Trick/`.
 
 ## Layout
