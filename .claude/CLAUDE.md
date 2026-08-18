@@ -26,6 +26,30 @@ Trusted sources, in order of preference:
 2. Teammates — `HamzaHassanain/CP_Templates`, `abowahbaz/CP-Templates`
 3. `Mazen-Ghanaym/CP-Templates`, `ShahjalalShohag/code-library`
 4. cp-algorithms.com, USACO Guide
+5. Other established public libraries — KACTL, AtCoder Library, youkn0wwho.academy,
+   and Codeforces blogs by a recognised author
+
+Tier 5 exists because ECPC/ACPC reaches topics the first four tiers do not cover. Use it
+only when nothing closer has the algorithm, and never as a shortcut past reading `other/`
+and `refs/` first.
+
+**Anything from tier 4 or 5, or written from a description rather than copied from code,
+is UNPROVEN until it earns a verdict.** Unproven means:
+
+- it carries `⚠` in the README and a provenance note in `CLAUDE.md` naming the exact source
+- it is tested against a brute force locally, as everything is, AND
+- a submission is prepared under `verify/<Template>/` — `test_template.cpp` embedding the
+  template byte for byte plus a `main()`, and `problem.md` naming the judge problem
+
+It stops being unproven when that submission is ACCEPTED. Then the `⚠` comes off and the
+provenance note records the judge, problem and date. `DP/Slope_Trick.cpp` is the worked
+example: authored, flagged, submitted to CSES 2132, accepted, unflagged.
+
+`python verify/check_verbatim.py` confirms each submission still embeds its template
+byte for byte. Run it after touching any template that has one.
+
+A local brute force is not a substitute for the judge. It shares your misunderstanding of
+the problem; the judge does not. It also cannot establish the time bound.
 
 ## `other/` is frozen
 
