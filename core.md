@@ -27,7 +27,6 @@ Add the following configuration in your VS Code settings to execute C++ code and
 ## Main Templete
 
 ```cpp
-// وَأَن لَّيْسَ لِلْإِنسَانِ إِلَّا مَا سَعَىٰ (39) وَأَنَّ سَعْيَهُ سَوْفَ يُرَىٰ (40) ثُمَّ يُجْزَاهُ الْجَزَاءَ الْأَوْفَىٰ (41)
 #include <bits/stdc++.h>
 using namespace std;
     
