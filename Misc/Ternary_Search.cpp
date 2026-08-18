@@ -1,9 +1,9 @@
 // Ternary Search: the minimum or maximum of a unimodal function, by discarding a third of the range each step.
-// Use when: the value falls then rises (or rises then falls) - "minimise this cost", geometry distances, tuning a parameter.
+// Use when: the value falls then rises (or the reverse) - "minimise this cost", distances, tuning a parameter.
 // Handles: integer and real domains, minimising or maximising, and flat stretches in the integer version.
 // Time: O(log range) evaluations for integers, O(iterations) for reals
 // Indexing: the integer search is inclusive [lo, hi]
-// Note: the function MUST be unimodal. Given two separate dips this returns one of them silently - it cannot detect that.
+// Note: the function MUST be unimodal. Given two separate dips it returns one silently - it cannot detect that.
 
 #include <bits/stdc++.h>
 using namespace std;
