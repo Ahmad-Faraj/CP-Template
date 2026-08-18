@@ -1,0 +1,81 @@
+// DSU Weighted: union-find that also stores each node's value relative to its component's root.
+// Use when: constraints "a[v] - a[u] = w" arrive online and you must spot the first contradiction, or online bipartite.
+// Handles: exact differences, and differences mod M via the Mod parameter (M = 2 is the parity / bipartite case).
+// Time: find / unite / diff all O(alpha(n)) amortized
+// Indexing: 1-based by default; use DSU_Weighted<ll, 0> for 0-based
+// Note: diff(u, v) means nothing unless same(u, v) - it returns 0 for unrelated nodes, which is not an answer.
+
+#include <bits/stdc++.h>
+using namespace std;
+using ll = long long;
+
+// Mod = 0 keeps exact integer differences. Any other Mod does the arithmetic in that ring, which is
+// what parity needs: union by size flips the sign of w, and -1 == 1 only mod 2.
+template <typename T = ll, int Base = 1, ll Mod = 0> struct DSU_Weighted {
+    int n, components;
+    vector<int> parent, comp_size;
+    vector<T> weight; // this node's value minus its parent's
+
+    DSU_Weighted(int n) : n(n), components(n), parent(n + 1), comp_size(n + 1, 1), weight(n + 1, T()) {
+        iota(parent.begin(), parent.end(), 0);
+    }
+
+    static T norm(T x) { return Mod ? (x % Mod + Mod) % Mod : x; } // no-op unless a modulus was asked for
+
+    int find(int u) { // root of u's component; weight[u] becomes u's value relative to that root
+        if (parent[u] == u) return u;
+        int root = find(parent[u]);
+        weight[u] = norm(weight[u] + weight[parent[u]]);
+        return parent[u] = root;
+    }
+
+    bool same(int u, int v) { return find(u) == find(v); }
+
+    T diff(int u, int v) { // a[v] - a[u], valid only when same(u, v)
+        find(u), find(v);
+        return norm(weight[v] - weight[u]);
+    }
+
+    // record a[v] - a[u] = w; false means it contradicts what is known already, and nothing changes
+    bool unite(int u, int v, T w) {
+        w = norm(w);
+        int ru = find(u), rv = find(v);
+        if (ru == rv) return norm(weight[v] - weight[u]) == w;
+        if (comp_size[ru] > comp_size[rv]) { // by size, so the tree is shallow even before compression
+            swap(ru, rv);
+            swap(u, v);
+            w = norm(-w);
+        }
+        parent[ru] = rv;
+        weight[ru] = norm(weight[v] - weight[u] - w);
+        comp_size[rv] += comp_size[ru];
+        components--;
+        return true;
+    }
+
+    int size(int u) { return comp_size[find(u)]; } // how many nodes share u's component
+
+    int count_components() { return components; }
+};
+
+using DSU_Parity = DSU_Weighted<ll, 1, 2>; // "u and v are on opposite sides" - online bipartiteness
+
+// Standard problem: n nodes, q lines. "! u v w" asserts a[v] - a[u] = w, "? u v" asks for a[v] - a[u].
+void solve() {
+    int n, q;
+    cin >> n >> q;
+    DSU_Weighted<ll> dsu(n);
+    while (q--) {
+        char type;
+        int u, v;
+        cin >> type >> u >> v;
+        if (type == '!') {
+            ll w;
+            cin >> w;
+            cout << (dsu.unite(u, v, w) ? "OK" : "CONTRADICTION") << '\n';
+        } else if (dsu.same(u, v))
+            cout << dsu.diff(u, v) << '\n';
+        else
+            cout << "UNKNOWN\n";
+    }
+}

@@ -26,14 +26,14 @@ A directory subdivides only once it passes ~15 files. Everything is `Title_Snake
 
 | Directory | | Count | Subfolders |
 | --- | --- | --- | --- |
-| [Range_Query](Range_Query/) | ■ | 23 | `Segment_Tree` |
+| [Range_Query](Range_Query/) | ■ | 24 | `Segment_Tree` |
 | [Strings](Strings/) | ■ | 18 | `Hashing` `Aho_Corasick` |
-| [Data_Structure](Data_Structure/) | ■ | 15 | |
+| [Data_Structure](Data_Structure/) | ■ | 16 | |
 | [DP](DP/) | ■ | 12 | |
-| [Tree](Tree/) | ■ | 10 | |
-| [Graph](Graph/) | ■ | 19 | `Shortest_Path` `Connectivity` `Flow_And_Matching` |
+| [Tree](Tree/) | ■ | 11 | |
+| [Graph](Graph/) | ■ | 20 | `Shortest_Path` `Connectivity` `Flow_And_Matching` |
 | [Geometry](Geometry/) | ■ | 6 | |
-| [Math](Math/) | ■ | 30 | `Number_Theory` `Combinatorics` `Polynomial` `Linear_Algebra` `Diophantine` `Calculus` |
+| [Math](Math/) | ■ | 31 | `Number_Theory` `Combinatorics` `Polynomial` `Linear_Algebra` `Diophantine` `Calculus` |
 | [Game_Theory](Game_Theory/) | ■ | 5 | |
 | [Misc](Misc/) | ■ | 6 | |
 
@@ -52,6 +52,7 @@ Per-file listings appear here as each directory is normalized.
 | [Segment_Tree_Persistent.cpp](Range_Query/Segment_Tree/Segment_Tree_Persistent.cpp) | variant | read the array as it was k updates ago |
 | [Segment_Tree_Lazy_Persistent.cpp](Range_Query/Segment_Tree/Segment_Tree_Lazy_Persistent.cpp) | variant | the same, with range updates and rollback |
 | [Segment_Tree_Beats.cpp](Range_Query/Segment_Tree/Segment_Tree_Beats.cpp) | variant | range `chmin`/`chmax` alongside sum queries |
+| [Segment_Tree_Merging.cpp](Range_Query/Segment_Tree/Segment_Tree_Merging.cpp) | variant | one tree per vertex, merged upward — subtree multisets |
 | [Fenwick_Tree.cpp](Range_Query/Fenwick_Tree.cpp) | | prefix/range sums, inversions, prefix-sum search |
 | [Fenwick_Tree_Range.cpp](Range_Query/Fenwick_Tree_Range.cpp) | variant | range add **and** range sum together |
 | [Prefix_Sum_2D.cpp](Range_Query/Prefix_Sum_2D.cpp) | | rectangle sums on a **fixed** grid, O(1) each |
@@ -94,6 +95,7 @@ Per-file listings appear here as each directory is normalized.
 | File | | Use when |
 | --- | --- | --- |
 | [DSU.cpp](Data_Structure/DSU.cpp) | **Main** | connectivity, Kruskal, "how many components", "how big is mine" |
+| [DSU_Weighted.cpp](Data_Structure/DSU_Weighted.cpp) | variant | online "a[v] - a[u] = w" constraints; parity / bipartite |
 | [DSU_Rollback.cpp](Data_Structure/DSU_Rollback.cpp) | variant | "try this edge, then take it back" — no path compression |
 | [MEX.cpp](Data_Structure/MEX.cpp) | **Main** | smallest absent number; Sprague-Grundy values |
 | [MEX_With_Updates.cpp](Data_Structure/MEX_With_Updates.cpp) | variant | `a[i] = v` then report the mex, repeatedly |
@@ -122,6 +124,7 @@ Per-file listings appear here as each directory is normalized.
 | [Small_To_Large.cpp](Tree/Small_To_Large.cpp) | variant | the same, when you want the shortest code that works |
 | [Diameter.cpp](Tree/Diameter.cpp) | | longest path, tree centre or radius |
 | [Tree_Isomorphism.cpp](Tree/Tree_Isomorphism.cpp) | | "same shape?", counting distinct subtree shapes |
+| [Virtual_Tree.cpp](Tree/Virtual_Tree.cpp) | | many queries each marking k nodes, with sum of k bounded |
 | [Rerooting.cpp](Tree/Rerooting.cpp) | ⚠ | "for each node, the answer if the tree were rooted there" — one pass, not n |
 
 `HLD.cpp` covers paths, `Euler_Tour.cpp` covers subtrees. Reach for `LCT.cpp` only when the
@@ -189,6 +192,7 @@ All of `Math/` is done.
 | [Combinatorics/Binomial_Coefficients.cpp](Math/Combinatorics/Binomial_Coefficients.cpp) | **Main** | nCr / nPr mod a prime, stars and bars, derangements, Lucas |
 | [Combinatorics/Binomial_Coefficients_Any_Mod.cpp](Math/Combinatorics/Binomial_Coefficients_Any_Mod.cpp) | variant | the modulus is **not** prime, so factorials will not invert |
 | [Combinatorics/Catalan.cpp](Math/Combinatorics/Catalan.cpp) | | bracket sequences, binary trees, triangulations |
+| [Polynomial/Lagrange_Interpolation.cpp](Math/Polynomial/Lagrange_Interpolation.cpp) | | "sum of i^k up to a huge n"; any DP known to be polynomial |
 | [Combinatorics/Permutations.cpp](Math/Combinatorics/Permutations.cpp) | | k shuffles, cycle decomposition, order, sign |
 | [Diophantine/LDE.cpp](Math/Diophantine/LDE.cpp) | **Main** | `ax + by = c`: one solution, all of them, or how many in a box |
 | [Diophantine/LDE_N_Variables.cpp](Math/Diophantine/LDE_N_Variables.cpp) | variant | more than two coefficients, any integer solution |
@@ -245,6 +249,7 @@ particular `norm` is the length *squared*, which is the usual misread.
 | [Connectivity/Bridges_Online.cpp](Graph/Connectivity/Bridges_Online.cpp) | variant | edges arrive as queries and each asks for the bridge count |
 | [Connectivity/Articulation_Points.cpp](Graph/Connectivity/Articulation_Points.cpp) | | critical **vertices**, and how many pieces removing one leaves |
 | [MST_Kruskal.cpp](Graph/MST_Kruskal.cpp) | | connect everything as cheaply as possible; also maximum spanning |
+| [Kruskal_Reconstruction_Tree.cpp](Graph/Kruskal_Reconstruction_Tree.cpp) | | "reachable using edges <= w"; minimax edge on a path |
 | [2_SAT.cpp](Graph/2_SAT.cpp) | | every constraint pairs two things with two states each |
 | [Strong_Orientation.cpp](Graph/Strong_Orientation.cpp) | | make every edge one-way with the fewest components forced |
 | [Flow_And_Matching/Dinic.cpp](Graph/Flow_And_Matching/Dinic.cpp) | **Main** | maximum flow, minimum cut, disjoint paths |
