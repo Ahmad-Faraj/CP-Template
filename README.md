@@ -1,6 +1,6 @@
 # CP-Template
 
-Contest reference library. 134 templates. Grab, paste, delete `solve()`, go.
+Contest reference library. 135 templates. Grab, paste, delete `solve()`, go.
 
 Every file opens with a fixed header — what it does, **when to reach for it**, what it
 handles, complexity, indexing, gotchas. Read the header, not the code. Nothing in this
@@ -28,7 +28,7 @@ A directory subdivides only once it passes ~15 files. Everything is `Title_Snake
 | --- | --- | --- | --- |
 | [Range_Query](Range_Query/) | ■ | 22 | `Segment_Tree` |
 | [Strings](Strings/) | ■ | 17 | `Hashing` `Aho_Corasick` |
-| [Data_Structure](Data_Structure/) | ■ | 13 | |
+| [Data_Structure](Data_Structure/) | ■ | 14 | |
 | [DP](DP/) | ■ | 12 | |
 | [Tree](Tree/) | ■ | 9 | |
 | [Graph](Graph/) | ■ | 19 | `Shortest_Path` `Connectivity` `Flow_And_Matching` |
@@ -103,6 +103,7 @@ Per-file listings appear here as each directory is normalized.
 | [Binary_Trie.cpp](Data_Structure/Binary_Trie.cpp) | | max XOR of a pair; XOR queries over a changing set |
 | [Monotonic_Queue.cpp](Data_Structure/Monotonic_Queue.cpp) | | sliding-window maximum |
 | [Monotonic_Stack.cpp](Data_Structure/Monotonic_Stack.cpp) | | next greater element, largest rectangle in a histogram |
+| [Interval_Set.cpp](Data_Structure/Interval_Set.cpp) | ⚠ | "set a[l..r] all to v" repeatedly; runs collapse |
 | [Cartesian_Tree.cpp](Data_Structure/Cartesian_Tree.cpp) | | range minimum as an LCA; divide and conquer over minima |
 
 ### Tree
@@ -247,7 +248,10 @@ particular `norm` is the length *squared*, which is the usual misread.
 connectivity. Reach for `Bridges.cpp` for critical edges and `Articulation_Points.cpp` for critical
 vertices; the two are easy to confuse and solve different questions.
 
-`Slope_Trick.cpp` is the only template here not derived from the team's repos — no source in
+⚠ `Interval_Set.cpp` is unproven: tier-5 source, verified locally against a plain array but not yet
+by a judge. A ready-to-submit file sits in `verify/Interval_Set/`.
+
+`Slope_Trick.cpp` is the only other template here not derived from the team's repos — no source in
 this codebase or the reference libraries has it. It was therefore submitted to a judge to prove
 it: **CSES 2132 "Increasing Array II", ACCEPTED on 2026-08-17**, all 8 tests, slowest 0.07 s.
 The submitted file embeds the template byte for byte; it is kept in `verify/Slope_Trick/`.
