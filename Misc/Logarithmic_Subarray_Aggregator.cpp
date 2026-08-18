@@ -5,6 +5,12 @@
 #include "../core.h"
 using namespace std;
 
+/*
+Given a sequence of integers a1, ..., an and q queries x1, ..., xq on it.
+For each query xi you have to count the number of pairs (l, r) such that 1 ≤ l ≤ r ≤ n and gcd(al, al + 1, ..., ar) = xi.
+is a greatest common divisor of v1, v2, ..., vn, that is equal to a largest positive integer that divides all vi.
+*/
+
 const int N = 1e5 + 9;
 int a[N];
 int32_t main() {
