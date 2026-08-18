@@ -1,6 +1,6 @@
 # CP-Template
 
-Contest reference library. 130 templates. Grab, paste, delete `solve()`, go.
+Contest reference library. 131 templates. Grab, paste, delete `solve()`, go.
 
 Every file opens with a fixed header — what it does, **when to reach for it**, what it
 handles, complexity, indexing, gotchas. Read the header, not the code. Nothing in this
@@ -33,7 +33,7 @@ A directory subdivides only once it passes ~15 files. Everything is `Title_Snake
 | [Tree](Tree/) | ■ | 9 | |
 | [Graph](Graph/) | ■ | 19 | `Shortest_Path` `Connectivity` `Flow_And_Matching` |
 | [Geometry](Geometry/) | ■ | 5 | |
-| [Math](Math/) | ■ | 27 | `Number_Theory` `Combinatorics` `Polynomial` `Linear_Algebra` `Diophantine` `Calculus` |
+| [Math](Math/) | ■ | 28 | `Number_Theory` `Combinatorics` `Polynomial` `Linear_Algebra` `Diophantine` `Calculus` |
 | [Game_Theory](Game_Theory/) | ■ | 5 | |
 | [Misc](Misc/) | ■ | 2 | |
 
@@ -166,6 +166,7 @@ All of `Math/` is done.
 | [Number_Theory/CRT.cpp](Math/Number_Theory/CRT.cpp) | | combine `x = r_i (mod m_i)`; handles non-coprime moduli |
 | [Number_Theory/Sieve.cpp](Math/Number_Theory/Sieve.cpp) | **Main** | primes up to n, then factorize many numbers in O(log n) each |
 | [Number_Theory/Divisors_And_Factors.cpp](Math/Number_Theory/Divisors_And_Factors.cpp) | | factorize **one** number near 1e18; divisor counts and sums over a range |
+| [Number_Theory/Miller_Rabin_Pollard_Rho.cpp](Math/Number_Theory/Miller_Rabin_Pollard_Rho.cpp) | | primality and factorization up to **9e18**, where trial division dies |
 | [Number_Theory/Euler_Phi.cpp](Math/Number_Theory/Euler_Phi.cpp) | | count coprimes, shrink an exponent by Euler's theorem |
 | [Number_Theory/Fibonacci.cpp](Math/Number_Theory/Fibonacci.cpp) | | `F(n) mod m` at huge n, or any two-term linear recurrence |
 | [Number_Theory/Discrete_Log.cpp](Math/Number_Theory/Discrete_Log.cpp) | | smallest `x` with `a^x = b (mod m)`; works when `a`, `m` share a factor |
