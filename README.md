@@ -1,6 +1,6 @@
 # CP-Template
 
-Contest reference library. 133 templates. Grab, paste, delete `solve()`, go.
+Contest reference library. 134 templates. Grab, paste, delete `solve()`, go.
 
 Every file opens with a fixed header — what it does, **when to reach for it**, what it
 handles, complexity, indexing, gotchas. Read the header, not the code. Nothing in this
@@ -33,7 +33,7 @@ A directory subdivides only once it passes ~15 files. Everything is `Title_Snake
 | [Tree](Tree/) | ■ | 9 | |
 | [Graph](Graph/) | ■ | 19 | `Shortest_Path` `Connectivity` `Flow_And_Matching` |
 | [Geometry](Geometry/) | ■ | 6 | |
-| [Math](Math/) | ■ | 28 | `Number_Theory` `Combinatorics` `Polynomial` `Linear_Algebra` `Diophantine` `Calculus` |
+| [Math](Math/) | ■ | 29 | `Number_Theory` `Combinatorics` `Polynomial` `Linear_Algebra` `Diophantine` `Calculus` |
 | [Game_Theory](Game_Theory/) | ■ | 5 | |
 | [Misc](Misc/) | ■ | 2 | |
 
@@ -177,6 +177,7 @@ All of `Math/` is done.
 | [Polynomial/NTT_Any_Mod.cpp](Math/Polynomial/NTT_Any_Mod.cpp) | variant | any modulus (1e9+7), via three NTTs and CRT |
 | [Polynomial/FWHT.cpp](Math/Polynomial/FWHT.cpp) | | indices combine by **XOR / AND / OR**, not addition |
 | [Combinatorics/Binomial_Coefficients.cpp](Math/Combinatorics/Binomial_Coefficients.cpp) | **Main** | nCr / nPr mod a prime, stars and bars, derangements, Lucas |
+| [Combinatorics/Binomial_Coefficients_Any_Mod.cpp](Math/Combinatorics/Binomial_Coefficients_Any_Mod.cpp) | variant | the modulus is **not** prime, so factorials will not invert |
 | [Combinatorics/Catalan.cpp](Math/Combinatorics/Catalan.cpp) | | bracket sequences, binary trees, triangulations |
 | [Combinatorics/Permutations.cpp](Math/Combinatorics/Permutations.cpp) | | k shuffles, cycle decomposition, order, sign |
 | [Diophantine/LDE.cpp](Math/Diophantine/LDE.cpp) | **Main** | `ax + by = c`: one solution, all of them, or how many in a box |
