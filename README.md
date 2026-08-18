@@ -1,6 +1,6 @@
 # CP-Template
 
-Contest reference library. 124 templates. Grab, paste, delete `solve()`, go.
+Contest reference library. 130 templates. Grab, paste, delete `solve()`, go.
 
 Every file opens with a fixed header — what it does, **when to reach for it**, what it
 handles, complexity, indexing, gotchas. Read the header, not the code. Nothing in this
@@ -26,12 +26,12 @@ A directory subdivides only once it passes ~15 files. Everything is `Title_Snake
 
 | Directory | | Count | Subfolders |
 | --- | --- | --- | --- |
-| [Range_Query](Range_Query/) | ■ | 19 | `Segment_Tree` |
-| [Strings](Strings/) | ■ | 16 | `Hashing` `Aho_Corasick` |
+| [Range_Query](Range_Query/) | ■ | 21 | `Segment_Tree` |
+| [Strings](Strings/) | ■ | 17 | `Hashing` `Aho_Corasick` |
 | [Data_Structure](Data_Structure/) | ■ | 13 | |
-| [DP](DP/) | ■ | 11 | |
+| [DP](DP/) | ■ | 12 | |
 | [Tree](Tree/) | ■ | 9 | |
-| [Graph](Graph/) | ■ | 17 | `Shortest_Path` `Connectivity` `Flow_And_Matching` |
+| [Graph](Graph/) | ■ | 19 | `Shortest_Path` `Connectivity` `Flow_And_Matching` |
 | [Geometry](Geometry/) | ■ | 5 | |
 | [Math](Math/) | ■ | 27 | `Number_Theory` `Combinatorics` `Polynomial` `Linear_Algebra` `Diophantine` `Calculus` |
 | [Game_Theory](Game_Theory/) | ■ | 5 | |
@@ -225,6 +225,7 @@ particular `norm` is the length *squared*, which is the usual misread.
 | [Shortest_Path/Bellman_Ford_SPFA.cpp](Graph/Shortest_Path/Bellman_Ford_SPFA.cpp) | variant | the same, queue-driven — far faster on typical graphs |
 | [Shortest_Path/Floyd.cpp](Graph/Shortest_Path/Floyd.cpp) | | all pairs, n up to a few hundred; paths, later edge additions |
 | [Depth_First_Search.cpp](Graph/Depth_First_Search.cpp) | **Main** | components, cycle check, bipartite check, topological order |
+| [Breadth_First_Search.cpp](Graph/Breadth_First_Search.cpp) | **Main** | fewest moves; **0/1 weights** via deque, multi-source, grids |
 | [Connectivity/Strongly_Connected_Components.cpp](Graph/Connectivity/Strongly_Connected_Components.cpp) | | collapse a directed graph's cycles; gives the condensation DAG |
 | [Connectivity/Bridges.cpp](Graph/Connectivity/Bridges.cpp) | **Main** | critical **edges**, two-edge-connected components, the bridge tree |
 | [Connectivity/Bridges_Online.cpp](Graph/Connectivity/Bridges_Online.cpp) | variant | edges arrive as queries and each asks for the bridge count |
