@@ -262,6 +262,28 @@ particular `norm` is the length *squared*, which is the usual misread.
 connectivity. Reach for `Bridges.cpp` for critical edges and `Articulation_Points.cpp` for critical
 vertices; the two are easy to confuse and solve different questions.
 
+## Verification
+
+[VERIFICATION.md](VERIFICATION.md) lists every template and what actually backs it. 24 of 149
+carry a judge verdict: `tools/verify.py` embeds the template byte for byte, downloads a judge's
+full system tests, and runs them against that judge's own checker. Everything else stands on
+brute-force agreement, which finds wrong answers but cannot establish a time bound.
+
+Two results worth knowing before you grab a file:
+
+- **`Bipartite_Matching.cpp` (Kuhn) times out on adversarial input.** 41 of 44 Library Checker
+  cases pass; `line_00`, `line_01` and `issue1068_large_02` exceed 15 s. Those cases exist
+  specifically to kill Kuhn. `Bipartite_Matching_Hopcroft_Karp.cpp` clears all 44 in 0.97 s.
+  Use Kuhn when the graph is small or friendly; reach for Hopcroft-Karp when it is neither.
+- **`Sieve.cpp`'s `primes_up_to` is correct but slow at the top of its range.** All 10 cases of
+  `enumerate_primes` are right, the slowest taking 12 s against a 10 s limit at N = 5e8.
+
+```
+py tools/verify.py            # run every judge entry
+py tools/verify.py --only DSU # just one
+py tools/checklist.py         # regenerate VERIFICATION.md
+```
+
 ⚠ `Interval_Set.cpp`, `Expression_Parsing.cpp` and `Rerooting.cpp` are unproven: tier-5 sources,
 verified locally against brute-force references but not yet by a judge. Ready-to-submit files sit in
 `verify/`. `Rerooting.cpp` is the strongest case of the three - no rerooting implementation exists in

@@ -19,7 +19,7 @@ $ErrorActionPreference = 'Stop'
 $repo = Split-Path -Parent $PSScriptRoot
 
 # Never checked: frozen archive, prose notes, tooling, editor config.
-$skipTop = @('other', 'notes', 'tools', '.git', '.claude', '.vscode')
+$skipTop = @('other', 'notes', 'tools', 'verify', '.git', '.claude', '.vscode')
 
 $root = if ($Path) { Join-Path $repo $Path } else { $repo }
 if (-not (Test-Path $root)) { throw "no such path: $root" }
