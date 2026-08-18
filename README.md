@@ -1,6 +1,6 @@
 # CP-Template
 
-Contest reference library. 131 templates. Grab, paste, delete `solve()`, go.
+Contest reference library. 132 templates. Grab, paste, delete `solve()`, go.
 
 Every file opens with a fixed header — what it does, **when to reach for it**, what it
 handles, complexity, indexing, gotchas. Read the header, not the code. Nothing in this
@@ -26,7 +26,7 @@ A directory subdivides only once it passes ~15 files. Everything is `Title_Snake
 
 | Directory | | Count | Subfolders |
 | --- | --- | --- | --- |
-| [Range_Query](Range_Query/) | ■ | 21 | `Segment_Tree` |
+| [Range_Query](Range_Query/) | ■ | 22 | `Segment_Tree` |
 | [Strings](Strings/) | ■ | 17 | `Hashing` `Aho_Corasick` |
 | [Data_Structure](Data_Structure/) | ■ | 13 | |
 | [DP](DP/) | ■ | 12 | |
@@ -53,6 +53,7 @@ Per-file listings appear here as each directory is normalized.
 | [Segment_Tree_Lazy_Persistent.cpp](Range_Query/Segment_Tree/Segment_Tree_Lazy_Persistent.cpp) | variant | the same, with range updates and rollback |
 | [Segment_Tree_Beats.cpp](Range_Query/Segment_Tree/Segment_Tree_Beats.cpp) | variant | range `chmin`/`chmax` alongside sum queries |
 | [Fenwick_Tree.cpp](Range_Query/Fenwick_Tree.cpp) | | prefix/range sums, inversions, prefix-sum search |
+| [Fenwick_Tree_Range.cpp](Range_Query/Fenwick_Tree_Range.cpp) | variant | range add **and** range sum together |
 | [Count_Inversions.cpp](Range_Query/Count_Inversions.cpp) | | pairs out of order, or minimum adjacent swaps to sort |
 | [Sparse_Table.cpp](Range_Query/Sparse_Table.cpp) | | RMQ in O(1) on a static array |
 | [Sparse_Table_2D.cpp](Range_Query/Sparse_Table_2D.cpp) | | max over a submatrix of a static grid |
