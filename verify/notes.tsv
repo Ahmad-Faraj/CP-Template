@@ -9,3 +9,4 @@ Misc/Majority_Element.cpp	Library Checker's majority_voting is a range query wit
 Range_Query/Segment_Tree/Segment_Tree_Lazy.cpp	Library Checker has range AFFINE range sum; this template does range ADD range sum
 Math/Calculus/Differentiation.cpp	numeric, no exact-answer judge problem exists
 Math/Calculus/Integration.cpp	numeric, no exact-answer judge problem exists
+DP/Aliens_Trick.cpp	submission ready in verify/Aliens_Trick (AtCoder ABC 218 H), unsubmitted

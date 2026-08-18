@@ -29,7 +29,7 @@ A directory subdivides only once it passes ~15 files. Everything is `Title_Snake
 | [Range_Query](Range_Query/) | ■ | 24 | `Segment_Tree` |
 | [Strings](Strings/) | ■ | 18 | `Hashing` `Aho_Corasick` |
 | [Data_Structure](Data_Structure/) | ■ | 16 | |
-| [DP](DP/) | ■ | 12 | |
+| [DP](DP/) | ■ | 13 | |
 | [Tree](Tree/) | ■ | 11 | |
 | [Graph](Graph/) | ■ | 20 | `Shortest_Path` `Connectivity` `Flow_And_Matching` |
 | [Geometry](Geometry/) | ■ | 6 | |
@@ -143,6 +143,7 @@ tree's shape actually changes — it is the heaviest file here.
 | [SOS.cpp](DP/SOS.cpp) | | for each mask, aggregate over its subsets or supersets |
 | [Digit_DP.cpp](DP/Digit_DP.cpp) | | count numbers in `[l, r]` by a property of their digits |
 | [Slope_Trick.cpp](DP/Slope_Trick.cpp) | | minimum total `\|change\|` to make an array non-decreasing |
+| [Aliens_Trick.cpp](DP/Aliens_Trick.cpp) | ⚠ | "exactly k groups/segments/transactions" and the k dimension is too slow |
 | [Weighted_Job_Scheduling.cpp](DP/Weighted_Job_Scheduling.cpp) | | pick non-overlapping intervals, maximise value |
 | [Meet_in_the_Middle.cpp](DP/Meet_in_the_Middle.cpp) | | n ≈ 40 and the values are too large to knapsack |
 
@@ -291,7 +292,7 @@ py tools/verify.py --only DSU # just one
 py tools/checklist.py         # regenerate VERIFICATION.md
 ```
 
-⚠ `Interval_Set.cpp`, `Expression_Parsing.cpp` and `Rerooting.cpp` are unproven: tier-5 sources,
+⚠ `Interval_Set.cpp`, `Expression_Parsing.cpp`, `Rerooting.cpp` and `Aliens_Trick.cpp` are unproven: tier-5,
 verified locally against brute-force references but not yet by a judge. Ready-to-submit files sit in
 `verify/`. `Rerooting.cpp` is the strongest case of the three - no rerooting implementation exists in
 `other/` or in any of the four reference libraries, so it was written from the standard formulation.

@@ -13,13 +13,14 @@ the data comes from `verify/results.json`, which `tools/verify.py` writes.
 
 Times below are the slowest single case on the machine that ran this, against the judge's stated limit. That machine is not the judge - read a thin margin as a warning.
 
-**29 of 149 templates carry a judge verdict.** The rest stand on brute-force agreement,
+**29 of 150 templates carry a judge verdict.** The rest stand on brute-force agreement,
 which catches wrong answers but cannot establish a time bound.
 
 ## DP
 
 | Template | Status | Evidence |
 | --- | --- | --- |
+| [Aliens_Trick.cpp](DP/Aliens_Trick.cpp) | brute force | tests/Aliens_Trick.cpp - submission ready in verify/Aliens_Trick (AtCoder ABC 218 H), unsubmitted |
 | [CHT.cpp](DP/CHT.cpp) | UNGUARDED | no judge problem and no brute-force test |
 | [CHT_Monotonic.cpp](DP/CHT_Monotonic.cpp) | UNGUARDED | no judge problem and no brute-force test |
 | [Deque_Trick.cpp](DP/Deque_Trick.cpp) | UNGUARDED | no judge problem and no brute-force test |
