@@ -15,8 +15,9 @@ Quick tests to check if $N$ is divisible by $D$:
 *   **12:** Divisible by both $3$ and $4$.
 
 ### **2. Primes & Factorization**
-*   **Number of Divisors $\tau(n)$:** If $n = p_1^{a_1} p_2^{a_2} \dots p_k^{a_k}$, then $\tau(n) = (a_1+1)(a_2+1)\dots(a_k+1)$.
-*   **Sum of Divisors $\sigma(n)$:** $\sigma(n) = \prod \frac{p_i^{a_i+1} - 1}{p_i - 1}$.
+*   **Number of Divisors $\tau(n)$:** If $n = \prod p_i^{e_i}$, then $\tau(n) = \prod (e_i+1)$ *(Choose each prime exponent independently)*.
+*   **Sum of Divisors $\sigma(n)$:** $\sigma(n) = \prod \frac{p_i^{e_i+1} - 1}{p_i - 1} = \prod (1+p_i+\dots+p_i^{e_i})$.
+*   **Number of Multiples:** The number of multiples of $d$ up to $n$ is $\lfloor n/d \rfloor$.
 *   **Sieve of Eratosthenes:** Finds all primes up to $N$ in $\mathcal{O}(N \log \log N)$.
     ```cpp
     vector<int> sieve(int n) {
@@ -56,9 +57,14 @@ Quick tests to check if $N$ is divisible by $D$:
     ```
 
 ### **3. GCD & Extended Euclidean Algorithm**
-*   **Euclidean Algorithm:** $\gcd(A, B) = \gcd(B, A \pmod B)$. Runs in $\mathcal{O}(\log(\min(A,B)))$.
-*   **LCM:** $\text{lcm}(A, B) = \frac{A \cdot B}{\gcd(A,B)}$.
-*   **Bézout's Identity:** For any integers $A$ and $B$, there exist integers $X$ and $Y$ such that $AX + BY = \gcd(A, B)$.
+*   **Euclidean Algorithm:** $\gcd(a, b) = \gcd(b, a \pmod b)$. Runs in $\mathcal{O}(\log(\min(a,b)))$.
+*   **Subtraction Form:** $\gcd(a, b) = \gcd(a, b-a)$ when $b \ge a$ *(Common divisors are unchanged by subtraction)*.
+*   **LCM:** $\gcd(a, b) \cdot \text{lcm}(a, b) = |ab|$ *(Prime exponents use $\min + \max = \text{sum}$)*.
+*   **Bézout's Identity:** For any integers $a$ and $b$, there exist integers $x$ and $y$ such that $ax + by = \gcd(a, b)$.
+    *   **Integer Solutions:** $ax+by=c$ has integer solutions $\iff \gcd(a,b)$ divides $c$.
+*   **Factoring GCD:** $\gcd(a,b)=g \iff a=gx, b=gy, \gcd(x,y)=1$.
+*   **Linear Combinations:** $\gcd(a_1,\dots,a_n)$ divides every integer linear combination of the array.
+*   **Exponent GCD:** $\gcd(a^m-1, a^n-1) = a^{\gcd(m,n)} - 1$ *(Exponent Euclidean structure)*.
 *   **Extended GCD:** Returns $X$, $Y$, and $\gcd(A,B)$.
     ```cpp
     long long extGCD(long long a, long long b, long long &x, long long &y) {
@@ -72,13 +78,15 @@ Quick tests to check if $N$ is divisible by $D$:
     ```
 
 ### **4. Modular Arithmetic & Inverse**
-*   **Addition:** $(A + B) \pmod M = (A \pmod M + B \pmod M) \pmod M$
-*   **Multiplication:** $(A \cdot B) \pmod M = (A \pmod M \cdot B \pmod M) \pmod M$
-*   **Subtraction:** $(A - B) \pmod M = (A \pmod M - B \pmod M + M) \pmod M$
-*   **Division:** $\frac{A}{B} \pmod M = (A \cdot B^{-1}) \pmod M$. 
-    *   $B^{-1}$ is the modular multiplicative inverse of $B$ modulo $M$.
-    *   It exists $\iff \gcd(B, M) = 1$.
-*   **Fermat's Little Theorem:** If $M$ is prime and $B$ is not divisible by $M$, then $B^{M-1} \equiv 1 \pmod M$.
+*   **Addition:** $(a + b) \pmod m = ((a \pmod m) + (b \pmod m)) \pmod m$
+*   **Multiplication:** $(a \cdot b) \pmod m = ((a \pmod m) \cdot (b \pmod m)) \pmod m$
+*   **Subtraction:** $(a - b) \pmod m = ((a \pmod m) - (b \pmod m) + m) \pmod m$ *(The $+m$ prevents negative representatives)*.
+*   **Division:** $\frac{a}{b} \pmod m = (a \cdot b^{-1}) \pmod m$. 
+    *   *(Note: This means multiplication by an inverse, NOT integer division).* 
+    *   $b^{-1}$ exists $\iff \gcd(b, m) = 1$ *(Coprimality is exactly the invertibility condition)*.
+*   **Negative Modulo Normalization:** Convert $x \pmod m$ to a positive representative in $[0, m-1]$ via `((x % m) + m) % m`.
+*   **Modulo to Floor:** $a \pmod m = a - m \cdot \lfloor a/m \rfloor$.
+*   **Fermat's Little Theorem:** If $m$ is prime and $b$ is not divisible by $m$, then $b^{m-1} \equiv 1 \pmod m$.
     *   Implies $B^{-1} \equiv B^{M-2} \pmod M$. Can be found via binary exponentiation in $\mathcal{O}(\log M)$.
     ```cpp
     long long mod_pow(long long a, long long b, long long m) {
@@ -236,3 +244,26 @@ $$ \sum_{i=1}^N \lfloor \frac{N}{i} \rfloor = 2 \sum_{i=1}^{\lfloor \sqrt{N} \rf
 Used to compute the prefix sum of a Dirichlet convolution $h = f * g$ up to $N$ in $\mathcal{O}(\sqrt{N})$ or $\mathcal{O}(N^{2/3})$:
 $$ \sum_{n=1}^N h(n) = \sum_{i=1}^{\lfloor \sqrt{N} \rfloor} f(i) G\left(\lfloor \frac{N}{i} \rfloor\right) + \sum_{j=1}^{\lfloor \sqrt{N} \rfloor} g(j) F\left(\lfloor \frac{N}{j} \rfloor\right) - F(\lfloor \sqrt{N} \rfloor) G(\lfloor \sqrt{N} \rfloor) $$
 *(Where $F$ and $G$ are the prefix sums of $f$ and $g$ respectively).*
+
+
+### **22. Floor, Ceil, and Division Math**
+*   **Ceil Formula:** $\lceil a / b \rceil = (a + b - 1) / b$ for integers $a \ge 0, b > 0$.
+    *   Alternatively: `a / b + (a % b != 0)` *(Avoids overflow from $a+b-1$)*.
+*   **Floor Multiples:** $\lfloor a / b \rfloor$ exactly counts the multiples of $b$ in $[1, a]$.
+*   **Range Multiples:** Number of multiples of $k$ in $[l, r]$ is $\lfloor r/k \rfloor - \lfloor (l-1)/k \rfloor$.
+*   **Range Congruences:** Numbers congruent to $c \pmod k$ in $[l, r]$ is $\lfloor (r-c)/k \rfloor - \lfloor ((l-1)-c)/k \rfloor$.
+*   **Floor Carries:** $\lfloor (a+b)/m \rfloor = \lfloor a/m \rfloor + \lfloor b/m \rfloor + \text{carry}$ (where carry is 1 iff $(a \pmod m) + (b \pmod m) \ge m$).
+*   **Quotient Grouping:** $\lfloor n/k \rfloor$ changes only $\mathcal{O}(\sqrt{n})$ times as $k$ varies.
+*   **Harmonic Boundaries:** For a fixed $l$ with $q = \lfloor n/l \rfloor$, the maximal $r$ with the same quotient $q$ is $r = \lfloor n/q \rfloor$.
+
+### **23. Common Algebraic Rewrites**
+*   **Difference of Squares:** $a^2 - b^2 = (a-b)(a+b)$
+*   **Square Expansion:** $(a \pm b)^2 = a^2 \pm 2ab + b^2$ *(Useful for converting quadratic DP to line queries)*.
+*   **Cubes:** $a^3 \pm b^3 = (a \pm b)(a^2 \mp ab + b^2)$
+*   **Min / Max Equations:**
+    *   $\min(a,b) = \frac{a+b - |a-b|}{2}$
+    *   $\max(a,b) = \frac{a+b + |a-b|}{2}$
+    *   $\max(a,b) + \min(a,b) = a+b$
+    *   $\max(a,b) - \min(a,b) = |a-b|$
+    *   $|a-b| = a+b - 2\min(a,b)$
+    *   $|a-b| = 2\max(a,b) - a - b$

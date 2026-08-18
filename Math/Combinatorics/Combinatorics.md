@@ -12,8 +12,12 @@
 ### **1. Core Binomial Properties**
 *   **Symmetry:** $\binom n k = \binom n {n-k}$
     *Meaning: Choosing $k$ items to KEEP is the exact same as choosing $n-k$ items to THROW AWAY.*
-*   **Factoring in (Absorption):** $\binom n k = \frac n k \binom {n-1} {k-1}$
+*   **Pascal's Recurrence:** $\binom n k = \binom{n-1} k + \binom{n-1}{k-1}$
+    *Meaning: Split by whether a fixed specific item is chosen or not.*
+*   **Factoring in (Absorption):** $k \binom n k = n \binom {n-1} {k-1}$
     *Meaning: Selecting a team of $k$ people and then picking a captain is the same as first picking the captain from $n$ people, then choosing the remaining $k-1$ team members.*
+*   **Factoring out:** $(n-k) \binom n k = n \binom{n-1} k$
+    *Meaning: Mark one unchosen element.*
 *   **Sum over $k$:** $\sum_{k = 0}^n \binom n k = 2 ^ n$
     *Meaning: The total number of subsets of any size you can form from $n$ items is exactly $2^n$ (each item is either IN or OUT).*
 *   **Sum over $n$ (Hockey Stick):** $\sum_{m = k}^n \binom m k = \binom {n + 1} {k + 1}$
@@ -24,6 +28,8 @@
     *Meaning: A direct result of Vandermonde's Identity when splitting a pool of $2n$ into two halves of $n$.*
 *   **Weighted sum:** $\sum_{k=1}^n k \binom n k = n 2^{n-1}$
     *Meaning: You want to pick a subset and elect a leader. You can either pick the leader first ($n$ choices) and then invite anyone else ($2^{n-1}$ subsets), OR pick a subset of size $k$ first ($\binom{n}{k}$) and then pick one of them to lead ($k$).*
+*   **Second moments:** $\sum_{k=0}^n k^2 \binom n k = n(n+1) 2^{n-2}$
+    *Meaning: Use $k^2 = k(k-1) + k$ and mark elements.*
 *   **Fibonacci Connection:** $\sum_{k=0}^{\lfloor n/2 \rfloor} \binom{n-k}{k} = F_{n+1}$
     *Meaning: The sum of the shallow diagonals in Pascal's triangle naturally generates the Fibonacci sequence.*
 
@@ -163,6 +169,8 @@ Counts the number of ways to partition a set of $n$ elements into exactly $k$ **
 *   **Formula:** $L(n, k) = \binom{n-1}{k-1} \frac{n!}{k!}$
 
 ### **17. Inclusion-Exclusion (PIE Min-Max & Posets)**
+*   **Standard PIE (Union of Sets):** $|\bigcup A_i| = \sum |A_i| - \sum |A_i \cap A_j| + \sum |A_i \cap A_j \cap A_k| \dots$
+    *Meaning: Corrects overcounting by alternating signs. Very common in forbidden-property counting.*
 *   **Min-Max Theorem (Expected Values):** $\max(A_1, \dots, A_n) = \sum_{i} A_i - \sum_{i<j} \min(A_i, A_j) + \sum_{i<j<k} \min(A_i, A_j, A_k) \dots$
     *Highly useful for calculating expected time to complete tasks (e.g., Coupon Collector variants).*
 *   **Möbius Inversion on Divisibility Poset:** $g(n) = \sum_{d \mid n} f(d) \iff f(n) = \sum_{d \mid n} \mu\left(\frac{n}{d}\right) g(d)$
@@ -277,3 +285,31 @@ $$ 2 \cdot N! \sum_{k=0}^N (-1)^k \frac{2N}{2N-k} \binom{2N-k}{k} (N-k)! $$
 ### **41. Fuss-Catalan Numbers $C_m(n)$**
 A generalization of Catalan numbers counting the number of $m$-ary trees with $n$ internal nodes, or the number of paths that never cross the diagonal $y = (m-1)x$.
 $$ C_m(n) = \frac{1}{mn+1} \binom{mn+1}{n} $$
+
+
+### **42. Arithmetic Sums and Progressions**
+*   **Sum of integers:** $1 + 2 + \dots + n = \frac{n(n+1)}{2}$
+*   **Sum of odds:** $1 + 3 + \dots + (2n-1) = n^2$ *(Square-growth arguments)*
+*   **Sum of evens:** $2 + 4 + \dots + 2n = n(n+1)$
+*   **Sum of squares:** $1^2 + 2^2 + \dots + n^2 = \frac{n(n+1)(2n+1)}{6}$
+*   **Sum of cubes:** $1^3 + 2^3 + \dots + n^3 = \left[ \frac{n(n+1)}{2} \right]^2$
+*   **Arithmetic Progression:** $\text{count} \cdot \frac{\text{first} + \text{last}}{2}$. Also, $\sum_{i=0}^{n-1} (a+id) = na + d \frac{n(n-1)}{2}$.
+*   **Weighted linear sequences:** $k + (k+d) + \dots + (k+(n-1)d) = nk + d \frac{n(n-1)}{2}$.
+*   **Geometric Sum:** $1 + r + \dots + r^{n-1} = \frac{r^n - 1}{r - 1}$ for $r \neq 1$.
+*   **Infinite Geometric Sum:** $\frac{a}{1 - r}$ for $|r| < 1$.
+*   **Prefix interval sums:** $\sum_{i=l}^r i = T(r) - T(l-1)$ where $T(x) = \frac{x(x+1)}{2}$.
+*   **L1 Optimization:** $\sum_i |a_i - x|$ is minimized when $x$ is the median of $a$. *(For sorted $a$, $\sum |a_i - x|$ can be evaluated in $\mathcal{O}(\log n)$ by splitting at `lower_bound`: left side contributes $x \cdot \text{cnt} - \text{sum}$, right contributes $\text{sum} - x \cdot \text{cnt}$)*.
+*   **L2 Optimization:** $\sum_i (a_i - x)^2$ is minimized when $x$ is the mean. *(Expansion: $\sum (a_i - c)^2 = \sum a_i^2 - 2c \sum a_i + n c^2$)*.
+
+### **43. Probability and Expected Value**
+*   **Linearity of Expectation:** $\mathbb{E}[X+Y] = \mathbb{E}[X] + \mathbb{E}[Y]$. *(Holds even without independence! Break a hard count into indicator variables)*.
+*   **Indicator Variables:** For an indicator $I[event]$, $\mathbb{E}[I] = P(event)$. Thus, expected number of successful objects = $\sum$ probabilities of success.
+*   **Union of Events:** $P(A \cup B) = P(A) + P(B) - P(A \cap B)$.
+*   **Conditional Probability:** $P(A \mid B) = \frac{P(A \cap B)}{P(B)}$.
+*   **Bayes' Theorem:** $P(A \mid B) = \frac{P(B \mid A) P(A)}{P(B)}$.
+*   **Independence:** $P(A \cap B) = P(A) P(B)$.
+*   **Expectation via Tails:** For a nonnegative integer variable $X$, $\mathbb{E}[X] = \sum_{k \ge 1} P(X \ge k)$.
+*   **Variance:** $\text{Var}(X) = \mathbb{E}[X^2] - (\mathbb{E}[X])^2$.
+*   **Variance of Sums:** If $X$ and $Y$ are independent, $\text{Var}(X+Y) = \text{Var}(X) + \text{Var}(Y)$.
+*   **Geometric Waiting Time:** If success probability is $p$, the expected number of trials until the first success is $1/p$.
+*   **Coupon Collector:** The expected number of trials to collect all $N$ unique items (when each is drawn uniformly with replacement) is $N(1 + \frac{1}{2} + \dots + \frac{1}{N}) \approx N \ln N$.

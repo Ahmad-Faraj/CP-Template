@@ -22,11 +22,14 @@ inline int count_zeros(long long n) { return 64 - __builtin_popcountll(n); }
 ```
 
 ### **2. Algebraic & Arithmetic Identities**
-*   **Addition:** $a + b = (a \oplus b) + 2(a \& b)$
+*   **Addition (XOR form):** $a + b = (a \oplus b) + 2(a \& b)$ *(Addition without carries + 2 * carries)*
 *   **Addition (OR form):** $a + b = (a | b) + (a \& b)$
 *   **Subtraction:** $a - b = (a \oplus (a \& b)) - ((a | b) \oplus a)$
 *   **Symmetry of OR/AND/XOR:** $a | b = a \oplus b + a \& b$
+*   **Recovering Intersection:** $a \& b = a + b - (a | b)$
 *   **Union & Intersection:** $a \oplus b = (a | b) \setminus (a \& b) = (a | b) \oplus (a \& b)$
+*   **Disjoint test:** $a \ \& \ b = 0 \iff a$ and $b$ are disjoint masks (no common set bits).
+*   **Subset test:** $(a \ \& \ b) = a \iff a \subseteq b$ as masks.
 
 ### **3. Power of 2 Validations & Tricks**
 *   **Check if power of 2:** `(n > 0) && (n & (n - 1)) == 0`
@@ -34,9 +37,11 @@ inline int count_zeros(long long n) { return 64 - __builtin_popcountll(n); }
     ```cpp
     n--; n |= n >> 1; n |= n >> 2; n |= n >> 4; n |= n >> 8; n |= n >> 16; n++;
     ```
-*   **LSB (Lowest Set Bit):** `n & -n`
+*   **LSB (Lowest Set Bit):** `n & -n` *(Isolates the lowest set bit via two's complement)*
 *   **MSB (Most Significant Bit):** `31 - __builtin_clz(n)` (or 63 for `ll`).
-*   **Clear LSB:** `n & (n - 1)`
+*   **Clear LSB:** `n & (n - 1)` *(Clears the lowest trailing ones/transitions)*
+*   **Set below LSB:** `n | (n - 1)` *(Sets all bits below the lowest set bit to 1)*
+*   **XOR LSB:** `n ^ (n - 1) = 2 \cdot \text{lowbit}(n) - 1` *(The changed suffix is exactly a block of ones)*
 
 ### **4. Range XOR Utilities**
 Finding the XOR sum of all numbers in a range `[L, R]` in $\mathcal{O}(1)$.
@@ -45,6 +50,7 @@ Finding the XOR sum of all numbers in a range `[L, R]` in $\mathcal{O}(1)$.
 inline long long xor_upto(long long x) {
     if (x < 0) return 0;
     long long rem = x % 4;
+    // 0 ^ 1 ^ ... ^ n follows n mod 4: [n, 1, n+1, 0]
     if (rem == 0) return x;
     if (rem == 1) return 1;
     if (rem == 2) return x + 1;
@@ -67,6 +73,9 @@ inline long long xor_range(long long l, long long r) {
     }
     // Note: To include 0, you can do: for(int s=M; ; s=(s-1)&M) { ... if(!s) break; }
     ```
+*   **Mask Combinatorics:**
+    *   Number of ordered pairs $(a, b)$ with $a | b = M$ is $3^{\text{popcount}(M)}$.
+    *   Number of ordered pairs $(a, b)$ with $a \ \& \ b = 0$ inside $n$ bits is $3^n$.
 *   **Gosper's Hack (Next Permutation of bits):**
     Generates the next number with exactly $K$ bits set in $\mathcal{O}(1)$. Useful for combinatorial brute forces across fixed sizes.
     ```cpp
@@ -76,6 +85,14 @@ inline long long xor_range(long long l, long long r) {
         return (((r ^ v) >> 2) / c) | r;
     }
     ```
+
+### **5.5 XOR over Arrays and Sequences**
+*   **Range XOR without array:** $a_l \oplus \dots \oplus a_r = \text{prefXor}[r] \oplus \text{prefXor}[l-1]$ (Equal prefixes cancel).
+*   **Frequency Parity:** XOR of every element appearing an even number of times is always $0$.
+*   **Subset XOR:** XOR of all subset XORs of an array is $0$ when $N \ge 2$ (Each element appears in $2^{N-1}$ subsets).
+*   **Global Sum of XORs:** Sum of XOR over all unordered pairs = $\sum_{\text{bit}} \text{cnt}_1 \cdot \text{cnt}_0 \cdot 2^{\text{bit}}$.
+*   **Global Sum of ANDs:** Sum of AND over all unordered pairs = $\sum_{\text{bit}} \binom{\text{cnt}_1}{2} \cdot 2^{\text{bit}}$.
+*   **Median/Optimization via XOR:** To minimize $\sum_i (X \oplus A_i)$, choose each bit of $X$ by the **majority** bit at that position across all $A_i$. To maximize, choose by the **minority** complement.
 
 ### **6. Sum Over Subsets (SOS DP)**
 Compute $F(mask) = \sum_{sub \subseteq mask} A[sub]$ in $\mathcal{O}(N \cdot 2^N)$.
