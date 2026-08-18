@@ -104,7 +104,7 @@ Per-file listings appear here as each directory is normalized.
 | [Binary_Trie.cpp](Data_Structure/Binary_Trie.cpp) | | max XOR of a pair; XOR queries over a changing set |
 | [Monotonic_Queue.cpp](Data_Structure/Monotonic_Queue.cpp) | | sliding-window maximum |
 | [Monotonic_Stack.cpp](Data_Structure/Monotonic_Stack.cpp) | | next greater element, largest rectangle in a histogram |
-| [Interval_Set.cpp](Data_Structure/Interval_Set.cpp) | ⚠ | "set a[l..r] all to v" repeatedly; runs collapse |
+| [Interval_Set.cpp](Data_Structure/Interval_Set.cpp) | ⚠ | "set a[l..r] all to v" repeatedly; range add too; runs collapse |
 | [Cartesian_Tree.cpp](Data_Structure/Cartesian_Tree.cpp) | | range minimum as an LCA; divide and conquer over minima |
 
 ### Tree

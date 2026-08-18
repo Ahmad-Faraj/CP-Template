@@ -1,6 +1,6 @@
 // Interval Set: keeps a sequence as runs of equal values, so assigning a whole range is one operation.
 // Use when: "set a[l..r] all to v" happens often - the runs collapse, and everything else is a walk over few pieces.
-// Handles: range assign, point read, walking the runs of a range, range sum, and counting a value over a range.
+// Handles: range assign, range add, point read, walking the runs of a range, range sum, counting a value.
 // Time: amortized O(log n) per assign when ranges are varied; O(n) worst case if they are adversarial
 // Indexing: 1-based inclusive [l, r]; the structure spans [1, n] fixed at construction
 // Note: the speed comes from ASSIGN merging runs. Without assigns nothing collapses and this degrades to a slow list.
@@ -34,6 +34,12 @@ struct Interval_Set {
         auto left = split(l);
         runs.erase(left, right);
         runs[l] = value;
+    }
+
+    void add(ll l, ll r, ll delta) { // a[l..r] += delta; runs survive, only their values move
+        if (l > r) return;
+        auto right = split(r + 1);
+        for (auto it = split(l); it != right; ++it) it->second += delta;
     }
 
     ll get(ll pos) { // a[pos]
@@ -71,18 +77,28 @@ struct Interval_Set {
     ll run_count() { return (ll)runs.size() - 1; } // how many runs the sequence has collapsed to
 };
 
-// Standard problem: Codeforces 915E - n days all available, each query marks [l, r]
-// unavailable (k = 1) or available (k = 2); report the available count after each.
+// Standard problem: CSES 1735 - range add, range assign and range sum on one array
 void solve() {
     ll n;
     int q;
     cin >> n >> q;
-    Interval_Set days(n, 1); // 1 = available
+    Interval_Set a(n, 0);
+    for (ll i = 1; i <= n; i++) {
+        ll v;
+        cin >> v;
+        a.assign(i, i, v);
+    }
     while (q--) {
-        ll l, r;
-        int k;
-        cin >> l >> r >> k;
-        days.assign(l, r, k == 1 ? 0 : 1);
-        cout << days.sum(1, n) << '\n';
+        int type;
+        ll l, r, x;
+        cin >> type >> l >> r;
+        if (type == 1) {
+            cin >> x;
+            a.add(l, r, x);
+        } else if (type == 2) {
+            cin >> x;
+            a.assign(l, r, x);
+        } else
+            cout << a.sum(l, r) << '\n';
     }
 }
