@@ -2,7 +2,8 @@
 
 /*
  * Topic: DP - Convex Hull Trick (CHT)
- * Description: Optimizes DP transitions of the form dp[i] = min/max(m[j] * x[i] + b[j])
+ * Description: Convex Hull Trick reduces the time complexity of DP transitions of
+ *   the form dp[i] = min/max(m[j] * x[i] + b[j]) from O(N^2) to O(N) or O(N log N).
  * Condition (Deque CHT): Use when BOTH the slopes of the added lines m[j] are monotonic 
  *                        (e.g., sorted) AND the query coordinates x[i] are monotonic. O(N) amortized.
  * Condition (Binary Search CHT): Use when slopes m[j] are monotonic, but queries x[i] are random. O(N log N).

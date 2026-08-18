@@ -2,8 +2,10 @@
 
 /*
  * Topic: DP - Li Chao Tree
- * Description: A data structure used to maintain a set of lines or line segments
- * and query the minimum value among them at any given x.
+ * Description: Li Chao Tree reduces the time complexity of DP transitions of
+ *   the form dp[i] = min/max(m[j] * x[i] + b[j]) from O(N^2) to O(N log(Range)).
+ *   It is a data structure used to maintain a set of lines or line segments
+ *   and query the minimum value among them at any given x.
  * Condition: Use this when NEITHER slopes m[j] nor queries x[i] are monotonic (i.e. both are random).
  * Time Complexity: O(log(Range)) per addition and query.
  * 
