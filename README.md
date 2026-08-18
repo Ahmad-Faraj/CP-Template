@@ -1,6 +1,6 @@
 # CP-Template
 
-Contest reference library. 135 templates. Grab, paste, delete `solve()`, go.
+Contest reference library. 136 templates. Grab, paste, delete `solve()`, go.
 
 Every file opens with a fixed header — what it does, **when to reach for it**, what it
 handles, complexity, indexing, gotchas. Read the header, not the code. Nothing in this
@@ -27,7 +27,7 @@ A directory subdivides only once it passes ~15 files. Everything is `Title_Snake
 | Directory | | Count | Subfolders |
 | --- | --- | --- | --- |
 | [Range_Query](Range_Query/) | ■ | 22 | `Segment_Tree` |
-| [Strings](Strings/) | ■ | 17 | `Hashing` `Aho_Corasick` |
+| [Strings](Strings/) | ■ | 18 | `Hashing` `Aho_Corasick` |
 | [Data_Structure](Data_Structure/) | ■ | 14 | |
 | [DP](DP/) | ■ | 12 | |
 | [Tree](Tree/) | ■ | 9 | |
@@ -85,6 +85,7 @@ Per-file listings appear here as each directory is normalized.
 | [Manacher.cpp](Strings/Manacher.cpp) | | longest palindrome, or "is `s[l..r]` a palindrome" in O(1) |
 | [Palindromic_Tree.cpp](Strings/Palindromic_Tree.cpp) | | count distinct palindromic substrings and their occurrences |
 | [Trie.cpp](Strings/Trie.cpp) | | prefix counting, dictionary lookups, autocomplete |
+| [Expression_Parsing.cpp](Strings/Expression_Parsing.cpp) | ⚠ | the input **is** a formula: evaluate it, or convert to postfix |
 | [Booth.cpp](Strings/Booth.cpp) | | lexicographically smallest rotation |
 
 ### Data_Structure
@@ -248,8 +249,8 @@ particular `norm` is the length *squared*, which is the usual misread.
 connectivity. Reach for `Bridges.cpp` for critical edges and `Articulation_Points.cpp` for critical
 vertices; the two are easy to confuse and solve different questions.
 
-⚠ `Interval_Set.cpp` is unproven: tier-5 source, verified locally against a plain array but not yet
-by a judge. A ready-to-submit file sits in `verify/Interval_Set/`.
+⚠ `Interval_Set.cpp` and `Expression_Parsing.cpp` are unproven: tier-5 sources, verified locally
+against brute-force references but not yet by a judge. Ready-to-submit files sit in `verify/`.
 
 `Slope_Trick.cpp` is the only other template here not derived from the team's repos — no source in
 this codebase or the reference libraries has it. It was therefore submitted to a judge to prove
