@@ -1,13 +1,15 @@
-# 6. Hackenbush (Green / Impartial)
+# Hackenbush (Green / Impartial)
 
 **Game Rules:** A graph (or tree) is drawn with some vertices connected to the "ground". Two players take turns removing exactly one edge. Any subgraph that becomes completely disconnected from the ground immediately falls away and is deleted. The last player to move wins.
 
 - **Colon Principle:** Stalks can be fused using XOR sum.
 - **Fusion Principle:** Cycles can be contracted into a single vertex without changing the Grundy value.
 
-## 6.1 Hackenbush on General Graphs
+## Hackenbush on General Graphs
 By contracting cycles using Tarjan's Bridge finding algorithm, any graph becomes a tree.
 
+### General Green Hackenbush (Cycles)
+*Evaluates Hackenbush on general cyclic graphs by contracting cycles using Tarjan's bridge-finding algorithm.*
 ```cpp
 #include "../../core.h"
 
@@ -34,13 +36,15 @@ int dfs_hackenbush_graph(int u, int pre = 0, int n = 0) {
 }
 ```
 
-## 6.2 Hackenbush on Simple Trees & Weighted Trees
+## Hackenbush on Simple Trees & Weighted Trees
 For a simple unweighted tree, the colon principle reduces to $G(u) = \bigoplus_{v} (G(v) + 1)$.
 For a **weighted tree**, where weights represent a series of edges:
 - If weight $W = 1$, XOR with $G(v) + 1$.
 - If weight $W$ is **even**, XOR with $G(v)$.
 - If weight $W > 1$ is **odd**, XOR with $G(v) \oplus 1$.
 
+### Weighted Hackenbush Trees
+*Evaluates Hackenbush on trees where edges have weights (acting as sequential chains).*
 ```cpp
 vector<pair<int, int>> adj_weighted[MAX_NODES];
 
@@ -59,12 +63,14 @@ long long dfs_hackenbush_tree(int u, int p) {
 }
 ```
 
-## 6.3 Partisan Hackenbush (Red-Blue)
+## Partisan Hackenbush (Red-Blue)
 Left player can only cut **Blue** edges, Right player can only cut **Red** edges. Evaluates to **Surreal Numbers**!
 - **Positive Numbers:** Favor Left (Blue).
 - **Negative Numbers:** Favor Right (Red).
 - **Fractional Stalks:** Reading from ground up, the first edge is $\pm 1$. After the first color change, each subsequent edge contributes exactly half the value of the previous edge (e.g., $1, \frac{1}{2}, \frac{1}{4}$), moving toward the new color's sign.
 
+### Partisan Stalk Evaluation
+*Evaluates a single independent stalk of Red/Blue edges using Surreal Numbers.*
 ```cpp
 // O ( E )
 // Evaluates a single independent stalk of edges from ground to top.
@@ -85,10 +91,12 @@ double partisan_hackenbush_stalk(const string& edges) {
 }
 ```
 
-## 6.4 Tree Chomp (Subtree Removal)
+## Tree Chomp (Subtree Removal)
 **Game Rules:** A tree is given. Choosing a node removes it and its entire subtree (all descendants).
 - **Formula:** It is solved recursively. The state transitions split the tree into a forest of independent trees. The Grundy value is the **MEX** of the XOR sums of the resulting independent components. In fact, this directly mirrors the Colon Principle!
 
+### Tree Chomp (Subtree Removal)
+*Evaluates tree chomp using the Colon Principle, identically to Green Hackenbush.*
 ```cpp
 // O ( V )
 // Tree Chomp evaluates identically to Hackenbush on a simple tree!
@@ -98,5 +106,41 @@ int tree_chomp_dfs(int u, int p, const vector<vector<int>>& adj) {
         if (v != p) xor_sum ^= (tree_chomp_dfs(v, u, adj) + 1);
     }
     return xor_sum;
+}
+```
+
+### Green Hackenbush on Trees (Colon Principle)
+*Reduces Green Hackenbush on a rooted tree into standard Nim by recursively XOR-summing the SG values of branches + 1.*
+```cpp
+int green_hackenbush_tree(int u, int p, const vector<vector<int>>& adj) {
+    int sg = 0;
+    for (int v : adj[u]) {
+        if (v == p) continue;
+        sg ^= (green_hackenbush_tree(v, u, adj) + 1);
+    }
+    return sg;
+}
+```
+
+### Partisan Hackenbush (Red-Blue Strings / Surreal Numbers)
+*Computes the exact fractional Surreal Number value of a sequential stack of Red/Blue edges (a Hackenbush stalk).*
+```cpp
+double partisan_hackenbush_stalk_value(const string& stalk) {
+    if (stalk.empty()) return 0.0;
+    double val = 0.0;
+    int sign = (stalk[0] == 'B') ? 1 : -1;
+    int i = 0;
+    while (i < (int)stalk.size() && stalk[i] == stalk[0]) {
+        val += sign;
+        i++;
+    }
+    double frac = sign;
+    while (i < (int)stalk.size()) {
+        frac /= 2.0;
+        if (stalk[i] == stalk[0]) val += frac;
+        else val -= frac;
+        i++;
+    }
+    return val;
 }
 ```

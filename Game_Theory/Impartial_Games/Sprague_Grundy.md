@@ -1,4 +1,4 @@
-# 1. Fundamentals & Sprague-Grundy Theorem
+# Fundamentals & Sprague-Grundy Theorem
 
 ## Impartial vs Partisan Games
 - **Impartial Games:** The set of valid moves from any given position is exactly the same for both players. (CP almost exclusively deals with impartial games).
@@ -13,6 +13,8 @@ Every impartial game under normal play is equivalent to a Nim pile of a certain 
 - **MEX (Minimum Excluded Value):** $G(S) = \text{MEX}( \{ G(S_1), G(S_2), \dots, G(S_k) \} )$
 - **Combining Games:** $G_{\text{total}} = G(\text{game}_1) \oplus G(\text{game}_2) \oplus \dots \oplus G(\text{game}_n)$
 
+### Core SG DP and MEX Calculation
+*Fundamental functions to combine game states via XOR, and recursively calculate the Grundy value of custom games using MEX.*
 ```cpp
 #include "../../core.h"
 
@@ -50,7 +52,7 @@ int compute_grundy(int h, const vector<int>& moves, vector<int>& dp) {
 ## Common Grundy Value Patterns (Cheat Sheet)
 Instead of running $O(N^2)$ DP for MEX, many standard game rules produce predictable, $O(1)$ mathematical patterns for $G(N)$. Always print the first 100 values of your DP to look for these patterns!
 
-### 1. Subtraction Rules
+### Subtraction Rules
 - **Take any number of stones (Standard Nim):** $G(N) = N$
 - **Take $1$ to $K$ stones (Bachet's Game):** $G(N) = N \pmod{K + 1}$
 - **Take any ODD number of stones:** $G(N) = N \pmod 2$
@@ -59,6 +61,8 @@ Instead of running $O(N^2)$ DP for MEX, many standard game rules produce predict
   - If $K$ is **odd**: $G(N) = N \pmod 2$
   - If $K$ is **even**: $G(N) = N \pmod{K + 1}$
 
+### Common Subtraction Rules
+*Evaluates $O(1)$ Grundy values for standard subtraction games like Bachet's, Even stones, and Powers of K.*
 ```cpp
 // O ( 1 )
 int bachets_game_grundy(int n, int k) { return n % (k + 1); }
@@ -66,13 +70,15 @@ int even_stones_grundy(int n) { return (n % 2 == 1) ? 0 : (n / 2); }
 int power_k_stones_grundy(int n, int k) { return (k % 2 == 1) ? (n % 2) : (n % (k + 1)); }
 ```
 
-### 2. Division & Factor Rules
+### Division & Factor Rules
 - **Divide $N$ by any of its divisors $D > 1$ (replace $N$ with $N/D$):**
   $G(N) = \text{Total number of prime factors of } N \text{ (with multiplicity)}$. 
   *(Example: $N = 12 = 2^2 \times 3^1 \implies G(12) = 2 + 1 = 3$. Dividing by $D$ is just removing prime factors, making it exactly Standard Nim).*
 - **Take at most half the stones ($1 \le X \le \lfloor N/2 \rfloor$):**
   $G(N) = \lfloor \log_2 N \rfloor$. (The position of the most significant bit).
 
+### Division & Factor Subtraction Games
+*Evaluates $O(1)$ Grundy values when taking half the stones or dividing by a prime factor.*
 ```cpp
 // O ( sqrt(N) )
 int division_game_grundy(long long n) {
@@ -88,12 +94,14 @@ int division_game_grundy(long long n) {
 int half_stones_grundy(long long n) { return 63 - __builtin_clzll(n); }
 ```
 
-### 3. Splitting Rules (Lasker's Nim)
+### Splitting Rules (Lasker's Nim)
 - **Take any number of stones OR split a pile into two non-empty piles:**
   - $N \equiv 1 \text{ or } 2 \pmod 4 \implies G(N) = N$
   - $N \equiv 3 \pmod 4 \implies G(N) = N + 1$
   - $N \equiv 0 \pmod 4 \implies G(N) = N - 1$
 
+### Lasker's Nim (Splitting Rule)
+*Evaluates the Grundy value when players can take stones or split a pile into two non-empty piles.*
 ```cpp
 // O ( 1 )
 int laskers_nim_grundy(int n) {
@@ -107,3 +115,31 @@ int laskers_nim_grundy(int n) {
 You have a tree with coins on some vertices. A move consists of sliding a coin toward the root.
 - **Trick:** The game is exactly equivalent to Nim where each coin at depth $D$ acts as a pile of size $D$. XOR the depths of all coins.
 - **Edge cases:** What if the capacity of nodes is limited? What if you slide away from root? Often reduces to Bipartite matching or parity arguments.
+
+
+### SG on a DAG (Game on a Directed Acyclic Graph)
+*Computes the exact Grundy value of a token moving along a DAG by evaluating the MEX of outgoing edges in Reverse Topological Order.*
+```cpp
+vector<int> sg_on_dag(int n, const vector<vector<int>>& adj) {
+    vector<int> out_degree(n, 0), grundy(n, 0);
+    vector<vector<int>> rev_adj(n);
+    for (int u = 0; u < n; ++u) {
+        for (int v : adj[u]) { out_degree[u]++; rev_adj[v].push_back(u); }
+    }
+    queue<int> q;
+    for (int i = 0; i < n; ++i) if (out_degree[i] == 0) q.push(i);
+
+    vector<unordered_set<int>> mex_sets(n);
+    while (!q.empty()) {
+        int u = q.front(); q.pop();
+        int g = 0;
+        while (mex_sets[u].count(g)) g++;
+        grundy[u] = g;
+        for (int p : rev_adj[u]) {
+            mex_sets[p].insert(g);
+            if (--out_degree[p] == 0) q.push(p);
+        }
+    }
+    return grundy;
+}
+```

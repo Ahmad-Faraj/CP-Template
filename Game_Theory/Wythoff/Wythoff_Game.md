@@ -1,4 +1,4 @@
-# 4. Wythoff's Game
+# Wythoff's Game
 
 **Game Rules:** There are exactly two piles of stones. A player can either take any positive number of stones from EXACTLY ONE pile, or take the EXACT SAME number of stones from BOTH piles simultaneously. The last player to move wins.
 
@@ -6,6 +6,8 @@
   - $\phi^2 = \phi + 1$, which heavily simplifies computations: $x = \lfloor (y-x)\phi \rfloor$.
   - **Trick:** Always use `long double` for $\phi$ to avoid precision issues on massive constraints ($10^{18}$).
 
+### Standard Wythoff Engine
+*Generates and validates Wythoff game states using the Golden Ratio Beatty Sequence.*
 ```cpp
 #include "../../core.h"
 
@@ -33,5 +35,33 @@ bool is_valid_wythoff_move(int a, int b, int x, int y) {
     if (x > a || y > b) return false;
     int da = a - x, db = b - y;
     return (da == 0 && db > 0) || (db == 0 && da > 0) || (da == db && da > 0);
+}
+```
+
+### $O(1)$ Winner Evaluation via Golden Ratio
+*Determines if a given Wythoff position $(x, y)$ is a losing state using precise floating-point Golden Ratio calculation.*
+```cpp
+bool is_wythoff_losing_state(long long x, long long y) {
+    if (x > y) swap(x, y);
+    long long diff = y - x;
+    double phi = (1.0 + sqrt(5.0)) / 2.0;
+    return x == (long long)(diff * phi);
+}
+```
+
+### Safe Wythoff Generator (Avoiding FP Inaccuracy)
+*Generates the first $N$ losing positions of Wythoff's Game in $O(N)$ without relying on floats (which lose precision for $N > 10^{15}$).*
+```cpp
+vector<pair<long long, long long>> generate_wythoff_cold_states(int N) {
+    vector<pair<long long, long long>> cold;
+    vector<bool> used(N * 3, false);
+    long long a = 1, b;
+    for (int k = 1; k <= N; k++) {
+        while (used[a]) a++;
+        b = a + k;
+        cold.push_back({a, b});
+        used[a] = used[b] = true;
+    }
+    return cold;
 }
 ```

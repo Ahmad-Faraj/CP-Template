@@ -1,7 +1,9 @@
-# 2. Compound Games (Impartial Game Rules)
+# Compound Games (Impartial Game Rules)
 
 When playing multiple sub-games simultaneously, the rules of combination dictate how to evaluate the final state.
 
+### Sub-Game Compound Operators
+*Combines multiple sub-games using Disjunctive, Selective, or Conjunctive rules for normal and misère play.*
 ```cpp
 #include "../../core.h"
 
@@ -59,4 +61,23 @@ bool normal_conjunctive_short(const vector<int>& states) {
 }
 bool misere_conjunctive_short(const vector<int>& states) { return normal_conjunctive_short(states); }
 bool misere_conjunctive_long(const vector<int>& states) { return normal_conjunctive_long(states); }
+```
+
+### Diminishing Rectangles / Multidimensional Nim
+*Evaluates a game where a token is on a multidimensional grid $(x, y, z)$. A move consists of strictly decreasing exactly one coordinate. This is exactly Nim where $x, y, z$ are the pile sizes!*
+```cpp
+bool diminishing_multidim_winner(const vector<int>& coordinates) {
+    int xor_sum = 0;
+    for (int c : coordinates) xor_sum ^= c;
+    return xor_sum != 0;
+}
+```
+
+### Multi-Game SG Combination
+*Solves tournaments where players play $K$ completely different games simultaneously.*
+```cpp
+bool multi_game_winner(int nim_state_sg, int wythoff_state_sg, int hackenbush_state_sg) {
+    int total_sg = nim_state_sg ^ wythoff_state_sg ^ hackenbush_state_sg;
+    return total_sg != 0;
+}
 ```
