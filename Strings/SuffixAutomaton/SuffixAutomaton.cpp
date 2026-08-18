@@ -26,7 +26,10 @@ struct SuffixAutomaton
       {
             int len, link;
             int next[26];
-            State() : len(0), link(-1)
+            int sz; // Size of endpos set (Frequency)
+            int first_pos; // End index of the first occurrence
+            bool is_clone;
+            State() : len(0), link(-1), sz(0), first_pos(-1), is_clone(false)
             {
                   fill(next, next + 26, -1);
             }
@@ -43,6 +46,8 @@ struct SuffixAutomaton
             int cur = st.size();
             st.emplace_back();
             st[cur].len = st[last].len + 1;
+            st[cur].first_pos = st[cur].len - 1;
+            st[cur].sz = 1;
 
             int p = last;
             while (p != -1 && st[p].next[c - 'a'] == -1)
@@ -73,6 +78,9 @@ struct SuffixAutomaton
                               st[clone].next[i] = st[q].next[i];
                         }
                         st[clone].link = st[q].link;
+                        st[clone].first_pos = st[q].first_pos;
+                        st[clone].is_clone = true;
+                        st[clone].sz = 0;
 
                         while (p != -1 && st[p].next[c - 'a'] == q)
                         {
