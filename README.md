@@ -1,6 +1,6 @@
 # CP-Template
 
-Contest reference library. 140 templates. Grab, paste, delete `solve()`, go.
+Contest reference library. 143 templates. Grab, paste, delete `solve()`, go.
 
 Every file opens with a fixed header — what it does, **when to reach for it**, what it
 handles, complexity, indexing, gotchas. Read the header, not the code. Nothing in this
@@ -28,14 +28,14 @@ A directory subdivides only once it passes ~15 files. Everything is `Title_Snake
 | --- | --- | --- | --- |
 | [Range_Query](Range_Query/) | ■ | 23 | `Segment_Tree` |
 | [Strings](Strings/) | ■ | 18 | `Hashing` `Aho_Corasick` |
-| [Data_Structure](Data_Structure/) | ■ | 14 | |
+| [Data_Structure](Data_Structure/) | ■ | 15 | |
 | [DP](DP/) | ■ | 12 | |
 | [Tree](Tree/) | ■ | 9 | |
 | [Graph](Graph/) | ■ | 19 | `Shortest_Path` `Connectivity` `Flow_And_Matching` |
 | [Geometry](Geometry/) | ■ | 6 | |
-| [Math](Math/) | ■ | 29 | `Number_Theory` `Combinatorics` `Polynomial` `Linear_Algebra` `Diophantine` `Calculus` |
+| [Math](Math/) | ■ | 30 | `Number_Theory` `Combinatorics` `Polynomial` `Linear_Algebra` `Diophantine` `Calculus` |
 | [Game_Theory](Game_Theory/) | ■ | 5 | |
-| [Misc](Misc/) | ■ | 5 | |
+| [Misc](Misc/) | ■ | 6 | |
 
 Per-file listings appear here as each directory is normalized.
 
@@ -101,6 +101,7 @@ Per-file listings appear here as each directory is normalized.
 | [MEX_All_Subarrays.cpp](Data_Structure/MEX_All_Subarrays.cpp) | variant | smallest positive integer that is no subarray's mex |
 | [Treap.cpp](Data_Structure/Treap.cpp) | **Main** | sorted multiset that also answers k-th and rank |
 | [Treap_Implicit.cpp](Data_Structure/Treap_Implicit.cpp) | variant | insert/erase mid-array, range reverse, cyclic shift |
+| [Hash_Table.cpp](Data_Structure/Hash_Table.cpp) | | a hash map anti-hash tests cannot blow up; pb_ds fast map |
 | [Ordered_Set.cpp](Data_Structure/Ordered_Set.cpp) | | rank queries with insert/erase — reach for this before a treap |
 | [Binary_Trie.cpp](Data_Structure/Binary_Trie.cpp) | | max XOR of a pair; XOR queries over a changing set |
 | [Monotonic_Queue.cpp](Data_Structure/Monotonic_Queue.cpp) | | sliding-window maximum |
@@ -146,6 +147,7 @@ tree's shape actually changes — it is the heaviest file here.
 | File | | Use when |
 | --- | --- | --- |
 | [Ternary_Search.cpp](Misc/Ternary_Search.cpp) | | minimise/maximise a unimodal function |
+| [Huffman_Coding.cpp](Misc/Huffman_Coding.cpp) | | shortest prefix-free code; optimal merge order |
 | [Josephus.cpp](Misc/Josephus.cpp) | | every k-th person leaves the circle |
 | [Majority_Element.cpp](Misc/Majority_Element.cpp) | | a value occupying more than n/2, or n/k |
 | [Coordinate_Compression.cpp](Misc/Coordinate_Compression.cpp) | | values reach 1e9 but only 1e5 are distinct |
@@ -168,6 +170,7 @@ All of `Math/` is done.
 | File | | Use when |
 | --- | --- | --- |
 | [Number_Theory/Mod_Arithmetic.cpp](Math/Number_Theory/Mod_Arithmetic.cpp) | **Main** | anything "modulo 1e9+7"; inverses, division, a number too big to read |
+| [Number_Theory/Modular_Int.cpp](Math/Number_Theory/Modular_Int.cpp) | **Main** | a type that carries the modulus, so `+ - * /` are already reduced |
 | [Number_Theory/Exponentiation.cpp](Math/Number_Theory/Exponentiation.cpp) | | `a^n mod m`, matrix power for a recurrence, `k` shuffles of a permutation |
 | [Number_Theory/Extended_GCD.cpp](Math/Number_Theory/Extended_GCD.cpp) | | an inverse under a **composite** modulus; is `ax + by = c` solvable |
 | [Number_Theory/CRT.cpp](Math/Number_Theory/CRT.cpp) | | combine `x = r_i (mod m_i)`; handles non-coprime moduli |

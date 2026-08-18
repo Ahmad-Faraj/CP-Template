@@ -1,0 +1,64 @@
+// Hash Table: a hash map that anti-hash tests cannot blow up, plus the faster pb_ds table.
+// Use when: you need a map keyed by int or long long and unordered_map is either too slow or being targeted.
+// Handles: any integral key, a randomised seed so the hash differs per run, and the same interface as unordered_map.
+// Time: O(1) expected per operation, roughly 3x faster than unordered_map for the pb_ds version
+// Indexing: not applicable
+// Note: plain unordered_map<int, ...> hashes by identity and is TLE-able on purpose. Do not ship it to Codeforces.
+
+#include <bits/stdc++.h>
+#include <ext/pb_ds/assoc_container.hpp>
+using namespace std;
+using namespace __gnu_pbds;
+using ll = long long;
+
+// splitmix64 with a clock-derived seed, so no fixed set of keys can be prepared against it
+struct Custom_Hash {
+    static uint64_t splitmix64(uint64_t x) {
+        x += 0x9e3779b97f4a7c15ULL;
+        x = (x ^ (x >> 30)) * 0xbf58476d1ce4e5b9ULL;
+        x = (x ^ (x >> 27)) * 0x94d049bb133111ebULL;
+        return x ^ (x >> 31);
+    }
+    size_t operator()(uint64_t x) const {
+        static const uint64_t SEED = chrono::steady_clock::now().time_since_epoch().count();
+        return (size_t)splitmix64(x + SEED);
+    }
+    size_t operator()(const pair<int, int> &p) const { // pairs are common enough to be worth it
+        return (size_t)splitmix64(((uint64_t)(uint32_t)p.first << 32 | (uint32_t)p.second) +
+                                  splitmix64(0x1234567));
+    }
+};
+
+// the fast one: open addressing, noticeably quicker than unordered_map
+template <typename Key, typename Value> using Fast_Map = gp_hash_table<Key, Value, Custom_Hash>;
+
+template <typename Key> using Fast_Set = gp_hash_table<Key, null_type, Custom_Hash>;
+
+// the drop-in one: same interface as unordered_map, just with a hash that cannot be targeted
+template <typename Key, typename Value> using Safe_Map = unordered_map<Key, Value, Custom_Hash>;
+
+template <typename Key> using Safe_Set = unordered_set<Key, Custom_Hash>;
+
+// reserving up front and loosening the load factor is most of unordered_map's remaining gap
+template <typename Map> void tune(Map &m, size_t expected) {
+    m.reserve(expected);
+    m.max_load_factor(0.25);
+}
+
+// Standard problem: n values then q queries, each asking how many times a value occurred
+void solve() {
+    int n, q;
+    cin >> n >> q;
+    Fast_Map<ll, int> count;
+    for (int i = 0; i < n; i++) {
+        ll x;
+        cin >> x;
+        count[x]++;
+    }
+    while (q--) {
+        ll x;
+        cin >> x;
+        auto it = count.find(x);
+        cout << (it == count.end() ? 0 : it->second) << '\n';
+    }
+}
