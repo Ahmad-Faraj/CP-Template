@@ -1,6 +1,6 @@
 # CP-Template
 
-Contest reference library. 132 templates. Grab, paste, delete `solve()`, go.
+Contest reference library. 133 templates. Grab, paste, delete `solve()`, go.
 
 Every file opens with a fixed header — what it does, **when to reach for it**, what it
 handles, complexity, indexing, gotchas. Read the header, not the code. Nothing in this
@@ -32,7 +32,7 @@ A directory subdivides only once it passes ~15 files. Everything is `Title_Snake
 | [DP](DP/) | ■ | 12 | |
 | [Tree](Tree/) | ■ | 9 | |
 | [Graph](Graph/) | ■ | 19 | `Shortest_Path` `Connectivity` `Flow_And_Matching` |
-| [Geometry](Geometry/) | ■ | 5 | |
+| [Geometry](Geometry/) | ■ | 6 | |
 | [Math](Math/) | ■ | 28 | `Number_Theory` `Combinatorics` `Polynomial` `Linear_Algebra` `Diophantine` `Calculus` |
 | [Game_Theory](Game_Theory/) | ■ | 5 | |
 | [Misc](Misc/) | ■ | 2 | |
@@ -210,6 +210,7 @@ integer-exact geometry cannot use `complex` at all.
 | [Circle.cpp](Geometry/Circle.cpp) | `complex<double>` | circles: intersections, overlap area, circumcircle, smallest enclosing circle |
 | [Convex_Hull.cpp](Geometry/Convex_Hull.cpp) | `struct Point<ll>` | smallest fence around all points; also exact `polar_sort` |
 | [Polygon.cpp](Geometry/Polygon.cpp) | `struct Point<ll>` | area, point-in-polygon, is it convex, lattice-point counts (Pick's) |
+| [Closest_Pair.cpp](Geometry/Closest_Pair.cpp) | `struct Point<ll>` | the two nearest points; exact, squared distance |
 | [Rectangle_Union.cpp](Geometry/Rectangle_Union.cpp) | `ll` corners | total area covered by overlapping axis-aligned rectangles |
 
 Reach for the exact pair whenever the input is integers: they use no EPS at all, so collinearity
