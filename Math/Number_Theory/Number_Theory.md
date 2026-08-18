@@ -14,69 +14,6 @@ Quick tests to check if $N$ is divisible by $D$:
 *   **11:** Difference between the sum of digits in odd positions and even positions is divisible by $11$.
 *   **12:** Divisible by both $3$ and $4$.
 
-### **2. Primes & Factorization**
-*   **Number of Divisors $\tau(n)$:** If $n = \prod p_i^{e_i}$, then $\tau(n) = \prod (e_i+1)$ *(Choose each prime exponent independently)*.
-*   **Sum of Divisors $\sigma(n)$:** $\sigma(n) = \prod \frac{p_i^{e_i+1} - 1}{p_i - 1} = \prod (1+p_i+\dots+p_i^{e_i})$.
-*   **Number of Multiples:** The number of multiples of $d$ up to $n$ is $\lfloor n/d \rfloor$.
-*   **Sieve of Eratosthenes:** Finds all primes up to $N$ in $\mathcal{O}(N \log \log N)$.
-    ```cpp
-    vector<int> sieve(int n) {
-        vector<bool> is_prime(n + 1, true);
-        vector<int> primes;
-        is_prime[0] = is_prime[1] = false;
-        for (int i = 2; i <= n; i++) {
-            if (is_prime[i]) {
-                primes.push_back(i);
-                for (long long j = 1LL * i * i; j <= n; j += i)
-                    is_prime[j] = false;
-            }
-        }
-        return primes;
-    }
-    ```
-*   **Smallest Prime Factor (SPF):** Precomputing the SPF allows factoring any $X \le N$ in $\mathcal{O}(\log X)$.
-    ```cpp
-    vector<int> spf(MAX_N + 1);
-    void build_spf() {
-        iota(spf.begin(), spf.end(), 0);
-        for (int i = 2; i * i <= MAX_N; i++) {
-            if (spf[i] == i) {
-                for (int j = i * i; j <= MAX_N; j += i)
-                    if (spf[j] == j) spf[j] = i;
-            }
-        }
-    }
-    vector<int> factorize(int x) {
-        vector<int> factors;
-        while (x != 1) {
-            factors.push_back(spf[x]);
-            x /= spf[x];
-        }
-        return factors;
-    }
-    ```
-
-### **3. GCD & Extended Euclidean Algorithm**
-*   **Euclidean Algorithm:** $\gcd(a, b) = \gcd(b, a \pmod b)$. Runs in $\mathcal{O}(\log(\min(a,b)))$.
-*   **Subtraction Form:** $\gcd(a, b) = \gcd(a, b-a)$ when $b \ge a$ *(Common divisors are unchanged by subtraction)*.
-*   **LCM:** $\gcd(a, b) \cdot \text{lcm}(a, b) = |ab|$ *(Prime exponents use $\min + \max = \text{sum}$)*.
-*   **Bézout's Identity:** For any integers $a$ and $b$, there exist integers $x$ and $y$ such that $ax + by = \gcd(a, b)$.
-    *   **Integer Solutions:** $ax+by=c$ has integer solutions $\iff \gcd(a,b)$ divides $c$.
-*   **Factoring GCD:** $\gcd(a,b)=g \iff a=gx, b=gy, \gcd(x,y)=1$.
-*   **Linear Combinations:** $\gcd(a_1,\dots,a_n)$ divides every integer linear combination of the array.
-*   **Exponent GCD:** $\gcd(a^m-1, a^n-1) = a^{\gcd(m,n)} - 1$ *(Exponent Euclidean structure)*.
-*   **Extended GCD:** Returns $X$, $Y$, and $\gcd(A,B)$.
-    ```cpp
-    long long extGCD(long long a, long long b, long long &x, long long &y) {
-        if (b == 0) { x = 1; y = 0; return a; }
-        long long x1, y1;
-        long long d = extGCD(b, a % b, x1, y1);
-        x = y1;
-        y = x1 - y1 * (a / b);
-        return d;
-    }
-    ```
-
 ### **4. Modular Arithmetic & Inverse**
 *   **Addition:** $(a + b) \pmod m = ((a \pmod m) + (b \pmod m)) \pmod m$
 *   **Multiplication:** $(a \cdot b) \pmod m = ((a \pmod m) \cdot (b \pmod m)) \pmod m$
@@ -125,14 +62,6 @@ Counts the integers $\le n$ that are coprime to $n$.
     $$ A^N \equiv A^{\phi(M) + [N \bmod \phi(M)]} \pmod M $$
     *(Note: When doing exponentiation, if $N \bmod \phi(M) == 0$, you MUST use $\phi(M)$ as the exponent, not $0$. Computing $A^0 \pmod M$ incorrectly returns 1 if $A$ and $M$ share factors).*
 
-### **6. Linear Diophantine Equations (LDE)**
-Finds integer solutions to $Ax + By = C$.
-*   **Condition:** A solution exists $\iff \gcd(A, B)$ divides $C$.
-*   **Base Solution:** Let $g = \text{extGCD}(A, B, x_0, y_0)$. The base solution is $x = x_0 \cdot \frac{C}{g}$ and $y = y_0 \cdot \frac{C}{g}$.
-*   **All Solutions:** 
-    $x_k = x + k \cdot \frac{B}{g}$
-    $y_k = y - k \cdot \frac{A}{g}$
-
 ### **7. Chinese Remainder Theorem (CRT)**
 Solves systems of congruences $x \equiv a_i \pmod{m_i}$ for $i=1 \dots K$.
 *   If all $m_i$ are pairwise coprime, a unique solution exists modulo $M = \prod m_i$.
@@ -169,11 +98,6 @@ A function is multiplicative if $f(a \cdot b) = f(a) \cdot f(b)$ for $\gcd(a,b)=
     *   $\mu(n) = -1$ if $n$ is square-free with an odd number of prime factors.
     *   $\mu(n) = 0$ if $n$ has a squared prime factor.
 *   **Fundamental Property:** $\sum_{d|n} \mu(d) = 1$ if $n=1$, else $0$.
-
-### **9. Möbius Inversion**
-Allows simplifying sums over divisors.
-If $g(n) = \sum_{d|n} f(d)$, then $f(n) = \sum_{d|n} \mu(d) g\left(\frac{n}{d}\right)$.
-*(Also applies to summation over multiples: If $g(n) = \sum_{n|d} f(d)$, then $f(n) = \sum_{n|d} \mu\left(\frac{d}{n}\right) g(d)$).*
 
 ### **10. Primitive Roots & Discrete Logarithm**
 *   **Primitive Root:** A number $g$ is a primitive root modulo $M$ if its powers $g^1, g^2, \dots, g^{\phi(M)}$ generate all numbers coprime to $M$. (Exists only for $M = 2, 4, p^k, 2p^k$).
@@ -229,16 +153,6 @@ The smallest positive integer $m$ such that $A^m \equiv 1 \pmod n$ for every int
 *   $\lambda(p^k) = \phi(p^k)$ for odd primes, and for $p=2$ with $k \le 2$.
 *   $\lambda(2^k) = \frac{1}{2} \phi(2^k) = 2^{k-2}$ for $k \ge 3$.
 *   $\lambda(p_1^{a_1} \dots p_k^{a_k}) = \text{lcm}(\lambda(p_1^{a_1}), \dots, \lambda(p_k^{a_k}))$.
-
-### **19. Min_25 Sieve (Lucy Hedgehog Sieve)**
-Computes the prefix sum of a multiplicative function $\sum_{i=1}^N f(i)$ in $\mathcal{O}(N^{3/4} / \log N)$ or $\mathcal{O}(N^{2/3})$.
-*   **Requirement:** $f(p)$ is a low-degree polynomial, and $f(p^k)$ can be computed quickly.
-*   **Mechanism:** Uses DP to calculate the sum over primes $\le \sqrt{N}$ and smoothly transitions to composite numbers.
-
-### **20. Harmonic Lemma & Divisor Summatory Function**
-The sum $\sum_{i=1}^N \lfloor \frac{N}{i} \rfloor$ (which counts the total number of divisors of all numbers up to $N$) can be computed in $\mathcal{O}(\sqrt{N})$ using the Harmonic Lemma:
-$$ \sum_{i=1}^N \lfloor \frac{N}{i} \rfloor = 2 \sum_{i=1}^{\lfloor \sqrt{N} \rfloor} \lfloor \frac{N}{i} \rfloor - \lfloor \sqrt{N} \rfloor^2 $$
-*Used heavily in Dirichlet hyperbola method and Möbius inversion block-jumping (where $\lfloor N/i \rfloor$ takes at most $2\sqrt{N}$ distinct values).*
 
 ### **21. Dirichlet Hyperbola Method**
 Used to compute the prefix sum of a Dirichlet convolution $h = f * g$ up to $N$ in $\mathcal{O}(\sqrt{N})$ or $\mathcal{O}(N^{2/3})$:

@@ -20,6 +20,14 @@
  *   cost(l, r) = (pref[r] - pref[l-1])^2
  */
 
+/*
+ * Trick (Blackbox Testing): Check Quadrangle Inequality quickly:
+ * bool is_qi() {
+ *     // C(a,c) + C(b,d) <= C(a,d) + C(b,c) for a < b < c < d
+ *     return get_cost(1, 3) + get_cost(2, 4) <= get_cost(1, 4) + get_cost(2, 3); 
+ * }
+ */
+
 const int MAXN = 4010;
 int n, k;
 ll pref[MAXN];

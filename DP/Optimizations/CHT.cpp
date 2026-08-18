@@ -3,8 +3,10 @@
 /*
  * Topic: DP - Convex Hull Trick (CHT)
  * Description: Optimizes DP transitions of the form dp[i] = min/max(m[j] * x[i] + b[j])
- * where slopes m[j] are monotonic. If x[i] are also monotonic, we can use a pointer
- * to answer queries in O(1) amortized. Otherwise, we can use binary search in O(log N).
+ * Condition (Deque CHT): Use when BOTH the slopes of the added lines m[j] are monotonic 
+ *                        (e.g., sorted) AND the query coordinates x[i] are monotonic. O(N) amortized.
+ * Condition (Binary Search CHT): Use when slopes m[j] are monotonic, but queries x[i] are random. O(N log N).
+ * Note: If NEITHER slopes nor queries are monotonic, use Li-Chao Tree instead.
  * Input: Lines (m, b) added sequentially, and queries x.
  * Output: The minimum/maximum evaluated value of m*x + b across all lines.
  */
@@ -54,3 +56,22 @@ struct CHT {
         return f(mid, x);
     }
 };
+/* 
+ * ---------------------------------------------------------
+ * ALTERNATIVE: O(N) Deque CHT
+ * Use this strictly when BOTH slopes and queries are monotonic.
+ * ---------------------------------------------------------
+ * struct Line { long long m, c; };
+ * deque<Line> dq;
+ * auto intersect = [](Line a, Line b) { return 1.0 * (b.c - a.c) / (a.m - b.m); };
+ * 
+ * // Add line (assuming slopes are monotonic)
+ * while (dq.size() >= 2 && intersect(dq.back(), line) <= intersect(dq[dq.size()-2], dq.back()))
+ *     dq.pop_back();
+ * dq.push_back(line);
+ * 
+ * // Query x (assuming queries are monotonic)
+ * while (dq.size() >= 2 && intersect(dq[0], dq[1]) <= x)
+ *     dq.pop_front();
+ * long long ans = dq.front().m * x + dq.front().c;
+ */

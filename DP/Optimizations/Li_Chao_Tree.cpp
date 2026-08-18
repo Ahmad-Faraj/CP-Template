@@ -4,6 +4,8 @@
  * Topic: DP - Li Chao Tree
  * Description: A data structure used to maintain a set of lines or line segments
  * and query the minimum value among them at any given x.
+ * Condition: Use this when NEITHER slopes m[j] nor queries x[i] are monotonic (i.e. both are random).
+ * Time Complexity: O(log(Range)) per addition and query.
  * 
  * To convert to a MAXIMUM query Li Chao Tree:
  * 1. Change all 'inf' defaults to '-inf' in node creation and null returns.
