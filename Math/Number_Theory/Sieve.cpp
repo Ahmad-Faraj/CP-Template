@@ -30,6 +30,22 @@ vector<int> primes_up_to(int n) {
     return primes;
 }
 
+// primes in [lo, hi] when hi is far too large to sieve from 0; the range itself must be manageable
+vector<ll> segmented_sieve(ll lo, ll hi) {
+    if (hi < 2) return {};
+    lo = max(lo, 2LL);
+    if (lo > hi) return {};
+    int root = (int)sqrtl((long double)hi) + 1;
+    vector<int> base = primes_up_to(root);
+    vector<char> composite(hi - lo + 1, 0);
+    for (int p : base)
+        for (ll j = max((ll)p * p, (lo + p - 1) / p * p); j <= hi; j += p) composite[j - lo] = 1;
+    vector<ll> out;
+    for (ll v = lo; v <= hi; v++)
+        if (!composite[v - lo]) out.push_back(v);
+    return out;
+}
+
 struct Sieve {
     int n;
     vector<int> spf;    // spf[i] = the smallest prime dividing i; spf[0] = spf[1] = 0

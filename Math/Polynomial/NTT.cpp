@@ -24,6 +24,25 @@ ll pow_mod(ll b, ll e, ll m) {
     return r;
 }
 
+// a primitive root of a prime p, for when you want an NTT under some other friendly prime
+ll primitive_root(ll p) {
+    vector<ll> factors;
+    ll phi = p - 1, m = phi;
+    for (ll f = 2; f * f <= m; f++)
+        if (m % f == 0) {
+            factors.push_back(f);
+            while (m % f == 0) m /= f;
+        }
+    if (m > 1) factors.push_back(m);
+    for (ll g = 2; g <= p; g++) {
+        bool ok = true;
+        for (ll f : factors)
+            if (pow_mod(g, phi / f, p) == 1) { ok = false; break; }
+        if (ok) return g;
+    }
+    return -1;
+}
+
 void ntt(vector<ll> &a, bool invert, ll mod = NTT_MOD, ll root = NTT_ROOT) {
     int n = (int)a.size();
     for (int i = 1, j = 0; i < n; i++) {

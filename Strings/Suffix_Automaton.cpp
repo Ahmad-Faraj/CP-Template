@@ -1,0 +1,119 @@
+// Suffix Automaton: the smallest automaton accepting every suffix, so every substring is one path from the start.
+// Use when: counting distinct substrings, "how many times does p occur", longest common substring, k-th substring.
+// Handles: any alphabet via a map per state, occurrence counts, first position, and queries after one build.
+// Time: build O(n log alphabet) | matching a pattern O(|p| log alphabet)
+// Indexing: states are 0-based and state 0 is the start; link[0] is -1
+// Note: occurrences() calls build_counts() itself the first time; call it directly if you add more text later.
+
+#include <bits/stdc++.h>
+using namespace std;
+using ll = long long;
+
+struct Suffix_Automaton {
+    struct State {
+        int len = 0, link = -1;
+        ll count = 0;      // how many times this state's substrings occur, after build_counts()
+        int first_pos = 0; // where the first occurrence ends
+        bool clone = false;
+        map<char, int> next;
+    };
+
+    vector<State> st;
+    int last = 0;
+    bool counts_ready = false;
+
+    Suffix_Automaton(const string &s = "") {
+        st.reserve(2 * s.size() + 2);
+        st.push_back(State());
+        for (char c : s) extend(c);
+    }
+
+    void extend(char c) {
+        int cur = (int)st.size();
+        st.push_back(State());
+        st[cur].len = st[last].len + 1;
+        st[cur].count = 1; // a real prefix ends here, so it occurs at least once
+        st[cur].first_pos = st[cur].len - 1;
+        int p = last;
+        while (p != -1 && !st[p].next.count(c)) st[p].next[c] = cur, p = st[p].link;
+        if (p == -1)
+            st[cur].link = 0;
+        else {
+            int q = st[p].next[c];
+            if (st[p].len + 1 == st[q].len)
+                st[cur].link = q;
+            else { // split q into a clone carrying the shorter length
+                int clone = (int)st.size();
+                st.push_back(st[q]);
+                st[clone].len = st[p].len + 1;
+                st[clone].count = 0;
+                st[clone].clone = true;
+                st[clone].first_pos = st[q].first_pos;
+                while (p != -1 && st[p].next[c] == q) st[p].next[c] = clone, p = st[p].link;
+                st[q].link = st[cur].link = clone;
+            }
+        }
+        last = cur;
+        counts_ready = false;
+    }
+
+    // push occurrence counts down the suffix links; needed before occurrences()
+    void build_counts() {
+        vector<int> order((int)st.size());
+        iota(order.begin(), order.end(), 0);
+        sort(order.begin(), order.end(), [&](int a, int b) { return st[a].len > st[b].len; });
+        for (int v : order)
+            if (st[v].link > 0 || (st[v].link == 0 && v != 0)) st[st[v].link].count += st[v].count;
+        counts_ready = true;
+    }
+
+    int walk(const string &p) const { // the state reached by p, or -1 if p is not a substring
+        int cur = 0;
+        for (char c : p) {
+            auto it = st[cur].next.find(c);
+            if (it == st[cur].next.end()) return -1;
+            cur = it->second;
+        }
+        return cur;
+    }
+
+    bool contains(const string &p) const { return walk(p) != -1; }
+
+    ll occurrences(const string &p) { // how many times p appears; needs build_counts()
+        if (!counts_ready) build_counts();
+        int v = walk(p);
+        return v == -1 ? 0 : st[v].count;
+    }
+
+    int first_occurrence(const string &p) const { // start index of the first occurrence, or -1
+        int v = walk(p);
+        return v == -1 ? -1 : st[v].first_pos - (int)p.size() + 1;
+    }
+
+    ll distinct_substrings() const { // each state contributes len - len(link) different substrings
+        ll total = 0;
+        for (size_t v = 1; v < st.size(); v++) total += st[v].len - st[st[v].link].len;
+        return total;
+    }
+
+    // the longest string that is a substring of both this text and t
+    string longest_common_substring(const string &t) const {
+        int v = 0, l = 0, best = 0, best_end = 0;
+        for (int i = 0; i < (int)t.size(); i++) {
+            while (v && !st[v].next.count(t[i])) v = st[v].link, l = st[v].len;
+            auto it = st[v].next.find(t[i]);
+            if (it != st[v].next.end()) v = it->second, l++;
+            if (l > best) best = l, best_end = i;
+        }
+        if (best == 0) return ""; // nothing in common; without this the substr below is out of range
+        return t.substr(best_end - best + 1, best);
+    }
+};
+
+// Standard problem: a text - report how many distinct non-empty substrings it has
+void solve() {
+    string s;
+    cin >> s;
+    Suffix_Automaton sam(s);
+    cout << sam.distinct_substrings() << '\n';
+}
