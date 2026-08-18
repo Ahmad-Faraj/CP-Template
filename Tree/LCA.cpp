@@ -3,7 +3,7 @@
 // Handles: any rooted tree, k-th ancestor, LCA, edge-count distance. Static - edges cannot change after build().
 // Time: build O(n log n) | get_lca O(log n) | kth_ancestor O(log n) | dist O(log n)
 // Indexing: 1-based nodes
-// Note: call build(root) once, after every add_edge. dfs is recursive, so a path-shaped tree can overflow the stack.
+// Note: call build(root) once, after every add_edge. The traversal is iterative, so a path-shaped tree is fine.
 
 #include <bits/stdc++.h>
 using namespace std;
@@ -26,12 +26,18 @@ struct LCA {
         adj[v].push_back(u);
     }
 
-    void dfs(int u, int p = 0) {
-        for (auto &v : adj[u]) {
-            if (v == p) continue;
-            dep[v] = dep[u] + 1, anc[v][0] = u;
-            for (int bit = 1; bit < LOG; bit++) anc[v][bit] = anc[anc[v][bit - 1]][bit - 1];
-            dfs(v, u);
+    // iterative on purpose: a path-shaped tree of 1e5 nodes overflows the stack when this recurses
+    void dfs(int root, int p = 0) {
+        vector<pair<int, int>> stack_{{root, p}};
+        while (!stack_.empty()) {
+            auto [u, parent] = stack_.back();
+            stack_.pop_back();
+            for (int v : adj[u]) {
+                if (v == parent) continue;
+                dep[v] = dep[u] + 1, anc[v][0] = u;
+                for (int bit = 1; bit < LOG; bit++) anc[v][bit] = anc[anc[v][bit - 1]][bit - 1];
+                stack_.push_back({v, u});
+            }
         }
     }
 
