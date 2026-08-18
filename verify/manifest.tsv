@@ -26,3 +26,7 @@ NTT_Any_Mod	Math/Polynomial/NTT_Any_Mod.cpp	https://judge.yosupo.jp/problem/conv
 FWHT	Math/Polynomial/FWHT.cpp	https://judge.yosupo.jp/problem/bitwise_xor_convolution
 Longest_Increasing_Subsequence	DP/Longest_Increasing_Subsequence.cpp	https://judge.yosupo.jp/problem/longest_increasing_subsequence
 Bipartite_Matching_Hopcroft_Karp	Graph/Flow_And_Matching/Bipartite_Matching_Hopcroft_Karp.cpp	https://judge.yosupo.jp/problem/bipartitematching
+Hungarian	Graph/Flow_And_Matching/Hungarian.cpp	https://judge.yosupo.jp/problem/assignment
+Rectangle_Union	Geometry/Rectangle_Union.cpp	https://judge.yosupo.jp/problem/area_of_union_of_rectangles
+Ordered_Set	Data_Structure/Ordered_Set.cpp	https://judge.yosupo.jp/problem/predecessor_problem
+Hash_Table	Data_Structure/Hash_Table.cpp	https://judge.yosupo.jp/problem/associative_array

@@ -3,7 +3,7 @@
   "cases": 18,
   "limit": 5.0,
   "passed": 18,
-  "slowest": 0.96,
+  "slowest": 0.95,
   "status": "AC",
   "template": "Graph/2_SAT.cpp",
   "url": "https://judge.yosupo.jp/problem/two_sat"
@@ -11,7 +11,7 @@
  "Bipartite_Matching": {
   "cases": 44,
   "limit": 5.0,
-  "passed": 41,
+  "passed": 40,
   "slowest": 15.0,
   "status": "TLE",
   "template": "Graph/Flow_And_Matching/Bipartite_Matching.cpp",
@@ -21,7 +21,7 @@
   "cases": 44,
   "limit": 5.0,
   "passed": 44,
-  "slowest": 1.77,
+  "slowest": 0.62,
   "status": "AC",
   "template": "Graph/Flow_And_Matching/Bipartite_Matching_Hopcroft_Karp.cpp",
   "url": "https://judge.yosupo.jp/problem/bipartitematching"
@@ -30,7 +30,7 @@
   "cases": 25,
   "limit": 5.0,
   "passed": 25,
-  "slowest": 0.23,
+  "slowest": 0.2,
   "status": "AC",
   "template": "Data_Structure/Cartesian_Tree.cpp",
   "url": "https://judge.yosupo.jp/problem/cartesian_tree"
@@ -39,7 +39,7 @@
   "cases": 18,
   "limit": 5.0,
   "passed": 18,
-  "slowest": 0.15,
+  "slowest": 0.14,
   "status": "AC",
   "template": "Data_Structure/DSU.cpp",
   "url": "https://judge.yosupo.jp/problem/unionfind"
@@ -48,7 +48,7 @@
   "cases": 18,
   "limit": 5.0,
   "passed": 18,
-  "slowest": 0.12,
+  "slowest": 0.11,
   "status": "AC",
   "template": "Data_Structure/DSU_Weighted.cpp",
   "url": "https://judge.yosupo.jp/problem/unionfind_with_potential"
@@ -57,7 +57,7 @@
   "cases": 29,
   "limit": 5.0,
   "passed": 29,
-  "slowest": 0.74,
+  "slowest": 0.66,
   "status": "AC",
   "template": "Graph/Shortest_Path/Dijkstra.cpp",
   "url": "https://judge.yosupo.jp/problem/shortest_path"
@@ -66,7 +66,7 @@
   "cases": 20,
   "limit": 10.0,
   "passed": 20,
-  "slowest": 0.61,
+  "slowest": 0.48,
   "status": "AC",
   "template": "Math/Number_Theory/Discrete_Log.cpp",
   "url": "https://judge.yosupo.jp/problem/discrete_logarithm_mod"
@@ -75,7 +75,7 @@
   "cases": 13,
   "limit": 5.0,
   "passed": 13,
-  "slowest": 0.84,
+  "slowest": 0.78,
   "status": "AC",
   "template": "Math/Polynomial/FWHT.cpp",
   "url": "https://judge.yosupo.jp/problem/bitwise_xor_convolution"
@@ -84,16 +84,34 @@
   "cases": 21,
   "limit": 5.0,
   "passed": 21,
-  "slowest": 0.33,
+  "slowest": 0.29,
   "status": "AC",
   "template": "Range_Query/Fenwick_Tree.cpp",
   "url": "https://judge.yosupo.jp/problem/point_add_range_sum"
+ },
+ "Hash_Table": {
+  "cases": 20,
+  "limit": 5.0,
+  "passed": 20,
+  "slowest": 0.87,
+  "status": "AC",
+  "template": "Data_Structure/Hash_Table.cpp",
+  "url": "https://judge.yosupo.jp/problem/associative_array"
+ },
+ "Hungarian": {
+  "cases": 14,
+  "limit": 5.0,
+  "passed": 14,
+  "slowest": 0.12,
+  "status": "AC",
+  "template": "Graph/Flow_And_Matching/Hungarian.cpp",
+  "url": "https://judge.yosupo.jp/problem/assignment"
  },
  "LCA": {
   "cases": 25,
   "limit": 5.0,
   "passed": 25,
-  "slowest": 1.85,
+  "slowest": 1.6,
   "status": "AC",
   "template": "Tree/LCA.cpp",
   "url": "https://judge.yosupo.jp/problem/lca"
@@ -102,7 +120,7 @@
   "cases": 19,
   "limit": 5.0,
   "passed": 19,
-  "slowest": 0.1,
+  "slowest": 0.09,
   "status": "AC",
   "template": "DP/Longest_Increasing_Subsequence.cpp",
   "url": "https://judge.yosupo.jp/problem/longest_increasing_subsequence"
@@ -111,7 +129,7 @@
   "cases": 31,
   "limit": 5.0,
   "passed": 31,
-  "slowest": 0.31,
+  "slowest": 0.26,
   "status": "AC",
   "template": "Graph/MST_Kruskal.cpp",
   "url": "https://judge.yosupo.jp/problem/minimum_spanning_tree"
@@ -120,7 +138,7 @@
   "cases": 24,
   "limit": 5.0,
   "passed": 24,
-  "slowest": 0.09,
+  "slowest": 0.1,
   "status": "AC",
   "template": "Strings/Manacher.cpp",
   "url": "https://judge.yosupo.jp/problem/enumerate_palindromes"
@@ -129,7 +147,7 @@
   "cases": 12,
   "limit": 5.0,
   "passed": 12,
-  "slowest": 1.04,
+  "slowest": 1.01,
   "status": "AC",
   "template": "Math/Number_Theory/Miller_Rabin_Pollard_Rho.cpp",
   "url": "https://judge.yosupo.jp/problem/primality_test"
@@ -138,7 +156,7 @@
   "cases": 31,
   "limit": 10.0,
   "passed": 31,
-  "slowest": 0.36,
+  "slowest": 0.34,
   "status": "AC",
   "template": "Math/Number_Theory/Miller_Rabin_Pollard_Rho.cpp",
   "url": "https://judge.yosupo.jp/problem/factorize"
@@ -147,7 +165,7 @@
   "cases": 53,
   "limit": 5.0,
   "passed": 53,
-  "slowest": 0.53,
+  "slowest": 0.56,
   "status": "AC",
   "template": "Math/Polynomial/NTT.cpp",
   "url": "https://judge.yosupo.jp/problem/convolution_mod"
@@ -156,16 +174,34 @@
   "cases": 48,
   "limit": 10.0,
   "passed": 48,
-  "slowest": 1.25,
+  "slowest": 1.39,
   "status": "AC",
   "template": "Math/Polynomial/NTT_Any_Mod.cpp",
   "url": "https://judge.yosupo.jp/problem/convolution_mod_1000000007"
+ },
+ "Ordered_Set": {
+  "cases": 22,
+  "limit": 10.0,
+  "passed": 22,
+  "slowest": 5.79,
+  "status": "AC",
+  "template": "Data_Structure/Ordered_Set.cpp",
+  "url": "https://judge.yosupo.jp/problem/predecessor_problem"
+ },
+ "Rectangle_Union": {
+  "cases": 21,
+  "limit": 5.0,
+  "passed": 21,
+  "slowest": 3.26,
+  "status": "AC",
+  "template": "Geometry/Rectangle_Union.cpp",
+  "url": "https://judge.yosupo.jp/problem/area_of_union_of_rectangles"
  },
  "Segment_Tree": {
   "cases": 21,
   "limit": 5.0,
   "passed": 21,
-  "slowest": 0.5,
+  "slowest": 0.44,
   "status": "AC",
   "template": "Range_Query/Segment_Tree/Segment_Tree.cpp",
   "url": "https://judge.yosupo.jp/problem/point_add_range_sum"
@@ -174,7 +210,7 @@
   "cases": 21,
   "limit": 5.0,
   "passed": 21,
-  "slowest": 0.38,
+  "slowest": 0.41,
   "status": "AC",
   "template": "Range_Query/Segment_Tree/Segment_Tree_Iterative.cpp",
   "url": "https://judge.yosupo.jp/problem/point_add_range_sum"
@@ -183,7 +219,7 @@
   "cases": 10,
   "limit": 10.0,
   "passed": 10,
-  "slowest": 12.03,
+  "slowest": 9.55,
   "status": "AC",
   "template": "Math/Number_Theory/Sieve.cpp",
   "url": "https://judge.yosupo.jp/problem/enumerate_primes"
@@ -192,7 +228,7 @@
   "cases": 27,
   "limit": 5.0,
   "passed": 27,
-  "slowest": 0.38,
+  "slowest": 0.41,
   "status": "AC",
   "template": "Range_Query/Sparse_Table.cpp",
   "url": "https://judge.yosupo.jp/problem/staticrmq"
@@ -201,7 +237,7 @@
   "cases": 12,
   "limit": 5.0,
   "passed": 12,
-  "slowest": 0.48,
+  "slowest": 0.52,
   "status": "AC",
   "template": "Graph/Connectivity/Strongly_Connected_Components.cpp",
   "url": "https://judge.yosupo.jp/problem/scc"
@@ -210,7 +246,7 @@
   "cases": 50,
   "limit": 5.0,
   "passed": 50,
-  "slowest": 0.77,
+  "slowest": 0.76,
   "status": "AC",
   "template": "Strings/Suffix_Array.cpp",
   "url": "https://judge.yosupo.jp/problem/suffixarray"
@@ -219,7 +255,7 @@
   "cases": 24,
   "limit": 5.0,
   "passed": 24,
-  "slowest": 0.69,
+  "slowest": 0.66,
   "status": "AC",
   "template": "Strings/Suffix_Automaton.cpp",
   "url": "https://judge.yosupo.jp/problem/number_of_substrings"
@@ -228,7 +264,7 @@
   "cases": 24,
   "limit": 5.0,
   "passed": 24,
-  "slowest": 2.4,
+  "slowest": 1.96,
   "status": "AC",
   "template": "Range_Query/Wavelet_Tree.cpp",
   "url": "https://judge.yosupo.jp/problem/range_kth_smallest"
@@ -237,7 +273,7 @@
   "cases": 29,
   "limit": 5.0,
   "passed": 29,
-  "slowest": 0.07,
+  "slowest": 0.06,
   "status": "AC",
   "template": "Strings/Z_Function.cpp",
   "url": "https://judge.yosupo.jp/problem/zalgorithm"

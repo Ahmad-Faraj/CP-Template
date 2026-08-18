@@ -4,7 +4,7 @@
 Reads verify/results.json (written by tools/verify.py) and walks the tree, so the
 checklist cannot drift from what was actually run.
 """
-import json, pathlib, collections
+import json, pathlib, collections, re
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 RES = ROOT / 'verify' / 'results.json'
@@ -27,10 +27,16 @@ def main():
                 parts = line.split('\t')
                 notes[parts[0]] = parts[1] if len(parts) > 1 else ''
 
+    # which templates a brute-force test actually includes
+    tested = collections.defaultdict(list)
+    for t in sorted((ROOT / 'tests').glob('*.cpp')):
+        for inc in re.findall(r'#include "\.\./([^"]+)"', t.read_text(encoding='utf-8')):
+            tested[inc].append(t.stem)
+
     dirs = collections.defaultdict(list)
     for f in sorted(ROOT.rglob('*.cpp')):
         rel = f.relative_to(ROOT).as_posix()
-        if rel.startswith('other/') or rel.startswith('verify/'):
+        if rel.startswith(('other/', 'verify/', 'tests/')):
             continue
         top = rel.split('/')[0]
         if len(rel.split('/')) > 2:
@@ -49,7 +55,8 @@ def main():
     out.append('| | meaning |')
     out.append('| --- | --- |')
     out.append('| **JUDGE** | passes a real judge\'s full system tests, run locally against the judge\'s own checker |')
-    out.append('| brute force | agrees with an independent reference over randomised inputs; no judge data exists for it |')
+    out.append('| brute force | a test in `tests/` compares it to an independent reference over randomised inputs |')
+    out.append('| UNGUARDED | neither - nothing here re-checks it |')
     out.append('| FAIL / TLE | the judge data rejects it - see the note |')
     out.append("| OVER LIMIT | every case is CORRECT, but the slowest run exceeded the limit here |")
     out.append('')
@@ -68,6 +75,8 @@ def main():
             runs = by_template.get(rel, [])
             ac = [r for _, r in runs if r['status'] == 'AC']
             over = [r for r in ac if r.get('limit') and r['slowest'] > r['limit']]
+            if rel in tested and ac:
+                pass
             if ac:
                 ev = '; '.join('[%s](%s) %d/%d cases, %.2fs of %.0fs' %
                                (r['url'].rsplit('/', 1)[-1], r['url'], r['passed'], r['cases'],
@@ -79,12 +88,21 @@ def main():
                 r = runs[0][1]
                 status = BADGE.get(r['status'], r['status'])
                 ev = '[%s](%s) %d/%d cases' % (r['url'].rsplit('/', 1)[-1], r['url'], r['passed'], r['cases'])
-            else:
+            elif rel in tested:
                 status = 'brute force'
-                ev = notes.get(rel, 'no matching judge problem found')
+                ev = 'tests/' + tested[rel][0] + '.cpp' + (
+                    ' - ' + notes[rel] if rel in notes else '')
+            else:
+                status = 'UNGUARDED'
+                ev = notes.get(rel, 'no judge problem and no brute-force test')
             out.append('| [%s](%s) | %s | %s |' % (name, rel, status, ev))
         out.append('')
 
+    unguarded = sum(1 for d in dirs for rel in dirs[d]
+                    if rel not in tested and not by_template.get(rel))
+    out.append("")
+    out.append("**%d templates are UNGUARDED** - no judge problem and no brute-force test." % unguarded)
+    out.append("")
     (ROOT / 'VERIFICATION.md').write_text('\n'.join(out) + '\n', encoding='utf-8', newline='\n')
     print('VERIFICATION.md: %d judged / %d templates' % (judged, total))
 

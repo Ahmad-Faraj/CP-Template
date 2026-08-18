@@ -264,10 +264,16 @@ vertices; the two are easy to confuse and solve different questions.
 
 ## Verification
 
-[VERIFICATION.md](VERIFICATION.md) lists every template and what actually backs it. 24 of 149
-carry a judge verdict: `tools/verify.py` embeds the template byte for byte, downloads a judge's
-full system tests, and runs them against that judge's own checker. Everything else stands on
-brute-force agreement, which finds wrong answers but cannot establish a time bound.
+[VERIFICATION.md](VERIFICATION.md) lists every template and what actually backs it. Two kinds of
+evidence, both reproducible:
+
+- **29 carry a judge verdict.** `tools/verify.py` embeds the template byte for byte, downloads a
+  judge's full system tests, and grades them with that judge's own checker at its time limit.
+- **68 more have a brute-force test** in `tests/`, comparing the template to an independent
+  reference over randomised inputs. `py tools/test.py` runs them all in about a minute.
+
+That leaves **51 templates unguarded** - marked UNGUARDED in the checklist. Check those against the
+problem's own sample before trusting them.
 
 Two results worth knowing before you grab a file:
 
@@ -275,8 +281,9 @@ Two results worth knowing before you grab a file:
   cases pass; `line_00`, `line_01` and `issue1068_large_02` exceed 15 s. Those cases exist
   specifically to kill Kuhn. `Bipartite_Matching_Hopcroft_Karp.cpp` clears all 44 in 0.97 s.
   Use Kuhn when the graph is small or friendly; reach for Hopcroft-Karp when it is neither.
-- **`Sieve.cpp`'s `primes_up_to` is correct but slow at the top of its range.** All 10 cases of
-  `enumerate_primes` are right, the slowest taking 12 s against a 10 s limit at N = 5e8.
+- **`Sieve.cpp`'s `primes_up_to` sits right on the limit at the top of its range.** All 10 cases of
+  `enumerate_primes` are correct, but the slowest has measured anywhere from 9.5 s to 12 s against a
+  10 s limit at N = 5e8. Treat it as borderline rather than safe for a sieve that large.
 
 ```
 py tools/verify.py            # run every judge entry
