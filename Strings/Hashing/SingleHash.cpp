@@ -37,7 +37,7 @@ struct SingleHash {
         }
     }
 
-    int query(int l, int r) {  // 0-indexed, inclusive
+    int query(int l, int r) { // 0-indexed, inclusive
         return (h1[r + 1] - (1LL * h1[l] * p1[r - l + 1]) % M1 + M1) % M1;
     }
 

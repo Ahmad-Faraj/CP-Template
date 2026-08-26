@@ -5,7 +5,7 @@ struct ZAlgorithm {
     int n;
     vector<int> z;
 
-    explicit ZAlgorithm(const string& str) : s(str), n(str.size()) {
+    explicit ZAlgorithm(const string &str) : s(str), n(str.size()) {
         z.assign(n, 0);
         for (int i = 1, l = 0, r = 0; i < n; i++) {
             if (i <= r) {
@@ -21,7 +21,5 @@ struct ZAlgorithm {
         }
     }
 
-    int operator[](int i) const {
-        return z[i];
-    }
+    int operator[](int i) const { return z[i]; }
 };

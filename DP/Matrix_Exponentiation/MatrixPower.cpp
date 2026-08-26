@@ -13,12 +13,10 @@ template <typename T = int, int MOD_VALUE = 1000000007> struct Matrix {
     int rows, cols;
 
     // O ( n ^ 2 )
-    Matrix(int rows, int cols) : rows(rows), cols(cols), mat(rows + 5, vector<T>(cols + 5, 0)) {
-    }
+    Matrix(int rows, int cols) : rows(rows), cols(cols), mat(rows + 5, vector<T>(cols + 5, 0)) {}
 
     // O ( n ^ 2 )
-    Matrix(int size) : Matrix(size, size) {
-    }
+    Matrix(int size) : Matrix(size, size) {}
 
     // O ( n ^ 2 )
     Matrix(const vector<vector<T>> &grid)
@@ -38,19 +36,13 @@ template <typename T = int, int MOD_VALUE = 1000000007> struct Matrix {
     }
 
     // O ( 1 )
-    static T add_modd(T a, T b) {
-        return (a + b) % MOD_VALUE;
-    }
+    static T add_modd(T a, T b) { return (a + b) % MOD_VALUE; }
 
     // O ( 1 )
-    static T sub_modd(T a, T b) {
-        return (a - b % MOD_VALUE + MOD_VALUE) % MOD_VALUE;
-    }
+    static T sub_modd(T a, T b) { return (a - b % MOD_VALUE + MOD_VALUE) % MOD_VALUE; }
 
     // O ( 1 )
-    static T mult_modd(T a, T b) {
-        return (T)(((__int128)a * b) % MOD_VALUE);
-    }
+    static T mult_modd(T a, T b) { return (T)(((__int128)a * b) % MOD_VALUE); }
 
     // O ( n ^ 2 )
     Matrix operator+(const Matrix &b) const {

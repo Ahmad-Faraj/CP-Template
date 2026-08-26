@@ -1,8 +1,9 @@
 #include "../../../core.h"
+
 /*
  * Topic: Hopcroft-Karp Bipartite Matching
  * Description: Fast maximum bipartite matching using BFS and DFS.
- * 
+ *
  * Important Facts:
  * - 1-based indexing for nodes by default.
  * - Time Complexity: O(E * sqrt(V))
@@ -13,6 +14,7 @@ struct HopcroftKarp {
     int n, m;
     vector<int> l, r, d;
     vector<vector<int>> g;
+
     // Time Complexity: O(V)
     // Space Complexity: O(V)
     // Initializes the HopcroftKarp structure with left side size _n and right side size _m.
@@ -25,12 +27,14 @@ struct HopcroftKarp {
         r.resize(p, 0);
         d.resize(p, 0);
     }
+
     // Time Complexity: O(1)
     // Space Complexity: O(1)
     // Adds a directed edge from left node u to right node v.
     void add_edge(int u, int v) {
         g[u].push_back(v + n); // right id is increased by n, so is l[u]
     }
+
     // Time Complexity: O(V + E)
     // Space Complexity: O(V)
     // Finds the shortest augmenting paths in the residual graph using BFS.
@@ -55,6 +59,7 @@ struct HopcroftKarp {
         }
         return d[0] != 1e9;
     }
+
     // Time Complexity: O(E)
     // Space Complexity: O(V) for recursion stack
     // Finds a maximal set of disjoint augmenting paths using DFS.
@@ -70,6 +75,7 @@ struct HopcroftKarp {
         d[u] = 1e9;
         return false;
     }
+
     // Time Complexity: O(E * sqrt(V))
     // Space Complexity: O(V)
     // Computes the maximum bipartite matching.
@@ -81,12 +87,10 @@ struct HopcroftKarp {
         }
         return ans;
     }
-
-
 };
 
 /*
- * Takes n (left size), m (right size), and k (edges). 
+ * Takes n (left size), m (right size), and k (edges).
  * Gives maximum matching size and the matched pairs.
  */
 int main() {

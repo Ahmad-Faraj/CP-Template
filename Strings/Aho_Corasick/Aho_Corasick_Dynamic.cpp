@@ -11,11 +11,14 @@ using ll = long long;
 #define sz(x) (int)(x).size()
 
 struct AhoBucket { // a static automaton over one bucket of patterns
+
     struct node {
         vector<int> occ; // pattern indices ending exactly here
         int child[26], cnt, link;
+
         node() : cnt(0), link(-1) { memset(child, -1, sizeof child); }
     };
+
     vector<node> tree;
 
     AhoBucket() { tree = vector<node>(1); }

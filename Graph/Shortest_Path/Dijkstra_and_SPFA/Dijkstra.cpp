@@ -1,15 +1,15 @@
 #include "../../../core.h"
+
 /*
  * Topic: Dijkstra's Algorithm
  * Description: Single-source shortest path for graphs with non-negative weights.
- * 
+ *
  * Important Facts:
  * - 1-based indexing for nodes by default.
  * - Time Complexity: O(E log V)
  * - Space Complexity: O(V + E)
  */
-template <typename T = int>
-struct Dijkstra {
+template <typename T = int> struct Dijkstra {
     struct Edge {
         T v, w;
 
@@ -21,7 +21,7 @@ struct Dijkstra {
         // Time Complexity: O(1)
         // Space Complexity: O(1)
         // Compares edges by weight for the priority queue (min-heap).
-        bool operator<(const Edge& e) const { return w > e.w; }
+        bool operator<(const Edge &e) const { return w > e.w; }
     };
 
     int n;
@@ -54,7 +54,7 @@ struct Dijkstra {
             pq.pop();
             T u = top.v, cost = top.w;
             if (cost > dist[u]) continue;
-            for (const auto& edge : adj[u]) {
+            for (const auto &edge : adj[u]) {
                 if (dist[edge.v] > dist[u] + edge.w) {
                     dist[edge.v] = dist[u] + edge.w;
                     pq.push(Edge(edge.v, dist[edge.v]));
@@ -63,7 +63,6 @@ struct Dijkstra {
         }
         return dist;
     }
-
 
     T min_cost(int src, int dest) {
         vector<T> dist(n + 1, INF);
@@ -75,7 +74,7 @@ struct Dijkstra {
             pq.pop();
             T u = top.v, cost = top.w;
             if (cost > dist[u]) continue;
-            for (const auto& edge : adj[u]) {
+            for (const auto &edge : adj[u]) {
                 if (dist[edge.v] > dist[u] + edge.w) {
                     dist[edge.v] = dist[u] + edge.w;
                     pq.push(Edge(edge.v, dist[edge.v]));
@@ -96,7 +95,7 @@ struct Dijkstra {
             pq.pop();
             T u = top.v, cost = top.w;
             if (cost > dist[u]) continue;
-            for (const auto& edge : adj[u]) {
+            for (const auto &edge : adj[u]) {
                 if (dist[edge.v] > dist[u] + edge.w) {
                     dist[edge.v] = dist[u] + edge.w;
                     parent[edge.v] = u;
@@ -109,7 +108,6 @@ struct Dijkstra {
         reverse(path.begin(), path.end());
         return path;
     }
-
 };
 
 int main() {

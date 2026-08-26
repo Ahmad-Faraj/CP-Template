@@ -3,7 +3,7 @@
  * Topic: Min-Cost Max-Flow (MCMF) via SPFA
  * Description: Finds min-cost max-flow using SPFA to handle negative costs.
  *              Fast but vulnerable to worst-case graphs.
- * 
+ *
  * Important Facts:
  * - 0-based indexing for nodes by default.
  * - Time Complexity: O(F * V * E)
@@ -16,12 +16,13 @@ struct MCMF_SPFA {
         int u, v;
         T cap, cost;
         int id;
+
         // Time Complexity: O(1)
         // Space Complexity: O(1)
         // Initializes an edge.
         edge(int _u, int _v, T _cap, T _cost, int _id) : u(_u), v(_v), cap(_cap), cost(_cost), id(_id) {}
-
     };
+
     int n, s, t, mxid;
     T flow, cost;
     vector<vector<int>> g;
@@ -107,8 +108,6 @@ struct MCMF_SPFA {
         return f;
     }
 
-
-
     // returns {maxflow, mincost}
     // Time Complexity: O(F * V * E) worst case, F is max flow
     // Space Complexity: O(V)
@@ -131,14 +130,13 @@ struct MCMF_SPFA {
         return {flow, cost};
     }
 
-
     // Time Complexity: O(E)
     // Space Complexity: O(V)
     // Extracts matching pairs for bipartite matching where edges have id >= 0.
     vector<pair<int, int>> get_bipartite_matching() {
         vector<pair<int, int>> matches;
         for (int i = 0; i < (int)e.size(); i += 2) {
-            if (e[i].id >= 0 && e[i^1].cap > 0) {
+            if (e[i].id >= 0 && e[i ^ 1].cap > 0) {
                 matches.push_back({e[i].u, e[i].v});
             }
         }
@@ -174,6 +172,6 @@ int main() {
     for (auto p : pairs) {
         cout << p.first << " " << p.second - n << "\n";
     }
-    
+
     return 0;
 }

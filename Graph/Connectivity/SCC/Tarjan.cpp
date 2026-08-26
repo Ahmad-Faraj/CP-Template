@@ -1,16 +1,16 @@
 #include "../../../core.h"
+
 /*
  * Topic: Tarjan's Strongly Connected Components (SCC)
  * Description: Finds SCCs in a directed graph using a single DFS pass.
  *              Also builds the condensed DAG of SCCs.
- * 
+ *
  * Important Facts:
  * - 1-based indexing for nodes by default.
  * - Time Complexity: O(V + E)
  * - Space Complexity: O(V + E)
  */
-template <typename T = int>
-struct Tarjan {
+template <typename T = int> struct Tarjan {
     int n, timer = 0, scc_count = 0;
     vector<vector<T>> adj;
     vector<int> dfs_num, dfs_low, comp;
@@ -72,9 +72,8 @@ struct Tarjan {
             if (!dfs_num[i]) dfs(i);
     }
 
-
-
     vector<vector<T>> dag;
+
     void build_dag() {
         dag.assign(scc_count + 1, {});
         set<pair<int, int>> used;
@@ -88,7 +87,6 @@ struct Tarjan {
             }
         }
     }
-
 };
 
 int main() {

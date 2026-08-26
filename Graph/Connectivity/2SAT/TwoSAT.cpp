@@ -1,11 +1,12 @@
 #include "../../../core.h"
+
 /*
  * Topic: 2-Satisfiability (2-SAT)
  * Description: Solves boolean satisfiability for clauses of size 2 using SCCs (Kosaraju's).
  *              Finds if there is any assignment of variables such that formula F is true.
  *              Formula F = (x_0 OP y_0) AND (x_1 OP y_1) AND ... (x_{n-1} OP y_{n-1})
  *              where OP belongs to {OR, XOR}.
- * 
+ *
  * Important Facts:
  * - 0-based indexing for variables.
  * - Time Complexity: O(V + E)
@@ -17,6 +18,7 @@ struct twosat {
     vector<bool> vis, res;
     vector<int> comp;
     stack<int> ts;
+
     // Time Complexity: O(V)
     // Space Complexity: O(V)
     // Allocates space for a 2-SAT problem with the given number of variables.
@@ -35,6 +37,7 @@ struct twosat {
         g[a].push_back(b);
         gt[b].push_back(a);
     }
+
     // add this type of condition->
     // add(a,af,b,bf) means if a is af then b must need to be bf
     // Time Complexity: O(1) amortized
@@ -44,6 +47,7 @@ struct twosat {
         _add(a, af, b, bf);
         _add(b, !bf, a, !af);
     }
+
     // Time Complexity: O(V + E) overall
     // Space Complexity: O(V)
     // First DFS pass of Kosaraju's algorithm to determine the finishing order.
@@ -53,6 +57,7 @@ struct twosat {
             if (!vis[v]) dfs1(v);
         ts.push(u);
     }
+
     // Time Complexity: O(V + E) overall
     // Space Complexity: O(V)
     // Second DFS pass of Kosaraju's algorithm to identify strongly connected components.
@@ -61,6 +66,7 @@ struct twosat {
         for (int v : gt[u])
             if (comp[v] == -1) dfs2(v, c);
     }
+
     // Time Complexity: O(V + E)
     // Space Complexity: O(V)
     // Evaluates satisfiability and constructs a valid variable assignment if possible.
@@ -83,7 +89,6 @@ struct twosat {
         return true;
     }
 
-
     //(x_a or (not x_b))-> af=1,bf=0
     void addOR(int a, bool af, int b, bool bf) {
         a += a + (af ^ 1);
@@ -99,7 +104,6 @@ struct twosat {
         addOR(a, af, b, bf);
         addOR(a, !af, b, !bf);
     }
-
 };
 
 // Reads input, builds the 2-SAT graph, checks satisfiability, and prints the result.

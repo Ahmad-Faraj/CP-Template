@@ -2,7 +2,7 @@
 
 /*
  * Topic: Data Structures - Disjoint Set Union (DSU)
- * Description: Maintains a collection of disjoint sets and supports 
+ * Description: Maintains a collection of disjoint sets and supports
  *              uniting sets and finding the representative of a set.
  *              Includes tracking of set sizes and roots.
  */

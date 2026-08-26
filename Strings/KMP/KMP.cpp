@@ -2,7 +2,8 @@
 
 struct KMP {
     string pattern;
-    vector<int> lp; // lp[i] stores the length of the longest proper prefix of pattern[0..i] which is also a suffix of pattern[0..i]
+    vector<int> lp; // lp[i] stores the length of the longest proper prefix of pattern[0..i] which is also a suffix of
+                    // pattern[0..i]
 
     KMP(const string &str = "") : pattern(str) { build(); }
 

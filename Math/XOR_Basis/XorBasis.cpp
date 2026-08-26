@@ -4,8 +4,7 @@
  */
 #include "../../core.h"
 
-template <int LOG = 62>
-struct XorBasis {
+template <int LOG = 62> struct XorBasis {
     static_assert(LOG >= 1 && LOG <= 63);
     int b[LOG];
     int rk;

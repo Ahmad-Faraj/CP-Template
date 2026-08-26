@@ -67,13 +67,11 @@ template <typename T> class ImplicitTreap {
 
         Node()
             : val(T()), sum(T()), mn(T()), mx(T()), add(T()), assign(T()), pri(INT_MIN), size(0), rev(false),
-              assign_flag(false), ch{this, this} {
-        }
+              assign_flag(false), ch{this, this} {}
 
         Node(const T &val)
             : val(val), sum(val), mn(val), mx(val), add(T()), assign(T()), pri(rnd(eng)), size(1), rev(false),
-              assign_flag(false), ch{EMPTY, EMPTY} {
-        }
+              assign_flag(false), ch{EMPTY, EMPTY} {}
 
         // customize your query here
         void update() {
@@ -120,21 +118,13 @@ template <typename T> class ImplicitTreap {
 
     Node *root = EMPTY;
 
-    int size(Node *root) {
-        return root->size;
-    }
+    int size(Node *root) { return root->size; }
 
-    T sum(Node *root) {
-        return root->sum;
-    }
+    T sum(Node *root) { return root->sum; }
 
-    T mn(Node *root) {
-        return root->mn;
-    }
+    T mn(Node *root) { return root->mn; }
 
-    T mx(Node *root) {
-        return root->mx;
-    }
+    T mx(Node *root) { return root->mx; }
 
     // Apply assignment to a whole subtree
     void apply_assign(Node *root, const T &val) {
@@ -347,14 +337,10 @@ template <typename T> class ImplicitTreap {
     }
 
     // Get element at index pos
-    T get(int pos) {
-        return get(root, pos);
-    }
+    T get(int pos) { return get(root, pos); }
 
     // Set element at index pos
-    void set(int pos, const T &val) {
-        set(root, pos, val);
-    }
+    void set(int pos, const T &val) { set(root, pos, val); }
 
     // Reverse range [l, r]
     void reverse(int l, int r) {
@@ -399,19 +385,13 @@ template <typename T> class ImplicitTreap {
     }
 
     // Range sum query
-    T query(int l, int r) {
-        return query(root, l, r, 0);
-    }
+    T query(int l, int r) { return query(root, l, r, 0); }
 
     // Range minimum query
-    T query_min(int l, int r) {
-        return query(root, l, r, 1);
-    }
+    T query_min(int l, int r) { return query(root, l, r, 1); }
 
     // Range maximum query
-    T query_max(int l, int r) {
-        return query(root, l, r, 2);
-    }
+    T query_max(int l, int r) { return query(root, l, r, 2); }
 
     // Right cyclic shift
     void cyclic_shift(int l, int r, int k) {
@@ -457,14 +437,10 @@ template <typename T> class ImplicitTreap {
     }
 
     // Get number of elements
-    int size() {
-        return root->size;
-    }
+    int size() { return root->size; }
 
     // Check if treap is empty
-    bool empty() {
-        return root == EMPTY;
-    }
+    bool empty() { return root == EMPTY; }
 
     // Print elements in order
     void print() {
@@ -479,9 +455,7 @@ template <typename T> class ImplicitTreap {
         root = EMPTY;
     }
 
-    ~ImplicitTreap() {
-        clear(root);
-    }
+    ~ImplicitTreap() { clear(root); }
 };
 
 template <typename T> typename ImplicitTreap<T>::Node *ImplicitTreap<T>::EMPTY = new typename ImplicitTreap<T>::Node();

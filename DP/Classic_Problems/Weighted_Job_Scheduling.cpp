@@ -10,7 +10,8 @@
  */
 
 void solve() {
-    int n; cin >> n;
+    int n;
+    cin >> n;
     vector<vector<ll>> arr(n, vector<ll>(3));
     for (int i = 0; i < n; i++) cin >> arr[i][1] >> arr[i][0] >> arr[i][2];
     sort(arr.begin(), arr.end()); // sort based on end time
@@ -22,18 +23,19 @@ void solve() {
             dp[i] = max(dp[i - 1], dp[k] + arr[i][2]);
         else
             dp[i] = max(dp[i - 1], arr[i][2]);
- 
     }
     cout << dp[n - 1] << "\n";
 }
 
 int main() {
     ios_base::sync_with_stdio(0);
-    cin.tie(0); cout.tie(0);
+    cin.tie(0);
+    cout.tie(0);
     // freopen("input.txt", "r", stdin);
     // freopen("output.txt", "w", stdout);
 
-    int tc; tc = 1;
+    int tc;
+    tc = 1;
     for (int t = 1; t <= tc; t++) {
         // cout << "Case #" << t  << ": ";
         solve();

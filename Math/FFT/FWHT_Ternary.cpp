@@ -19,12 +19,11 @@ struct FWHT_Ternary {
         if (a < 0) a += mod;
     }
 
-    static inline int mul(int a, int b) {
-        return (1LL * a * b) % mod;
-    }
+    static inline int mul(int a, int b) { return (1LL * a * b) % mod; }
 
     struct cmplx {
         int a, b;
+
         cmplx(int _a = 0, int _b = 0) : a(_a), b(_b) {
             if (a >= mod) a %= mod;
             if (b >= mod) b %= mod;
@@ -32,33 +31,32 @@ struct FWHT_Ternary {
             if (b < 0) b = (b % mod + mod) % mod;
         }
 
-        cmplx operator+(const cmplx& x) const {
+        cmplx operator+(const cmplx &x) const {
             cmplx res = *this;
             add(res.a, x.a);
             add(res.b, x.b);
             return res;
         }
 
-        cmplx operator*(int k) const {
-            return cmplx(mul(a, k), mul(b, k));
-        }
+        cmplx operator*(int k) const { return cmplx(mul(a, k), mul(b, k)); }
 
-        cmplx operator*(const cmplx& x) const {
+        cmplx operator*(const cmplx &x) const {
             int na = mul(a, x.a);
             sub(na, mul(b, x.b));
-            
+
             int nb = mul(a, x.b);
             add(nb, mul(b, x.a));
             sub(nb, mul(b, x.b));
-            
+
             return cmplx(na, nb);
         }
     };
 
     static cmplx w() { return cmplx(0, 1); }
+
     static cmplx w2() { return cmplx(mod - 1, mod - 1); }
 
-    static void fwht(vector<cmplx>& vals, bool invert = false) {
+    static void fwht(vector<cmplx> &vals, bool invert = false) {
         int n = vals.size();
         for (int len = 1; len < n; len *= 3) {
             int pitch = len * 3;
@@ -68,7 +66,7 @@ struct FWHT_Ternary {
                     cmplx a = vals[i + j];
                     cmplx b = vals[i + j + len];
                     cmplx c = vals[i + j + len2];
-                    
+
                     vals[i + j] = a + b + c;
                     vals[i + j + len] = a + (b * w()) + (c * w2());
                     vals[i + j + len2] = a + (b * w2()) + (c * w());
@@ -76,7 +74,7 @@ struct FWHT_Ternary {
                 }
             }
         }
-        
+
         if (invert) {
             int inv3 = (mod + 1) / 3;
             int inv = 1;
@@ -104,7 +102,7 @@ struct FWHT_Ternary {
         return ret;
     }
 
-    static vector<cmplx> convert(int n, const vector<int>& a) {
+    static vector<cmplx> convert(int n, const vector<int> &a) {
         vector<cmplx> p(M);
         for (int i = 0; i < n; i++) {
             int x = tobase3(i);
@@ -113,25 +111,25 @@ struct FWHT_Ternary {
         return p;
     }
 
-    static vector<int> multiply(int n, const vector<int>& a, const vector<int>& b) {
+    static vector<int> multiply(int n, const vector<int> &a, const vector<int> &b) {
         vector<cmplx> p = convert(n, a);
         vector<cmplx> q = convert(n, b);
         fwht(p);
         fwht(q);
         for (int i = 0; i < M; i++) p[i] = p[i] * q[i];
         fwht(p, true);
-        
+
         vector<int> ans(M);
         for (int i = 0; i < M; i++) ans[i] = p[i].a;
         return ans;
     }
 
-    static vector<int> poly_pow(int n, const vector<int>& a, long long k) {
+    static vector<int> poly_pow(int n, const vector<int> &a, long long k) {
         vector<cmplx> p = convert(n, a);
         fwht(p);
         for (int i = 0; i < M; i++) p[i] = power(p[i], k);
         fwht(p, true);
-        
+
         vector<int> ans(M);
         for (int i = 0; i < M; i++) ans[i] = p[i].a;
         return ans;

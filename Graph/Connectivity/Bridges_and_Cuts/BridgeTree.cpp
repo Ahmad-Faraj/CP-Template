@@ -1,9 +1,10 @@
 #include "../../../core.h"
+
 /*
  * Topic: Bridge Tree (2-Edge-Connected Components)
  * Description: Condenses a graph by grouping 2-edge-connected components into nodes.
  *              Constructs a tree/forest where edges represent bridges.
- * 
+ *
  * Important Facts:
  * - 0-based indexing for nodes by default.
  * - Time Complexity: O(V + E)

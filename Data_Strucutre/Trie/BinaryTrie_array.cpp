@@ -11,10 +11,8 @@ struct BinaryTrie_array {
     vector<array<int, 2>> child_node;
     vector<int> frequency;
 
-    
     BinaryTrie_array(int max_bit = 30) : max_bit(max_bit), child_node(1, {0, 0}), frequency(1, 0) {}
 
-    
     void insert(int number) {
         int current_node = 0;
         for (int i = max_bit; i >= 0; i--) {
@@ -29,7 +27,6 @@ struct BinaryTrie_array {
         }
     }
 
-    
     void erase(int number) {
         int current_node = 0;
         for (int i = max_bit; i >= 0; i--) {
@@ -40,7 +37,6 @@ struct BinaryTrie_array {
         }
     }
 
-    
     int max_xor(int number) {
         int current_node = 0, answer = 0;
         for (int i = max_bit; i >= 0; i--) {
@@ -55,7 +51,6 @@ struct BinaryTrie_array {
         return answer;
     }
 
-    
     int min_xor(int number) {
         int current_node = 0, answer = 0;
         for (int i = max_bit; i >= 0; i--) {

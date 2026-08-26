@@ -3,7 +3,7 @@
 /*
  * Topic: Data Structures - DSU with Rollback
  * Description: A Disjoint Set Union that supports rolling back the last union operations.
- *              Because of rollbacks, path compression cannot be used, so it relies 
+ *              Because of rollbacks, path compression cannot be used, so it relies
  *              strictly on union by size/rank, making operations O(log N).
  */
 
@@ -12,14 +12,17 @@ struct DSU {
     vector<int> parent, gsize;
     stack<pair<int, int>> stk;
     int sets;
+
     DSU(int n) : sets(n) {
         parent = gsize = vector<int>(n + 1, 1);
         for (int i = 1; i <= n; i++) parent[i] = i;
     }
+
     int find(int u) {
         while (u != parent[u]) u = parent[u];
         return u;
     }
+
     void unite(int u, int v) {
         u = find(u), v = find(v);
         if (u == v) {
@@ -32,6 +35,7 @@ struct DSU {
         stk.push({u, v});
         sets--;
     }
+
     void rollback(int k) {
 
         while (k-- && !stk.empty()) {
@@ -43,8 +47,11 @@ struct DSU {
             sets++;
         }
     }
+
     int components() { return sets; }
+
     int size(int u) { return gsize[find(u)]; }
+
     bool same(int u, int v) { return find(u) == find(v); }
 };
 

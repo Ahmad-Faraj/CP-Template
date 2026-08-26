@@ -9,7 +9,9 @@ const int N = 1e5 + 9, inf = 1e9;
 
 struct ST {
     int t[4 * N];
+
     ST() {}
+
     void build(int n, int b, int e) {
         t[n] = 0;
         if (b == e) {
@@ -20,6 +22,7 @@ struct ST {
         build(r, mid + 1, e);
         t[n] = min(t[l], t[r]);
     }
+
     void update(int n, int b, int e, int i, int x) {
         if (b > i || e < i) return;
         if (b == e && b == i) {
@@ -31,6 +34,7 @@ struct ST {
         update(r, mid + 1, e, i, x);
         t[n] = min(t[l], t[r]);
     }
+
     int query_min(int n, int b, int e, int i, int j) {
         if (b > j || e < i) return inf;
         if (b >= i && e <= j) return t[n];
@@ -39,6 +43,7 @@ struct ST {
         int R = query_min(r, mid + 1, e, i, j);
         return min(L, R);
     }
+
     int query_mex(int n, int b, int e, int i) { // mex of [i... cur_id]
         if (t[n] >= i) return inf;
         if (b == e) return b;
@@ -49,6 +54,7 @@ struct ST {
 } t;
 
 int a[N], f[N];
+
 int32_t main() {
     ios_base::sync_with_stdio(0);
     cin.tie(0);

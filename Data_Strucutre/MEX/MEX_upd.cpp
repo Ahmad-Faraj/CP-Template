@@ -2,7 +2,7 @@
 
 /*
  * Topic: Data Structures - Dynamic MEX with Updates
- * Description: Maintains the MEX of a collection while supporting dynamic insertions 
+ * Description: Maintains the MEX of a collection while supporting dynamic insertions
  *              and deletions using a frequency map and a set of missing numbers.
  */
 

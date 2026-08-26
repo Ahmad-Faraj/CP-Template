@@ -1,8 +1,9 @@
 #include "../../../core.h"
+
 /*
  * Topic: Bipartite Matching (Kuhn's Algorithm)
  * Description: Finds maximum bipartite matching using simple DFS.
- * 
+ *
  * Important Facts:
  * - 1-based indexing for nodes by default.
  * - Time Complexity: O(V * E)
@@ -18,9 +19,7 @@ struct BipartiteMatching {
     BipartiteMatching(int _n, int _m) : n(_n), m(_m), adj(_n + 1), mt(_m + 1, -1) {}
 
     // Adds a directed edge from left node u to right node v
-    void add_edge(int u, int v) {
-        adj[u].push_back(v);
-    }
+    void add_edge(int u, int v) { adj[u].push_back(v); }
 
     bool try_kuhn(int v) {
         if (used[v]) return false;
@@ -42,12 +41,10 @@ struct BipartiteMatching {
         }
         return ans;
     }
-
-
 };
 
 /*
- * Takes n (left size), m (right size), and k (edges). 
+ * Takes n (left size), m (right size), and k (edges).
  * Gives maximum matching size and the matched pairs.
  */
 int main() {

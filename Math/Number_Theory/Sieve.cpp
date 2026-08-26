@@ -6,8 +6,8 @@
 using namespace std;
 
 const int MAXV = 1e7 + 5;
-vector<int> spf(MAXV);    // spf[i] = the smallest prime dividing i
-vector<int> primes;       // every prime < MAXV, ascending
+vector<int> spf(MAXV); // spf[i] = the smallest prime dividing i
+vector<int> primes;    // every prime < MAXV, ascending
 
 void sieve() {
     spf[0] = spf[1] = 1;
@@ -20,7 +20,7 @@ void sieve() {
             }
         }
     }
-    
+
     if (MAXV > 2) primes.push_back(2);
     for (int i = 3; i < MAXV; i += 2) {
         if (spf[i] == i) primes.push_back(i);
@@ -37,7 +37,7 @@ bool is_prime(long long x) { // Trial division, safe for any x up to about 1e18
 }
 
 bool prime(int x) { // O(1) query for x < MAXV
-    return x >= 2 && x < MAXV && spf[x] == x; 
+    return x >= 2 && x < MAXV && spf[x] == x;
 }
 
 vector<pair<int, int>> factorize(int x) { // (prime, exponent), ascending; empty for x <= 1

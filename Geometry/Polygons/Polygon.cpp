@@ -1,12 +1,13 @@
 #include "../../core.h"
 #include "../Primitives/Point.cpp"
 
-template <typename T>
-struct Polygon {
+template <typename T> struct Polygon {
     vector<Point<T>> pts;
+
     Polygon() {}
-    Polygon(const vector<Point<T>>& _pts) : pts(_pts) {}
-    
+
+    Polygon(const vector<Point<T>> &_pts) : pts(_pts) {}
+
     // Regular Polygon from Center and a Vertex
     static Polygon<T> createRegularCenter(Point<T> center, Point<T> vertex, int n) {
         Polygon<T> p;
@@ -32,21 +33,26 @@ struct Polygon {
         }
         return p;
     }
-    
+
     int size() const { return pts.size(); }
-    void add_point(const Point<T>& p) { pts.push_back(p); }
-    Point<T>& operator[](int i) { return pts[i]; }
-    const Point<T>& operator[](int i) const { return pts[i]; }
-    
+
+    void add_point(const Point<T> &p) { pts.push_back(p); }
+
+    Point<T> &operator[](int i) { return pts[i]; }
+
+    const Point<T> &operator[](int i) const { return pts[i]; }
+
     // Geometric Transformations
-    void translate(const Point<T>& v) {
-        for (auto& p : pts) p = p + v;
+    void translate(const Point<T> &v) {
+        for (auto &p : pts) p = p + v;
     }
-    void scale(const Point<T>& center, double factor) {
-        for (auto& p : pts) p = center + (p - center) * factor;
+
+    void scale(const Point<T> &center, double factor) {
+        for (auto &p : pts) p = center + (p - center) * factor;
     }
-    void rotate(const Point<T>& center, double angle) {
-        for (auto& p : pts) p = p.rotateAbout(center, angle);
+
+    void rotate(const Point<T> &center, double angle) {
+        for (auto &p : pts) p = p.rotateAbout(center, angle);
     }
 
     // Measurements
@@ -67,15 +73,15 @@ struct Polygon {
     }
 
     // Point Inclusion
-    bool onBoundary(const Point<T>& p) const {
+    bool onBoundary(const Point<T> &p) const {
         for (int i = 0; i < size(); i++) {
             Point<T> a = pts[i], b = pts[(i + 1) % size()];
             if (abs((b - a).cross(p - a)) < eps && (p - a).dot(p - b) <= eps) return true;
         }
         return false;
     }
-    
-    bool contains(const Point<T>& p) const {
+
+    bool contains(const Point<T> &p) const {
         if (onBoundary(p)) return true;
         bool in = false;
         for (int i = 0, j = size() - 1; i < size(); j = i++) {
@@ -85,10 +91,8 @@ struct Polygon {
         }
         return in;
     }
-    
-    bool strictlyInside(const Point<T>& p) const {
-        return contains(p) && !onBoundary(p);
-    }
+
+    bool strictlyInside(const Point<T> &p) const { return contains(p) && !onBoundary(p); }
 
     // Center of Mass (Centroid)
     Point<double> centroid() const {
@@ -104,17 +108,17 @@ struct Polygon {
     }
 
     // Splits a convex polygon by a directed line AB into {Left Polygon, Right Polygon}
-    pair<Polygon<T>, Polygon<T>> split(const Point<T>& a, const Point<T>& b) const {
+    pair<Polygon<T>, Polygon<T>> split(const Point<T> &a, const Point<T> &b) const {
         Polygon<T> left, right;
         for (int i = 0; i < size(); i++) {
             Point<T> cur = pts[i];
             Point<T> nxt = pts[(i + 1) % size()];
             double cross1 = (b - a).cross(cur - a);
             double cross2 = (b - a).cross(nxt - a);
-            
+
             if (cross1 >= -eps) left.add_point(cur);
             if (cross1 <= eps) right.add_point(cur);
-            
+
             if (cross1 * cross2 < -eps) {
                 double t = (b - a).cross(a - cur) / (b - a).cross(nxt - cur);
                 Point<T> intersect = cur + (nxt - cur) * t;
@@ -124,7 +128,6 @@ struct Polygon {
         }
         return {left, right};
     }
-
 };
 
 using poly = Polygon<double>;

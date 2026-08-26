@@ -1,13 +1,13 @@
 #include "../../core.h"
 #include "../Primitives/Point.cpp"
 
-template <typename T>
-struct Triangle {
+template <typename T> struct Triangle {
     Point<T> a, b, c; // The three vertices of the triangle
-    
+
     Triangle() {}
+
     Triangle(Point<T> _a, Point<T> _b, Point<T> _c) : a(_a), b(_b), c(_c) {}
-    
+
     // Equilateral Triangle from Center and a Vertex
     static Triangle<T> createEquilateralCenter(Point<T> center, Point<T> vertex) {
         double angle = 2.0 * acos(-1.0) / 3.0; // 120 degrees
@@ -19,7 +19,7 @@ struct Triangle {
         double angle = acos(-1.0) / 3.0; // 60 degrees
         return Triangle<T>(p1, p2, p2.rotateAbout(p1, angle));
     }
-    
+
     // SAS (Side-Angle-Side)
     static Triangle<T> createSAS(Point<T> A, Point<T> B, double angle_A, double len_AC) {
         Point<T> dir = (B - A);
@@ -54,49 +54,45 @@ struct Triangle {
     }
 
     // Geometric Transformations
-    void translate(const Point<T>& v) {
-        a = a + v; b = b + v; c = c + v;
+    void translate(const Point<T> &v) {
+        a = a + v;
+        b = b + v;
+        c = c + v;
     }
-    void scale(const Point<T>& center, double factor) {
+
+    void scale(const Point<T> &center, double factor) {
         a = center + (a - center) * factor;
         b = center + (b - center) * factor;
         c = center + (c - center) * factor;
     }
-    void rotate(const Point<T>& center, double angle) {
+
+    void rotate(const Point<T> &center, double angle) {
         a = a.rotateAbout(center, angle);
         b = b.rotateAbout(center, angle);
         c = c.rotateAbout(center, angle);
     }
 
     // Measurements
-    double perimeter() const {
-        return a.distance(b) + b.distance(c) + c.distance(a);
-    }
-    
-    double area() const {
-        return abs((b - a).cross(c - a)) / 2.0;
-    }
+    double perimeter() const { return a.distance(b) + b.distance(c) + c.distance(a); }
+
+    double area() const { return abs((b - a).cross(c - a)) / 2.0; }
 
     // Point Inclusion
-    bool onBoundary(const Point<T>& p) const {
+    bool onBoundary(const Point<T> &p) const {
         auto onSeg = [&](Point<T> p1, Point<T> p2) {
             return abs((p2 - p1).cross(p - p1)) < eps && (p - p1).dot(p - p2) <= eps;
         };
         return onSeg(a, b) || onSeg(b, c) || onSeg(c, a);
     }
-    
-    bool strictlyInside(const Point<T>& p) const {
+
+    bool strictlyInside(const Point<T> &p) const {
         double cross1 = (b - a).cross(p - a);
         double cross2 = (c - b).cross(p - b);
         double cross3 = (a - c).cross(p - c);
-        return (cross1 > eps && cross2 > eps && cross3 > eps) || 
-               (cross1 < -eps && cross2 < -eps && cross3 < -eps);
-    }
-    
-    bool contains(const Point<T>& p) const {
-        return strictlyInside(p) || onBoundary(p);
+        return (cross1 > eps && cross2 > eps && cross3 > eps) || (cross1 < -eps && cross2 < -eps && cross3 < -eps);
     }
 
+    bool contains(const Point<T> &p) const { return strictlyInside(p) || onBoundary(p); }
 };
 
 using triangle = Triangle<double>;

@@ -15,8 +15,8 @@ struct DoubleHash {
     }
 
     static int get_rand_prime() {
-        static const int primes[] = { 1e9 + 513 ,  1e9 + 531 ,  1e9 + 579 ,  1e9 + 607 ,  1e9 + 613 ,
-                                      1e9 + 637 ,  1e9 + 663 ,  1e9 + 711 ,  1e9 + 753 ,  1e9 + 787 } ;
+        static const int primes[] = {1e9 + 513, 1e9 + 531, 1e9 + 579, 1e9 + 607, 1e9 + 613,
+                                     1e9 + 637, 1e9 + 663, 1e9 + 711, 1e9 + 753, 1e9 + 787};
         return primes[get_rand_base() % 10];
     }
 
@@ -42,7 +42,7 @@ struct DoubleHash {
         }
     }
 
-    pair<int, int> query(int l, int r) {  // 0-indexed, inclusive
+    pair<int, int> query(int l, int r) { // 0-indexed, inclusive
         int v1 = (h1[r + 1] - (1LL * h1[l] * p1[r - l + 1]) % M1 + M1) % M1;
         int v2 = (h2[r + 1] - (1LL * h2[l] * p2[r - l + 1]) % M2 + M2) % M2;
         return {v1, v2};

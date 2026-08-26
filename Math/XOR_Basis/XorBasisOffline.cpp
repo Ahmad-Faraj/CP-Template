@@ -10,18 +10,16 @@ struct Query {
 };
 
 // Answers offline queries asking for the Maximum XOR in subarray A[L...R]
-vector<int> solve_offline_queries(const vector<int>& a, vector<Query>& queries) {
+vector<int> solve_offline_queries(const vector<int> &a, vector<Query> &queries) {
     int n = a.size();
     int q = queries.size();
-    
+
     // Sort queries by their right endpoint in ascending order
-    sort(queries.begin(), queries.end(), [](const Query& A, const Query& B) {
-        return A.r < B.r;
-    });
+    sort(queries.begin(), queries.end(), [](const Query &A, const Query &B) { return A.r < B.r; });
 
     vector<int> ans(q);
     XorBasisPrefix<62> basis;
-    
+
     int curr_r = 0;
     for (int i = 0; i < q; i++) {
         // Insert elements into the prefix basis until we reach the query's right bound

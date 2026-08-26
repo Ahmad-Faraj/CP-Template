@@ -16,6 +16,7 @@ struct Aho {
         vector<int> pat; // indices ending here; more than one only when the same pattern is given twice
         int patLen = 0;  // a trie node is exactly one string, so one length covers them all
         vector<char> chars;
+
         Node() { memset(child, 0, sizeof child); }
     };
 

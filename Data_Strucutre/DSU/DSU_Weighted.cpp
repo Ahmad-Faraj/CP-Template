@@ -38,9 +38,7 @@ struct WeightedDSU {
         comp = n;
     }
 
-    int merge(int a, int b) {
-        return a + b;
-    }
+    int merge(int a, int b) { return a + b; }
 
     pair<int, int> find(int x) {
         if (parent[x] == x) {
@@ -98,13 +96,9 @@ struct WeightedDSU {
         return wv - wu;
     }
 
-    bool same(int u, int v) {
-        return find(u).first == find(v).first;
-    }
+    bool same(int u, int v) { return find(u).first == find(v).first; }
 
-    int Size(int u) {
-        return group[find(u).first];
-    }
+    int Size(int u) { return group[find(u).first]; }
 };
 
 int main() {

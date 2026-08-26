@@ -37,6 +37,7 @@ using namespace std;
 
 mt19937 eng(0);
 uniform_int_distribution<int> rnd(INT_MIN + 1, INT_MAX);
+
 template <typename T> class Treap {
   private:
     enum DIR { L, R };
@@ -52,9 +53,7 @@ template <typename T> class Treap {
 
         Node(const T &val) : val(val), pri(rnd(eng)), size(1), frq(1), ch{EMPTY, EMPTY}, par(EMPTY) {}
 
-        void update() {
-            size = ch[L]->size + frq + ch[R]->size;
-        }
+        void update() { size = ch[L]->size + frq + ch[R]->size; }
     };
 
     static Node *EMPTY;
@@ -70,9 +69,7 @@ template <typename T> class Treap {
         }
     }
 
-    int getDir(Node *p, Node *c) {
-        return p->ch[R] == c;
-    }
+    int getDir(Node *p, Node *c) { return p->ch[R] == c; }
 
     void rotate(Node *q) {
         Node *p = q->par;
@@ -218,36 +215,22 @@ template <typename T> class Treap {
     }
 
     // 0-based indexing kth smallest
-    T kth(int k) {
-        return kth(root, k);
-    }
+    T kth(int k) { return kth(root, k); }
 
     // count of numbers < val
-    int lower_bound(const T &val) {
-        return lower_bound(root, val);
-    }
+    int lower_bound(const T &val) { return lower_bound(root, val); }
 
     // count of numbers <= val
-    int upper_bound(const T &val) {
-        return upper_bound(root, val);
-    }
+    int upper_bound(const T &val) { return upper_bound(root, val); }
 
-    bool isExist(int x) {
-        return lower_bound(x) != upper_bound(x);
-    }
+    bool isExist(int x) { return lower_bound(x) != upper_bound(x); }
 
-    int size() {
-        return root->size;
-    }
+    int size() { return root->size; }
 
-    bool empty() {
-        return root == EMPTY;
-    }
+    bool empty() { return root == EMPTY; }
 
     // testing
-    void print() {
-        print(root);
-    }
+    void print() { print(root); }
 
     void clear() {
         clear(root);

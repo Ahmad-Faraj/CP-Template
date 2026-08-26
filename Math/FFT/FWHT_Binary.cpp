@@ -30,23 +30,29 @@ struct FWHT {
         if (a < 0) a += mod;
     }
 
-    static void fwht(vector<int>& a, bool inv, int flag) {
+    static void fwht(vector<int> &a, bool inv, int flag) {
         int n = a.size();
         for (int len = 1; 2 * len <= n; len <<= 1) {
             for (int i = 0; i < n; i += 2 * len) {
                 for (int j = 0; j < len; j++) {
                     int u = a[i + j];
                     int v = a[i + len + j];
-                    
+
                     if (flag == OR) {
-                        if (!inv) add(a[i + len + j], u);
-                        else      sub(a[i + len + j], u);
+                        if (!inv)
+                            add(a[i + len + j], u);
+                        else
+                            sub(a[i + len + j], u);
                     } else if (flag == AND) {
-                        if (!inv) add(a[i + j], v);
-                        else      sub(a[i + j], v);
+                        if (!inv)
+                            add(a[i + j], v);
+                        else
+                            sub(a[i + j], v);
                     } else if (flag == XOR) {
-                        a[i + j] = u; add(a[i + j], v);
-                        a[i + len + j] = u; sub(a[i + len + j], v);
+                        a[i + j] = u;
+                        add(a[i + j], v);
+                        a[i + len + j] = u;
+                        sub(a[i + len + j], v);
                     }
                 }
             }
@@ -64,7 +70,7 @@ struct FWHT {
         while (n < max(sz(a), sz(b))) n <<= 1;
         a.resize(n, 0);
         b.resize(n, 0);
-        
+
         fwht(a, false, flag);
         fwht(b, false, flag);
         for (int i = 0; i < n; i++) {
@@ -78,7 +84,7 @@ struct FWHT {
         int n = 1;
         while (n < sz(a)) n <<= 1;
         a.resize(n, 0);
-        
+
         fwht(a, false, flag);
         for (int i = 0; i < n; i++) {
             a[i] = mod_pow(a[i], k);

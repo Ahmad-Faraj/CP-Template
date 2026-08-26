@@ -9,12 +9,12 @@
 struct BinaryTrie_pointer {
     struct Node {
         int freq;
-        Node* child[2];
+        Node *child[2];
 
         Node() : freq(0), child{nullptr, nullptr} {}
     };
 
-    Node* root;
+    Node *root;
     int LOG, cnt;
 
     inline bool get_bit(const ll x, const int bit) const { return (x >> bit) & 1; }
@@ -26,7 +26,7 @@ struct BinaryTrie_pointer {
         return right_cnt - left_cnt;
     }
 
-    inline bool check_branch(Node* cur, bool b, ll prefix, int i, ll l, ll r) {
+    inline bool check_branch(Node *cur, bool b, ll prefix, int i, ll l, ll r) {
         if (!cur->child[b] or !cur->child[b]->freq) return false;
         ll P_min = prefix | ((ll)(b) << i);
         ll P_max = P_min | ((1LL << i) - 1);
@@ -37,7 +37,7 @@ struct BinaryTrie_pointer {
         return count_in_range(L, R) > 0;
     }
 
-    void clear(Node* node) {
+    void clear(Node *node) {
         if (!node) return;
         clear(node->child[0]);
         clear(node->child[1]);
@@ -45,12 +45,13 @@ struct BinaryTrie_pointer {
     }
 
     BinaryTrie_pointer(int log = 60) : root(new Node()), LOG(log), cnt(0) {}
+
     ~BinaryTrie_pointer() { clear(root); }
 
     // Inserts the value `x` into the Binary Trie.
     inline void insert(const ll x) {
         ++cnt;
-        Node* cur = root;
+        Node *cur = root;
         for (int i = LOG; ~i; i--) {
             bool bit = get_bit(x, i);
             if (!cur->child[bit]) cur->child[bit] = new Node();
@@ -63,9 +64,9 @@ struct BinaryTrie_pointer {
     inline void erase(const ll x) {
         if (!search(x)) return;
         --cnt;
-        Node* path[65];
+        Node *path[65];
         path[LOG + 1] = root;
-        Node* cur = root;
+        Node *cur = root;
         for (int i = LOG; ~i; i--) {
             bool bit = get_bit(x, i);
             cur = cur->child[bit];
@@ -73,8 +74,8 @@ struct BinaryTrie_pointer {
         }
         for (int i = 0; i <= LOG; i++) {
             bool bit = get_bit(x, i);
-            Node* current = path[i];
-            Node* parent = path[i + 1];
+            Node *current = path[i];
+            Node *parent = path[i + 1];
             if (--current->freq == 0) {
                 delete current;
                 parent->child[bit] = nullptr;
@@ -84,7 +85,7 @@ struct BinaryTrie_pointer {
 
     // Searches for the presence of the value `x` in the Binary Trie.
     inline bool search(const ll x) {
-        Node* cur = root;
+        Node *cur = root;
         for (int i = LOG; ~i; i--) {
             bool bit = get_bit(x, i);
             if (!cur->child[bit] or !cur->child[bit]->freq) return false;
@@ -99,7 +100,7 @@ struct BinaryTrie_pointer {
     // Counts the number of elements `p` in the trie such that (p ^ x) <= k.
     inline ll count(const ll x, const ll k) {
         ll ans = 0;
-        Node* cur = root;
+        Node *cur = root;
         for (int i = LOG; ~i; i--) {
             if (!cur) break;
             bool val_bit = get_bit(x, i), k_bit = get_bit(k, i);
@@ -116,11 +117,11 @@ struct BinaryTrie_pointer {
 
     // Counts the number of elements `p` in the trie such that (p ^ x) > k.
     inline ll count_greater(const ll x, const ll k) { return cnt - count(x, k); }
-    
+
     // Finds the k-th smallest element (1-based index).
     inline ll kth_min(int k) {
         assert(k > 0 && k <= cnt);
-        Node* cur = root;
+        Node *cur = root;
         ll ans = 0;
         for (int i = LOG; ~i; i--) {
             int left_count = cur->child[0] ? cur->child[0]->freq : 0;
@@ -136,14 +137,12 @@ struct BinaryTrie_pointer {
     }
 
     // Finds the k-th largest element (1-based index).
-    inline ll kth_max(int k) {
-        return kth_min(cnt - k + 1);
-    }
+    inline ll kth_max(int k) { return kth_min(cnt - k + 1); }
 
     // Finds max XOR of `x` with any element `p` in range [l, r]. Returns -1 if none.
     inline ll max_xor(const ll x, const ll l = 0, const ll r = INF) {
         ll ans = 0, prefix = 0;
-        Node* cur = root;
+        Node *cur = root;
         for (int i = LOG; ~i; i--) {
             bool bit = get_bit(x, i);
             bool target = !bit;
@@ -164,7 +163,7 @@ struct BinaryTrie_pointer {
     // Finds min XOR of `x` with any element `p` in range [l, r]. Returns -1 if none.
     inline ll min_xor(const ll x, const ll l = 0, const ll r = INF) {
         ll ans = 0, prefix = 0;
-        Node* cur = root;
+        Node *cur = root;
         for (int i = LOG; ~i; i--) {
             bool bit = get_bit(x, i);
             bool target = bit;
@@ -185,7 +184,7 @@ struct BinaryTrie_pointer {
     // Finds max OR of `x` with any element `p` in range [l, r]. Returns -1 if none.
     inline ll max_or(const ll x, const ll l = 0, const ll r = INF) {
         ll ans = 0, prefix = 0;
-        Node* cur = root;
+        Node *cur = root;
         for (int i = LOG; ~i; i--) {
             bool xb = get_bit(x, i);
 
@@ -215,7 +214,7 @@ struct BinaryTrie_pointer {
     // Finds min OR of `x` with any element `p` in range [l, r]. Returns -1 if none.
     inline ll min_or(const ll x, const ll l = 0, const ll r = INF) {
         ll ans = 0, prefix = 0;
-        Node* cur = root;
+        Node *cur = root;
         for (int i = LOG; ~i; i--) {
             bool xb = get_bit(x, i);
 

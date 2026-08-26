@@ -3,7 +3,7 @@
  * Topic: Min-Cost Max-Flow (MCMF)
  * Description: Finds the cheapest way to route maximum flow using Dijkstra with potentials.
  *              Works for directed, undirected, and negative costs (no negative cycles).
- * 
+ *
  * Important Facts:
  * - 0-based indexing for nodes by default.
  * - Time Complexity: O(F * E log V)
@@ -23,6 +23,7 @@ struct MCMF {
         int u, v;
         T cap, cost;
         int id;
+
         // Time Complexity: O(1)
         // Space Complexity: O(1)
         // Initializes an edge.
@@ -34,6 +35,7 @@ struct MCMF {
             id = _id;
         }
     };
+
     int n, s, t, mxid;
     T flow, cost;
     vector<vector<int>> g;
@@ -41,10 +43,12 @@ struct MCMF {
     vector<T> d, potential, flow_through;
     vector<int> par;
     bool neg;
+
     // Time Complexity: O(1)
     // Space Complexity: O(1)
     // Default constructor.
     MCMF() {}
+
     // Time Complexity: O(V)
     // Space Complexity: O(V)
     // Initializes the MCMF network with _n nodes.
@@ -54,6 +58,7 @@ struct MCMF {
         neg = false;
         mxid = 0;
     }
+
     // Time Complexity: O(1)
     // Space Complexity: O(1)
     // Adds a directed or undirected edge with given capacity and cost.
@@ -66,6 +71,7 @@ struct MCMF {
         mxid = max(mxid, id);
         if (!directed) add_edge(v, u, cap, cost, -1, true);
     }
+
     // Time Complexity: O(E log V)
     // Space Complexity: O(V)
     // Finds the shortest augmenting path using Dijkstra's algorithm with potentials.
@@ -155,14 +161,14 @@ struct MCMF {
         }
         return make_pair(flow, cost);
     }
-    
+
     // Time Complexity: O(E)
     // Space Complexity: O(V)
     // Extracts matching pairs for bipartite matching where edges have id >= 0.
     vector<pair<int, int>> get_bipartite_matching() {
         vector<pair<int, int>> matches;
         for (int i = 0; i < (int)e.size(); i += 2) {
-            if (e[i].id >= 0 && e[i^1].cap > 0) {
+            if (e[i].id >= 0 && e[i ^ 1].cap > 0) {
                 matches.push_back({e[i].u, e[i].v});
             }
         }
@@ -176,7 +182,7 @@ int main() {
     cin.tie(NULL);
     int n;
     if (!(cin >> n)) return 0;
-    
+
     // Create MCMF with 2*n + 2 nodes
     // Source = 0, Sink = 2*n + 1
     // Workers = 1 to n
@@ -198,6 +204,6 @@ int main() {
     for (auto p : pairs) {
         cout << p.first << " " << p.second - n << "\n";
     }
-    
+
     return 0;
 }

@@ -1,9 +1,10 @@
 #include "../../../core.h"
+
 /*
  * Topic: Block-Cut Tree (Biconnected Components)
  * Description: Constructs a bipartite tree where nodes represent either
  *              articulation points or biconnected components (blocks).
- * 
+ *
  * Important Facts:
  * - 0-based indexing for nodes by default.
  * - Time Complexity: O(V + E)
@@ -84,7 +85,7 @@ int main() {
         }
         bct.build();
         cout << bct.bcc.size() << "\n";
-        for (const auto& comp : bct.bcc) {
+        for (const auto &comp : bct.bcc) {
             cout << comp.size() << " ";
             for (int v : comp) cout << v + 1 << " ";
             cout << "\n";

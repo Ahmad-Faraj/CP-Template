@@ -1,16 +1,16 @@
 #include "../../../core.h"
+
 /*
  * Topic: Bridge Finding
  * Description: Finds edges that disconnect the graph if removed.
  *              Also constructs the 2-Edge-Connected Components (2-ECC) condensed graph.
- * 
+ *
  * Important Facts:
  * - 1-based indexing for nodes by default.
  * - Time Complexity: O(V + E)
  * - Space Complexity: O(V + E)
  */
-template <typename T = int>
-struct Bridges {
+template <typename T = int> struct Bridges {
     T dfs_timer;
     vector<vector<T>> adj;
     vector<pair<T, T>> bridges;
@@ -44,7 +44,9 @@ struct Bridges {
             if (!dfs_num[child]) {
                 tarjan(child, node);
                 dfs_low[node] = min(dfs_low[node], dfs_low[child]);
-                if (dfs_low[child] > dfs_num[node]) { bridges.push_back({node, child}); }
+                if (dfs_low[child] > dfs_num[node]) {
+                    bridges.push_back({node, child});
+                }
             } else if (vis[child]) {
                 dfs_low[node] = min(dfs_low[node], dfs_num[child]);
             }
@@ -59,18 +61,18 @@ struct Bridges {
             if (!dfs_num[i]) tarjan(i, -1);
     }
 
-
-
     vector<T> comp_id;
     vector<vector<T>> comp_adj;
     T comp_cnt = 0;
-    
+
     void make_scc_graph() {
         T n = (T)(int)(adj).size() - 1;
         comp_id.assign(n + 1, 0);
         comp_cnt = 0;
         set<pair<T, T>> is_bridge;
-        for (auto& e : bridges) { is_bridge.insert({min(e.first, e.second), max(e.first, e.second)}); }
+        for (auto &e : bridges) {
+            is_bridge.insert({min(e.first, e.second), max(e.first, e.second)});
+        }
         for (T i = 1; i <= n; ++i) {
             if (comp_id[i]) continue;
             ++comp_cnt;
@@ -91,7 +93,7 @@ struct Bridges {
         }
         comp_adj.assign(comp_cnt + 1, vector<T>());
         set<pair<T, T>> used;
-        for (auto& e : bridges) {
+        for (auto &e : bridges) {
             T u = e.first, v = e.second;
             T cu = comp_id[u], cv = comp_id[v];
             if (cu == cv) continue;
@@ -102,7 +104,6 @@ struct Bridges {
             }
         }
     }
-
 };
 
 int main() {

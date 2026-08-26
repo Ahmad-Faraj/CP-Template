@@ -4,8 +4,7 @@
  */
 #include "../../core.h"
 
-template <int LOG = 62>
-struct XorBasisPrefix {
+template <int LOG = 62> struct XorBasisPrefix {
     static_assert(LOG >= 1 && LOG <= 63);
     int b[LOG];
     int pos[LOG];
@@ -18,9 +17,11 @@ struct XorBasisPrefix {
     }
 
     void insert(int v, int idx = 0) {
-        if (idx == 0) idx = ++last;
-        else last = max(last, idx);
-        
+        if (idx == 0)
+            idx = ++last;
+        else
+            last = max(last, idx);
+
         int p = idx;
         for (int i = LOG - 1; i >= 0; i--) {
             if (((v >> i) & 1) == 0) continue;

@@ -1,15 +1,15 @@
 #include "../../../core.h"
+
 /*
  * Topic: Articulation Points (Cut Vertices)
  * Description: Finds vertices that disconnect the graph if removed.
- * 
+ *
  * Important Facts:
  * - 1-based indexing for nodes by default.
  * - Time Complexity: O(V + E)
  * - Space Complexity: O(V + E)
  */
-template <typename T = int>
-struct ArticulationPoints {
+template <typename T = int> struct ArticulationPoints {
     T dfs_timer;
     vector<T> dfs_num, dfs_low, vis;
     vector<vector<T>> adj;
@@ -44,13 +44,17 @@ struct ArticulationPoints {
             if (!dfs_num[child]) {
                 tarjan(child, node);
                 dfs_low[node] = min(dfs_low[node], dfs_low[child]);
-                if (dfs_low[child] >= dfs_num[node] && parent != -1) { articulation_points.insert(node); }
+                if (dfs_low[child] >= dfs_num[node] && parent != -1) {
+                    articulation_points.insert(node);
+                }
                 ++children;
             } else if (vis[child]) {
                 dfs_low[node] = min(dfs_low[node], dfs_num[child]);
             }
         }
-        if (parent == -1 && children > 1) { articulation_points.insert(node); }
+        if (parent == -1 && children > 1) {
+            articulation_points.insert(node);
+        }
     }
 
     // Time Complexity: O(V + E)

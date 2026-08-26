@@ -1,14 +1,14 @@
 #include "../../../core.h"
+
 /*
  * Topic: Hungarian Algorithm
  * Description: Finds minimum or maximum weight perfect matching in a bipartite graph.
- * 
+ *
  * Important Facts:
  * - 1-based indexing for nodes by default.
  * - Time Complexity: O(V^3)
  * - Space Complexity: O(V^2)
  */
-
 
 struct Hungarian {
     static const int N = 505;
@@ -16,24 +16,23 @@ struct Hungarian {
     int l[N], r[N], arg[N], trace[N];
     queue<int> q;
     int start, finish, n;
-    
+
     // Default constructor.
     Hungarian() {}
-    
+
     // Initializes the Hungarian structure with maximum dimension.
     Hungarian(int n1, int n2) : n(max(n1, n2)) {
         for (int i = 1; i <= n; ++i) {
             fy[i] = l[i] = r[i] = 0;
-            for (int j = 1; j <= n; ++j)
-                c[i][j] = inf; 
+            for (int j = 1; j <= n; ++j) c[i][j] = inf;
         }
     }
-    
+
     // Updates the edge cost between u and v with minimum.
     void add_edge(int u, int v, long long cost) { c[u][v] = min(c[u][v], cost); }
-    
+
     inline long long getC(int u, int v) { return c[u][v] - fx[u] - fy[v]; }
-    
+
     void initBFS() {
         while (!q.empty()) q.pop();
         q.push(start);
@@ -44,7 +43,7 @@ struct Hungarian {
         }
         finish = 0;
     }
-    
+
     void findAugPath() {
         while (!q.empty()) {
             int u = q.front();
@@ -67,7 +66,7 @@ struct Hungarian {
                 }
         }
     }
-    
+
     void subX_addY() {
         long long delta = inf;
         for (int v = 1; v <= n; ++v)
@@ -92,7 +91,7 @@ struct Hungarian {
                 q.push(r[v]);
             }
     }
-    
+
     void Enlarge() {
         do {
             int u = trace[finish];
@@ -102,7 +101,7 @@ struct Hungarian {
             finish = nxt;
         } while (finish);
     }
-    
+
     long long maximum_matching() {
         for (int u = 1; u <= n; ++u) {
             fx[u] = c[u][1];
@@ -150,7 +149,7 @@ struct Hungarian {
 };
 
 /*
- * Takes n (workers and tasks) and an n x n cost matrix. 
+ * Takes n (workers and tasks) and an n x n cost matrix.
  * Gives minimum total cost and the optimal worker-task assignments.
  */
 int main() {

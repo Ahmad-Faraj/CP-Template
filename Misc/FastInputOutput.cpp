@@ -19,7 +19,9 @@ char next_char() {
     if (pos == len) {
         pos = 0;
         len = (int)fread(buf, 1, BUF_SZ, stdin);
-        if (!len) { return EOF; }
+        if (!len) {
+            return EOF;
+        }
     }
     return buf[pos++];
 }
@@ -29,10 +31,14 @@ int read_int() {
     char ch;
     int sgn = 1;
     while (!isdigit(ch = next_char())) {
-        if (ch == '-') { sgn *= -1; }
+        if (ch == '-') {
+            sgn *= -1;
+        }
     }
     x = ch - '0';
-    while (isdigit(ch = next_char())) { x = x * 10 + (ch - '0'); }
+    while (isdigit(ch = next_char())) {
+        x = x * 10 + (ch - '0');
+    }
     return x * sgn;
 }
 
@@ -41,13 +47,18 @@ int read_ll() {
     char ch;
     int sgn = 1;
     while (!isdigit(ch = next_char())) {
-        if (ch == '-') { sgn *= -1; }
+        if (ch == '-') {
+            sgn *= -1;
+        }
     }
     x = ch - '0';
-    while (isdigit(ch = next_char())) { x = x * 10 + (ch - '0'); }
+    while (isdigit(ch = next_char())) {
+        x = x * 10 + (ch - '0');
+    }
     return x * sgn;
 }
-}
+} // namespace Input
+
 inline namespace Output {
 char buf[BUF_SZ];
 int pos;
@@ -58,7 +69,9 @@ void flush_out() {
 }
 
 void write_char(char c) {
-    if (pos == BUF_SZ) { flush_out(); }
+    if (pos == BUF_SZ) {
+        flush_out();
+    }
     buf[pos++] = c;
 }
 
@@ -69,10 +82,14 @@ void write_int(int x) {
         x *= -1;
     }
     int len = 0;
-    for (; x >= 10; x /= 10) { num_buf[len++] = (char)('0' + (x % 10)); }
+    for (; x >= 10; x /= 10) {
+        num_buf[len++] = (char)('0' + (x % 10));
+    }
     write_char((char)('0' + x));
-    while (len) { write_char(num_buf[--len]); }
-    write_char('\n');  // cahnge it to write ' '
+    while (len) {
+        write_char(num_buf[--len]);
+    }
+    write_char('\n'); // cahnge it to write ' '
 }
 
 void write_ll(ll x) {
@@ -82,13 +99,17 @@ void write_ll(ll x) {
         x *= -1;
     }
     int len = 0;
-    for (; x >= 10; x /= 10) { num_buf[len++] = (char)('0' + (x % 10)); }
+    for (; x >= 10; x /= 10) {
+        num_buf[len++] = (char)('0' + (x % 10));
+    }
     write_char((char)('0' + x));
-    while (len) { write_char(num_buf[--len]); }
-    write_char('\n');  // cahnge it to write ' '
+    while (len) {
+        write_char(num_buf[--len]);
+    }
+    write_char('\n'); // cahnge it to write ' '
 }
 
 // auto-flush output when program exits
 void init_output() { assert(atexit(flush_out) == 0); }
 
-}
+} // namespace Output

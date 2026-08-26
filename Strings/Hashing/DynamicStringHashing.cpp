@@ -25,7 +25,7 @@ struct DynamicStringHashing {
         return {(a.h1 * p1[b.len] + b.h1) % M1, (a.h2 * p2[b.len] + b.h2) % M2, a.len + b.len};
     }
 
-    void build(int node, int l, int r, const string& s) {
+    void build(int node, int l, int r, const string &s) {
         if (l == r) {
             tree[node] = {s[l], s[l], 1};
             return;
@@ -60,7 +60,7 @@ struct DynamicStringHashing {
         return merge(query(2 * node, l, mid, ql, qr), query(2 * node + 1, mid + 1, r, ql, qr));
     }
 
-    pair<int, int> query(int l, int r) {  // 0-indexed, inclusive
+    pair<int, int> query(int l, int r) { // 0-indexed, inclusive
         Node res = query(1, 0, n - 1, l, r);
         return {res.h1, res.h2};
     }

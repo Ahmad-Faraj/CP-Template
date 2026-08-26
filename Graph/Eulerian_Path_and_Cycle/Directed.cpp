@@ -13,7 +13,7 @@ using namespace std;
     - Space: O(n + m)
 
     [2] When You Should Use It
-    - Find an Euler Path "e1, e2, ... en" or Euler Circuit in a directed graph. 
+    - Find an Euler Path "e1, e2, ... en" or Euler Circuit in a directed graph.
     - Use it when every edge must be used exactly once.
 
     [3] Notes
@@ -27,6 +27,7 @@ using namespace std;
 int n, m;
 vector<vector<pair<int, int>>> adj; // this will include the vertex and edge id
 vector<int> deg;
+
 bool Directed_Euler() // this function for path & circuit
 {
     int st = -1, en = -1, cycle_st = -1;

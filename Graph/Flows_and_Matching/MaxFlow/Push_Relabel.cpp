@@ -1,8 +1,9 @@
 #include "../../../core.h"
+
 /*
  * Topic: Push-Relabel Max Flow
  * Description: Fast max flow algorithm that pushes excess flow to neighbors. Great for dense graphs.
- * 
+ *
  * Important Facts:
  * - Supports 0-based and 1-based indexing.
  * - Time Complexity: O(V^3)
@@ -14,21 +15,20 @@ struct PushRelabel {
         long long cap, flow;
         int rev;
     };
-    
+
     int n;
     vector<vector<Edge>> adj;
     vector<long long> excess;
     vector<int> height, count;
     vector<bool> active;
     queue<int> q;
-    
+
     // Time Complexity: O(V)
     // Space Complexity: O(V)
     // Initialize with number of vertices V.
-    PushRelabel(int vertices) : n(vertices), adj(vertices), 
-                                excess(vertices), height(vertices), 
-                                count(vertices * 2), active(vertices) {}
-    
+    PushRelabel(int vertices)
+        : n(vertices), adj(vertices), excess(vertices), height(vertices), count(vertices * 2), active(vertices) {}
+
     // Time Complexity: O(1) amortized
     // Space Complexity: O(1)
     // Add directed edge from u to v with given capacity.
@@ -36,7 +36,7 @@ struct PushRelabel {
         adj[u].push_back({v, cap, 0, static_cast<int>(adj[v].size())});
         adj[v].push_back({u, 0, 0, static_cast<int>(adj[u].size()) - 1});
     }
-    
+
     // Time Complexity: O(1)
     // Space Complexity: O(1)
     // Enqueue active node.
@@ -46,29 +46,29 @@ struct PushRelabel {
             q.push(v);
         }
     }
-    
+
     // Time Complexity: O(1)
     // Space Complexity: O(1)
     // Push flow on a specific edge.
     void push(int u, int i) {
-        auto& edge = adj[u][i];
+        auto &edge = adj[u][i];
         long long d = min(excess[u], edge.cap - edge.flow);
         if (d == 0 || height[u] <= height[edge.to]) return;
-        
+
         excess[u] -= d;
         excess[edge.to] += d;
         edge.flow += d;
         adj[edge.to][edge.rev].flow -= d;
         enqueue(edge.to);
     }
-    
+
     // Time Complexity: O(V)
     // Space Complexity: O(1)
     // Relabel height of node u.
     void relabel(int u) {
         count[height[u]]--;
         int d = 2 * n;
-        for (const auto& edge : adj[u]) {
+        for (const auto &edge : adj[u]) {
             if (edge.cap - edge.flow > 0) {
                 d = min(d, height[edge.to] + 1);
             }
@@ -77,7 +77,7 @@ struct PushRelabel {
         count[height[u]]++;
         enqueue(u);
     }
-    
+
     // Time Complexity: O(V)
     // Space Complexity: O(1)
     // Perform gap heuristic.
@@ -91,7 +91,7 @@ struct PushRelabel {
             }
         }
     }
-    
+
     // Time Complexity: O(V^3)
     // Space Complexity: O(V)
     // Compute max flow from source s to sink t.
@@ -100,23 +100,23 @@ struct PushRelabel {
         count[n] = 1;
         height[s] = n;
         active[s] = active[t] = true;
-        
+
         for (int i = 0; i < static_cast<int>(adj[s].size()); i++) {
-            auto& edge = adj[s][i];
+            auto &edge = adj[s][i];
             excess[s] += edge.cap;
             push(s, i);
         }
-        
+
         while (!q.empty()) {
             int u = q.front();
             q.pop();
             active[u] = false;
-            
+
             int v_h = height[u];
             for (int i = 0; i < static_cast<int>(adj[u].size()) && excess[u] > 0; i++) {
                 push(u, i);
             }
-            
+
             if (excess[u] > 0) {
                 if (count[v_h] == 1) {
                     gap(v_h);
@@ -127,7 +127,6 @@ struct PushRelabel {
         }
         return excess[t];
     }
-
 };
 
 /*

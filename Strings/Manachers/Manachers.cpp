@@ -17,7 +17,7 @@ struct Manacher {
         }
         int n = t.size();
         p.assign(n, 1);
-        
+
         int l = 0, r = 0;
         for (int i = 1; i < n; i++) {
             if (i <= r) {

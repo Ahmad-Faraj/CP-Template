@@ -1,8 +1,9 @@
 #include "../../../core.h"
+
 /*
  * Topic: Edmonds-Karp Max Flow
  * Description: Uses BFS to find augmenting paths. Simple to code, good for small networks.
- * 
+ *
  * Important Facts:
  * - Supports 0-based and 1-based indexing.
  * - Time Complexity: O(V * E^2)
@@ -14,15 +15,15 @@ struct EdmondsKarp {
         long long cap, flow;
         int rev;
     };
-    
+
     int n;
     vector<vector<Edge>> adj;
-    
+
     // Time Complexity: O(V)
     // Space Complexity: O(V)
     // Initialize with number of vertices V.
     EdmondsKarp(int vertices) : n(vertices), adj(vertices) {}
-    
+
     // Time Complexity: O(1) amortized
     // Space Complexity: O(1)
     // Add directed edge from u to v with given capacity.
@@ -30,7 +31,7 @@ struct EdmondsKarp {
         adj[u].push_back({v, cap, 0, static_cast<int>(adj[v].size())});
         adj[v].push_back({u, 0, 0, static_cast<int>(adj[u].size()) - 1});
     }
-    
+
     // Time Complexity: O(V * E^2)
     // Space Complexity: O(V)
     // Compute max flow from source s to sink t.
@@ -38,26 +39,26 @@ struct EdmondsKarp {
         long long flow = 0;
         vector<int> parent(n);
         vector<int> parent_edge(n);
-        
+
         while (true) {
             fill(parent.begin(), parent.end(), -1);
             queue<pair<int, long long>> q;
             q.push({s, (long long)2e18});
             parent[s] = -2;
-            
+
             long long pushed = 0;
             while (!q.empty()) {
                 int curr = q.front().first;
                 long long f = q.front().second;
                 q.pop();
-                
+
                 if (curr == t) {
                     pushed = f;
                     break;
                 }
-                
+
                 for (int i = 0; i < static_cast<int>(adj[curr].size()); ++i) {
-                    auto& edge = adj[curr][i];
+                    auto &edge = adj[curr][i];
                     int next = edge.to;
                     if (parent[next] == -1 && edge.cap - edge.flow > 0) {
                         parent[next] = curr;
@@ -67,16 +68,16 @@ struct EdmondsKarp {
                     }
                 }
             }
-            
+
             if (pushed == 0) break;
             flow += pushed;
-            
+
             int curr = t;
             while (curr != s) {
                 int p = parent[curr];
                 int idx = parent_edge[curr];
                 int rev_idx = adj[p][idx].rev;
-                
+
                 adj[p][idx].flow += pushed;
                 adj[curr][rev_idx].flow -= pushed;
                 curr = p;
@@ -84,7 +85,6 @@ struct EdmondsKarp {
         }
         return flow;
     }
-
 };
 
 /*

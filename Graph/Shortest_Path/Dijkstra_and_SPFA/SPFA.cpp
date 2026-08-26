@@ -1,15 +1,15 @@
 #include "../../../core.h"
+
 /*
  * Topic: Shortest Path Faster Algorithm (SPFA)
  * Description: Queue-optimized Bellman-Ford. Fast on average but O(V*E) worst-case.
- * 
+ *
  * Important Facts:
  * - 1-based indexing for nodes by default.
  * - Time Complexity: O(E) avg, O(V * E) worst
  * - Space Complexity: O(V + E)
  */
-template <typename T = int>
-struct SPFA {
+template <typename T = int> struct SPFA {
     struct Edge {
         int v;
         T w;
@@ -22,7 +22,7 @@ struct SPFA {
         // Time Complexity: O(1)
         // Space Complexity: O(1)
         // Compares edges by weight.
-        bool operator<(const Edge& e) const { return w < e.w; }
+        bool operator<(const Edge &e) const { return w < e.w; }
     };
 
     int n;
@@ -58,7 +58,7 @@ struct SPFA {
             int u = q.front();
             q.pop();
             in_queue[u] = 0;
-            for (const auto& e : adj[u]) {
+            for (const auto &e : adj[u]) {
                 if (dist[u] + e.w < dist[e.v]) {
                     dist[e.v] = dist[u] + e.w;
                     if (!in_queue[e.v]) {

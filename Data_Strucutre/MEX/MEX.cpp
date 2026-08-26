@@ -14,6 +14,7 @@ int mex(vector<int> const &A) {
 }
 
 const int MAX_N = 1e5 + 5;
+
 int mex(vector<int> const &A) {
     static bool used[MAX_N + 1] = {0};
     for (int x : A) {

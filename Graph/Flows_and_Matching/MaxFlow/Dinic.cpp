@@ -1,8 +1,9 @@
 #include "../../../core.h"
+
 /*
  * Topic: Dinic's Algorithm (Max Flow)
  * Description: Finds max flow using layered graphs. Extremely fast in practice.
- * 
+ *
  * Important Facts:
  * - Supports 0-based and 1-based indexing.
  * - Time Complexity: O(V^2 * E) generally, O(E * sqrt(V)) for bipartite graphs.
@@ -14,14 +15,17 @@ struct Dinic {
         long long flow, w;
         int id;
     };
+
     int n, s, t, mxid;
     vector<int> d, flow_through;
     vector<int> done;
     vector<vector<edge>> g;
+
     // Time Complexity: O(1)
     // Space Complexity: O(1)
     // Default constructor.
     Dinic() {}
+
     // Time Complexity: O(V)
     // Space Complexity: O(V)
     // Initializes the Dinic structure with _n nodes.
@@ -99,9 +103,6 @@ struct Dinic {
                 if (e.id >= 0) flow_through[e.id] = (int)e.flow;
         return flow;
     }
-
-
-
 };
 
 /*

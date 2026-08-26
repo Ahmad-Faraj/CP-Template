@@ -1,9 +1,10 @@
 #include "../../../core.h"
+
 /*
  * Topic: Topological Sorting
  * Description: Linearly orders a Directed Acyclic Graph (DAG) and detects cycles.
  *              Uses DFS to push nodes to answer array on exit time.
- * 
+ *
  * Important Facts:
  * - 1-based indexing for nodes by default.
  * - Time Complexity: O(V + E)

@@ -21,8 +21,8 @@ struct NTT_With_any_MOD {
     // Modular inverse using Fermat
     static int power(int a, int b, int mod) {
         int res = 1;
-        while(b) {
-            if(b & 1) res = res * a % mod;
+        while (b) {
+            if (b & 1) res = res * a % mod;
             a = a * a % mod;
             b >>= 1;
         }
@@ -61,7 +61,8 @@ struct NTT_With_any_MOD {
     static vector<int> multiply_mod(vector<int> a, vector<int> b, int mod, int root) {
         int n = 1;
         while (n < sz(a) + sz(b) - 1) n <<= 1;
-        a.resize(n); b.resize(n);
+        a.resize(n);
+        b.resize(n);
 
         ntt(a, mod, root, false);
         ntt(b, mod, root, false);
@@ -71,9 +72,7 @@ struct NTT_With_any_MOD {
         return a;
     }
 
-    static int mod_inv(int a, int m) {
-        return power(a, m - 2, m);
-    }
+    static int mod_inv(int a, int m) { return power(a, m - 2, m); }
 
     static int crt(int r1, int r2, int r3) {
         int64_t m1 = mod1, m2 = mod2, m3 = mod3;
@@ -96,12 +95,9 @@ struct NTT_With_any_MOD {
         vector<int> z = multiply_mod(a, b, mod3, root3);
 
         vector<int> res(sz(x));
-        for (int i = 0; i < sz(x); i++)
-            res[i] = crt(x[i], y[i], z[i]);
+        for (int i = 0; i < sz(x); i++) res[i] = crt(x[i], y[i], z[i]);
         return res;
     }
-
-
 
     static vector<int> multiply(vector<int> a, vector<int> b, int limit) {
         vector<int> res = multiply(a, b);

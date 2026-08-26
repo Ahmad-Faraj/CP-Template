@@ -21,6 +21,7 @@ ll extended_euclid(ll a, ll b, ll &x, ll &y) {
     }
     return a;
 }
+
 // a * x + b * y = c. returns valid x and y if possible.
 bool find_any_solution(ll a, ll b, ll c, ll &x0, ll &y0, ll &g) {
     if (a == 0 and b == 0) {
@@ -118,4 +119,5 @@ int32_t main() {
     }
     return 0;
 }
+
 // https://codeforces.com/gym/102020/problem/I

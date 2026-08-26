@@ -19,8 +19,7 @@ struct Hash2D {
 
     inline int mul(int a, int b) { return ((a % mod) * (b % mod)) % mod; }
 
-    template <typename T>
-    inline void calc(const T& s) {
+    template <typename T> inline void calc(const T &s) {
         for (int i = 0; i < n; i++) PWX[i + 1] = mul(PWX[i], PX);
         for (int i = 0; i < m; i++) PWY[i + 1] = mul(PWY[i], PY);
         for (int i = 0; i < n; i++)
@@ -32,11 +31,11 @@ struct Hash2D {
     }
 
     template <typename T>
-    Hash2D(const T& s) : n(sz(s)), m(sz(s[0])), PWX(n + 1, 1), PWY(m + 1, 1), hs(n + 1, vector<int>(m + 1, 0)) {
+    Hash2D(const T &s) : n(sz(s)), m(sz(s[0])), PWX(n + 1, 1), PWY(m + 1, 1), hs(n + 1, vector<int>(m + 1, 0)) {
         calc(s);
     }
 
-    inline int get_hash(int x1, int y1, int x2, int y2) {  // 1-indexed
+    inline int get_hash(int x1, int y1, int x2, int y2) { // 1-indexed
         int dx = x2 - x1 + 1, dy = y2 - y1 + 1;
         int term1 = sub(hs[x2][y2], mul(hs[x2][y1 - 1], PWY[dy]));
         int term2 = sub(hs[x1 - 1][y2], mul(hs[x1 - 1][y1 - 1], PWY[dy]));

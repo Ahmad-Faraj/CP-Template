@@ -8,14 +8,13 @@ using namespace std;
 // Modulus used for NTT: 998244353 = 119 * 2^23 + 1, which is a prime.
 const int special_mod = 998244353;
 const int primitive_root = 3; // Primitive root modulo special_mod
-const int lim = 64; // Threshold under which naive multiplication is used
+const int lim = 64;           // Threshold under which naive multiplication is used
 
 // Fast modular exponentiation: computes (b^n) % m
 ll powrmod(ll b, ll n, ll m) {
     ll result = 1;
     while (n > 0) {
-        if (n & 1)
-            result = result * b % m;
+        if (n & 1) result = result * b % m;
         b = b * b % m;
         n >>= 1;
     }
@@ -58,20 +57,17 @@ vector<int> fast_ntt_poly_mul(vector<int> &a, vector<int> &b, int x) {
     if ((n <= lim) || (n & 1)) {
         vector<unsigned ll> temp(2 * n);
         for (int i = 0; i < n; i++) {
-            for (int j = 0; j < n; j++)
-                temp[i + j] += (ll)a[i] * b[j];
+            for (int j = 0; j < n; j++) temp[i + j] += (ll)a[i] * b[j];
 
             // Periodically reduce to avoid overflow
             if ((i & 15) == 15)
-                for (int j = i + 1; j < i + n; j++)
-                    temp[j] %= special_mod;
+                for (int j = i + 1; j < i + n; j++) temp[j] %= special_mod;
         }
 
         // Combine result using root of unity
         vector<int> result(n);
         int c = powrmod(primitive_root, x, special_mod);
-        for (int i = 0; i < n; i++)
-            result[i] = (temp[i] + c * (temp[i + n] % special_mod)) % special_mod;
+        for (int i = 0; i < n; i++) result[i] = (temp[i] + c * (temp[i + n] % special_mod)) % special_mod;
 
         return result;
     }
@@ -96,8 +92,7 @@ vector<int> fast_ntt_poly_mul(vector<int> &a, vector<int> &b, int x) {
     int two_sqrtc_inv = mod_div(sqrtc_inv);
 
     vector<int> result(n);
-    for (int i = 0; i < n / 2; i++)
-        result[i] = mod_div(ans_minus[i] + ans_plus[i]);
+    for (int i = 0; i < n / 2; i++) result[i] = mod_div(ans_minus[i] + ans_plus[i]);
     for (int i = 0; i < n / 2; i++)
         result[i + n / 2] = (ll)(ans_minus[i] - ans_plus[i] + special_mod) * two_sqrtc_inv % special_mod;
 
@@ -139,8 +134,7 @@ void solve() {
 
     vector<int> res = fast_ntt_poly_mul(X, Y);
 
-    for (auto val : res)
-        cout << val << ' ';
+    for (auto val : res) cout << val << ' ';
 }
 
 int main() {

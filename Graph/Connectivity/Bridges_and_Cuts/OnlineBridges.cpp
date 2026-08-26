@@ -1,9 +1,10 @@
 #include "../../../core.h"
+
 /*
  * Topic: Online Bridges
  * Description: Dynamically tracks the number of bridges as edges are added.
  *              Uses a combination of DSUs for 2-ECCs and connected components.
- * 
+ *
  * Important Facts:
  * - 0-based indexing for nodes by default.
  * - Time Complexity: O(log V) amortized per edge addition.

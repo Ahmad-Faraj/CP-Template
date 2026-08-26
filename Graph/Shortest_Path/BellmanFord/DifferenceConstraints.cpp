@@ -1,15 +1,15 @@
 #include "../../../core.h"
+
 /*
  * Topic: System of Difference Constraints
  * Description: Solves systems of inequalities x_i - x_j <= C using Bellman-Ford on a constraint graph.
- * 
+ *
  * Important Facts:
  * - 0-based indexing for nodes by default.
  * - Time Complexity: O(V * E)
  * - Space Complexity: O(V + E)
  */
-template <typename T = int>
-struct DifferenceConstraints {
+template <typename T = int> struct DifferenceConstraints {
     struct Constraint {
         int u, v;
         T c;

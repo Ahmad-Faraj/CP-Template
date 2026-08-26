@@ -1,15 +1,15 @@
 #include "../../../core.h"
+
 /*
  * Topic: Bellman-Ford
  * Description: Single-source shortest path for graphs with negative weights. Detects negative cycles.
- * 
+ *
  * Important Facts:
  * - 1-based indexing for nodes by default.
  * - Time Complexity: O(V * E)
  * - Space Complexity: O(V + E)
  */
-template <typename T = int>
-struct BellmanFord {
+template <typename T = int> struct BellmanFord {
     struct Edge {
         T u, v, w;
 
@@ -41,7 +41,7 @@ struct BellmanFord {
         was_processed = true;
         for (T i = 0; i < n - 1; ++i) {
             bool updated = false;
-            for (const auto& e : edges) {
+            for (const auto &e : edges) {
                 if (dist[e.u] != INF && dist[e.u] + e.w < dist[e.v]) {
                     dist[e.v] = dist[e.u] + e.w;
                     par[e.v] = e.u;

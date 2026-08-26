@@ -2,7 +2,7 @@
 
 /*
  * Topic: Data Structures - Binary Trie
- * Description: A Trie for binary representations of numbers. Supports fast XOR 
+ * Description: A Trie for binary representations of numbers. Supports fast XOR
  *              operations, finding max/min XOR, and bitwise manipulations.
  */
 
@@ -12,6 +12,7 @@ struct BinaryTrie {
     struct Node {
         Node *child[2];
         int freq;
+
         Node() {
             memset(child, 0, sizeof(child));
             freq = 0;
@@ -19,6 +20,7 @@ struct BinaryTrie {
     };
 
     Node *root;
+
     BinaryTrie() {
         root = new Node;
         insert(0);
@@ -46,7 +48,9 @@ struct BinaryTrie {
             curr->child[bit] = 0;
         }
     }
+
     void erase(const ll n) { erase(n, LOG, root); }
+
     ll max_xor(const ll n) {
         Node *curr = root;
         ll ans = 0;
@@ -61,6 +65,7 @@ struct BinaryTrie {
         }
         return ans;
     }
+
     ll min_xor(const ll n) {
         Node *curr = root;
         ll ans = 0;
@@ -77,7 +82,7 @@ struct BinaryTrie {
     }
 
     inline bool search(const ll x) {
-        Node* cur = root;
+        Node *cur = root;
         for (int i = LOG; ~i; i--) {
             bool bit = (x >> i) & 1;
             if (!cur->child[bit] or !cur->child[bit]->freq) return false;

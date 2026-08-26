@@ -9,6 +9,7 @@
 struct SegmentTree {
     int n;
     vector<int> tree;
+
     SegmentTree(int sz) {
         n = 1;
         while (n < sz) {
@@ -16,6 +17,7 @@ struct SegmentTree {
         }
         tree.assign(2 * n, 0);
     }
+
     void update(int ind, int val) {
         ind += n;
         tree[ind] = val;
@@ -25,6 +27,7 @@ struct SegmentTree {
             ind >>= 1;
         }
     }
+
     int query(int x) {
         // return the first index i, such that s[i] < x
         int node = 1;

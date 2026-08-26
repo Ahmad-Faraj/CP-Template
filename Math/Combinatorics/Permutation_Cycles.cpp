@@ -73,7 +73,7 @@ ll order(const vector<int> &p) { // smallest k > 0 with p^k the identity: the lc
 }
 
 ll order_mod(const vector<int> &p, ll mod) { // the same, reduced, for when the true order does not fit
-    map<ll, int> best; // the highest power of each prime across all cycle lengths
+    map<ll, int> best;                       // the highest power of each prime across all cycle lengths
     for (const vector<int> &c : decompose(p)) {
         ll len = (ll)c.size();
         for (ll f = 2; f * f <= len; f++) {

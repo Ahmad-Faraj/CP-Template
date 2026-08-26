@@ -1,15 +1,15 @@
 #include "../../../core.h"
+
 /*
  * Topic: Minimum Delta Cycle
  * Description: Finds cycle weight differences using Bellman-Ford relaxations.
- * 
+ *
  * Important Facts:
  * - 0-based indexing for nodes by default.
  * - Time Complexity: O(V * E)
  * - Space Complexity: O(V + E)
  */
-template <typename T = int>
-struct MinDeltaCycle {
+template <typename T = int> struct MinDeltaCycle {
     struct Edge {
         int u, v;
         T w;
@@ -28,8 +28,10 @@ struct MinDeltaCycle {
         vector<vector<T>> dp(n + 1, vector<T>(n, INF));
         for (int v = 0; v < n; ++v) dp[0][v] = 0;
         for (int k = 1; k <= n; ++k) {
-            for (const auto& e : edges) {
-                if (dp[k - 1][e.u] != INF) { dp[k][e.v] = min(dp[k][e.v], dp[k - 1][e.u] + e.w); }
+            for (const auto &e : edges) {
+                if (dp[k - 1][e.u] != INF) {
+                    dp[k][e.v] = min(dp[k][e.v], dp[k - 1][e.u] + e.w);
+                }
             }
         }
         T min_delta = INF;

@@ -1,6 +1,6 @@
 /*
  * Topic: Gray Code
- * Description: Generates the Gray Code, a binary numeral system where two 
+ * Description: Generates the Gray Code, a binary numeral system where two
  *   successive values differ in only one bit.
  */
 #include "../core.h"

@@ -4,7 +4,7 @@
  * Topic: DP - Convex Hull Trick (CHT)
  * Description: Convex Hull Trick reduces the time complexity of DP transitions of
  *   the form dp[i] = min/max(m[j] * x[i] + b[j]) from O(N^2) to O(N) or O(N log N).
- * Condition (Deque CHT): Use when BOTH the slopes of the added lines m[j] are monotonic 
+ * Condition (Deque CHT): Use when BOTH the slopes of the added lines m[j] are monotonic
  *                        (e.g., sorted) AND the query coordinates x[i] are monotonic. O(N) amortized.
  * Condition (Binary Search CHT): Use when slopes m[j] are monotonic, but queries x[i] are random. O(N log N).
  * Note: If NEITHER slopes nor queries are monotonic, use Li-Chao Tree instead.
@@ -15,18 +15,16 @@
 struct CHT {
     vector<ll> m, b;
     int ptr = 0;
-    
+
     // Set to true for: (slope dec + query min) or (slope inc + query max)
     // Set to false for: (slope dec + query max) or (slope inc + query min)
     bool is_min_query = true;
 
     bool bad(int l1, int l2, int l3) {
         if (is_min_query)
-            return (__int128_t)(b[l3] - b[l1]) * (m[l1] - m[l2]) <=
-                   (__int128_t)(b[l2] - b[l1]) * (m[l1] - m[l3]);
+            return (__int128_t)(b[l3] - b[l1]) * (m[l1] - m[l2]) <= (__int128_t)(b[l2] - b[l1]) * (m[l1] - m[l3]);
         else
-            return (__int128_t)(b[l3] - b[l1]) * (m[l1] - m[l2]) >
-                   (__int128_t)(b[l2] - b[l1]) * (m[l1] - m[l3]);
+            return (__int128_t)(b[l3] - b[l1]) * (m[l1] - m[l2]) > (__int128_t)(b[l2] - b[l1]) * (m[l1] - m[l3]);
     }
 
     void add(ll _m, ll _b) {
@@ -57,7 +55,8 @@ struct CHT {
         return f(mid, x);
     }
 };
-/* 
+
+/*
  * ---------------------------------------------------------
  * ALTERNATIVE: O(N) Deque CHT
  * Use this strictly when BOTH slopes and queries are monotonic.
@@ -65,12 +64,12 @@ struct CHT {
  * struct Line { long long m, c; };
  * deque<Line> dq;
  * auto intersect = [](Line a, Line b) { return 1.0 * (b.c - a.c) / (a.m - b.m); };
- * 
+ *
  * // Add line (assuming slopes are monotonic)
  * while (dq.size() >= 2 && intersect(dq.back(), line) <= intersect(dq[dq.size()-2], dq.back()))
  *     dq.pop_back();
  * dq.push_back(line);
- * 
+ *
  * // Query x (assuming queries are monotonic)
  * while (dq.size() >= 2 && intersect(dq[0], dq[1]) <= x)
  *     dq.pop_front();

@@ -31,13 +31,11 @@ struct SuffixArray {
         for (int i = 0; i < n; i++) p[i] = a[i].second;
         c[p[0]] = 0;
 
-        for (int i = 1; i < n; i++)
-            c[p[i]] = c[p[i - 1]] + (a[i].first != a[i - 1].first);
+        for (int i = 1; i < n; i++) c[p[i]] = c[p[i - 1]] + (a[i].first != a[i - 1].first);
 
         int k = 0;
         while ((1 << k) < n && p.back() != n - 1) {
-            for (int i = 0; i < n; i++)
-                p[i] = (p[i] - (1 << k) + n) % n;
+            for (int i = 0; i < n; i++) p[i] = (p[i] - (1 << k) + n) % n;
             count_sort();
             vector<int> c_new(n);
             c_new[p[0]] = 0;
@@ -80,9 +78,7 @@ struct SuffixArray {
         return a == b ? 0 : (a < b ? -1 : 1);
     }
 
-    inline int compare(const int i, const string &pattern) {
-        return s.compare(i, pattern.size(), pattern);
-    }
+    inline int compare(const int i, const string &pattern) { return s.compare(i, pattern.size(), pattern); }
 
     inline bool find(const string &pattern) {
         int l = 0, r = n - 1;
@@ -90,28 +86,28 @@ struct SuffixArray {
             int mid = (l + r) >> 1;
             int res = compare(p[mid], pattern);
             if (res == 0) return true;
-            if (res < 0) l = mid + 1;
-            else r = mid - 1;
+            if (res < 0)
+                l = mid + 1;
+            else
+                r = mid - 1;
         }
         return false;
     }
 
     inline int lower(const string &pattern) {
-        return lower_bound(p.begin(), p.end(), pattern, [&](int i, const string &pat) {
-            return s.compare(i, pat.size(), pat) < 0;
-        }) - p.begin();
+        return lower_bound(p.begin(), p.end(), pattern,
+                           [&](int i, const string &pat) { return s.compare(i, pat.size(), pat) < 0; }) -
+               p.begin();
     }
 
     inline int upper(const string &pattern) {
-        return upper_bound(p.begin(), p.end(), pattern, [&](const string &pat, int i) {
-            return s.compare(i, pat.size(), pat) > 0;
-        }) - p.begin() - 1;
+        return upper_bound(p.begin(), p.end(), pattern,
+                           [&](const string &pat, int i) { return s.compare(i, pat.size(), pat) > 0; }) -
+               p.begin() - 1;
     }
 
-    inline int count(const string &pattern) {
-        return upper(pattern) - lower(pattern) + 1;
-    }
-    
+    inline int count(const string &pattern) { return upper(pattern) - lower(pattern) + 1; }
+
     // O(1) Longest Common Prefix between suffix starting at i and suffix starting at j
     inline int longest_common_prefix(int i, int j) {
         if (i == j) return n - i - 1;

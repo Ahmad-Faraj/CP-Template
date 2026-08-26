@@ -6,16 +6,16 @@
  *   the form dp[i][j] = min(dp[i-1][k-1] + cost(k, j)) from O(K N^2) to O(K N log N)
  *   when the cost function satisfies the quadrangle inequality.
  *
- * Basic Idea: 
+ * Basic Idea:
  *   If the optimal split point for dp[i][j] is opt(i, j), the quadrangle inequality
- *   guarantees that opt(i, j-1) <= opt(i, j) <= opt(i+1, j). 
- *   Because of this monotonicity, if we compute dp[i][mid] for the middle element, 
- *   we can restrict the search space for the left half to [opt_left, opt_mid] and 
- *   the right half to [opt_mid, opt_right]. This divide and conquer approach reduces 
+ *   guarantees that opt(i, j-1) <= opt(i, j) <= opt(i+1, j).
+ *   Because of this monotonicity, if we compute dp[i][mid] for the middle element,
+ *   we can restrict the search space for the left half to [opt_left, opt_mid] and
+ *   the right half to [opt_mid, opt_right]. This divide and conquer approach reduces
  *   the transition time per layer to O(N log N).
  *
  * Basic Problem Implemented:
- *   Divide an array of N positive integers into K contiguous segments such that the sum 
+ *   Divide an array of N positive integers into K contiguous segments such that the sum
  *   of the squares of the sums of each segment is minimized.
  *   cost(l, r) = (pref[r] - pref[l-1])^2
  */
@@ -24,7 +24,7 @@
  * Trick (Blackbox Testing): Check Quadrangle Inequality quickly:
  * bool is_qi() {
  *     // C(a,c) + C(b,d) <= C(a,d) + C(b,c) for a < b < c < d
- *     return get_cost(1, 3) + get_cost(2, 4) <= get_cost(1, 4) + get_cost(2, 3); 
+ *     return get_cost(1, 3) + get_cost(2, 4) <= get_cost(1, 4) + get_cost(2, 3);
  * }
  */
 
@@ -36,7 +36,7 @@ ll dp_before[MAXN], dp_curr[MAXN];
 /*
  * Function: get_cost
  * Description: Evaluates the cost function C(left, right) in O(1) time.
- *              For Divide and Conquer to work, this cost function MUST satisfy the 
+ *              For Divide and Conquer to work, this cost function MUST satisfy the
  *              Quadrangle Inequality: C(a, c) + C(b, d) <= C(a, d) + C(b, c) for a <= b <= c <= d.
  * Parameters:
  *   - left: Starting index of the interval
@@ -52,9 +52,9 @@ inline ll get_cost(int left, int right) {
 /*
  * Function: compute
  * Description: Recursively computes the DP transitions for a specific layer.
- *              It finds the optimal split point (opt_k) for the midpoint `mid` 
- *              by iterating only between the optimal split points of its boundaries 
- *              (`opt_left` to `opt_right`). This monotonic property reduces 
+ *              It finds the optimal split point (opt_k) for the midpoint `mid`
+ *              by iterating only between the optimal split points of its boundaries
+ *              (`opt_left` to `opt_right`). This monotonic property reduces
  *              the complexity from O(N^2) to O(N log N) per layer.
  * Parameters:
  *   - left: The left boundary of the state indices we are currently evaluating
@@ -80,18 +80,18 @@ void compute(int left, int right, int opt_left, int opt_right) {
     }
 
     dp_curr[mid] = best_cost;
-    
+
     // The optimal split point for the left half must be <= opt_k
     compute(left, mid - 1, opt_left, opt_k);
-    
+
     // The optimal split point for the right half must be >= opt_k
     compute(mid + 1, right, opt_k, opt_right);
 }
 
 /*
  * Function: solve
- * Description: Manages the layer-by-layer computation of the DP. 
- *              Since dp[layer][j] only depends on dp[layer-1][k], we use two 1D arrays 
+ * Description: Manages the layer-by-layer computation of the DP.
+ *              Since dp[layer][j] only depends on dp[layer-1][k], we use two 1D arrays
  *              (`dp_before` and `dp_curr`) to optimize memory to O(N).
  *              For each layer, it invokes `compute` to populate `dp_curr`.
  * Parameters:
@@ -101,11 +101,11 @@ void compute(int left, int right, int opt_left, int opt_right) {
 ll solve(int total_layers) {
     // 1-based indexing for DP layers and elements
     for (int i = 1; i <= n; i++) dp_before[i] = get_cost(1, i);
-    
+
     // i represents the current segment we are forming
     for (int i = 2; i <= total_layers; i++) {
         compute(1, n, 1, n);
-        
+
         // Swap dp_curr to dp_before for the next layer
         for (int j = 1; j <= n; j++) {
             dp_before[j] = dp_curr[j];
@@ -120,7 +120,8 @@ int main() {
 
     if (cin >> n >> k) {
         for (int i = 1; i <= n; i++) {
-            ll val; cin >> val;
+            ll val;
+            cin >> val;
             pref[i] = pref[i - 1] + val;
         }
 

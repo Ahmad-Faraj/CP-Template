@@ -31,7 +31,7 @@ int endA, endB, diameter_len;
 void dfs_dist(int u, int p, int d, int *current_dist, bool record_parent = false) {
     current_dist[u] = d;
     if (record_parent) parent[u] = p; // Record parent to reconstruct the path
-    
+
     for (int v : adj[u]) {
         if (v == p) continue;
         dfs_dist(v, u, d + 1, current_dist, record_parent);
@@ -50,7 +50,7 @@ void find_diameter_endpoints() {
     for (int i = 1; i <= n; i++) {
         if (distA[i] > distA[endB]) endB = i;
     }
-    
+
     diameter_len = distA[endB];
 
     dfs_dist(endB, 0, 0, distB, false);
@@ -63,7 +63,6 @@ vector<int> get_diameter_path() {
     }
     return path;
 }
-
 
 // [2] Tree Distances II (Rerooting DP)
 int sz[N];
@@ -83,10 +82,10 @@ void dfs_sz(int u, int p, int d) {
 void dfs_reroot(int u, int p) {
     for (int v : adj[u]) {
         if (v == p) continue;
-        
+
         // Rerooting logic: moving from u to v
         sum_dist[v] = sum_dist[u] + n - 2LL * sz[v];
-        
+
         dfs_reroot(v, u);
     }
 }
@@ -95,7 +94,7 @@ int main() {
     ios_base::sync_with_stdio(false);
     cin.tie(NULL);
 
-    cin >> n ;
+    cin >> n;
 
     for (int i = 0; i < n - 1; i++) {
         int u, v;

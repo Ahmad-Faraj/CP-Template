@@ -14,13 +14,17 @@ struct node {
     bool flip = 0;
     int sz = 0, ssz = 0, vsz = 0; // splay size, represented-tree subtree size, virtual subtree size
     ll val = 0, sum = 0, lazy = 0, subsum = 0, vsum = 0;
+
     node() {}
+
     node(ll x) : sz(1), ssz(1), vsz(0), val(x), sum(x), lazy(0), subsum(x), vsum(0) {}
 };
 
 struct LCT {
     vector<node> t;
+
     LCT() {}
+
     LCT(int n) : t(n + 1) {}
 
     void init(int u, ll val) { t[u] = node(val); } // set u's value; do this before linking

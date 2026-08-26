@@ -17,8 +17,8 @@ struct TNode {
     }
 };
 
-TNode* cloneNode(TNode* prev) {
-    TNode* cur = new TNode();
+TNode *cloneNode(TNode *prev) {
+    TNode *cur = new TNode();
     if (prev) {
         cur->l = prev->l;
         cur->r = prev->r;
@@ -27,17 +27,17 @@ TNode* cloneNode(TNode* prev) {
     return cur;
 }
 
-TNode* insertTrie(TNode* prevRoot, int val) {
+TNode *insertTrie(TNode *prevRoot, int val) {
     // Time Complexity: O(MAXBIT)
     // Space Complexity: O(MAXBIT)
-    TNode* cur = cloneNode(prevRoot);
+    TNode *cur = cloneNode(prevRoot);
     cur->cnt = (prevRoot ? prevRoot->cnt : 0) + 1;
-    TNode* root = cur;
-    TNode* prev = prevRoot;
+    TNode *root = cur;
+    TNode *prev = prevRoot;
     for (int b = MAXBIT; b >= 0; --b) {
         int bit = (val >> b) & 1;
-        TNode* prevChild = prev ? (bit ? prev->r : prev->l) : nullptr;
-        TNode* newChild = cloneNode(prevChild);
+        TNode *prevChild = prev ? (bit ? prev->r : prev->l) : nullptr;
+        TNode *newChild = cloneNode(prevChild);
         newChild->cnt = (prevChild ? prevChild->cnt : 0) + 1;
         if (bit)
             cur->r = newChild;
@@ -49,16 +49,16 @@ TNode* insertTrie(TNode* prevRoot, int val) {
     return root;
 }
 
-int queryTrie(TNode* oldRoot, TNode* newRoot, int x) {
+int queryTrie(TNode *oldRoot, TNode *newRoot, int x) {
     // Time Complexity: O(MAXBIT)
     int res = 0;
-    TNode* oldCur = oldRoot;
-    TNode* newCur = newRoot;
+    TNode *oldCur = oldRoot;
+    TNode *newCur = newRoot;
     for (int b = MAXBIT; b >= 0; --b) {
         int bit = (x >> b) & 1;
         int want = 1 - bit;
-        TNode* newChild = want ? (newCur ? newCur->r : nullptr) : (newCur ? newCur->l : nullptr);
-        TNode* oldChild = want ? (oldCur ? oldCur->r : nullptr) : (oldCur ? oldCur->l : nullptr);
+        TNode *newChild = want ? (newCur ? newCur->r : nullptr) : (newCur ? newCur->l : nullptr);
+        TNode *oldChild = want ? (oldCur ? oldCur->r : nullptr) : (oldCur ? oldCur->l : nullptr);
         int have = (newChild ? newChild->cnt : 0) - (oldChild ? oldChild->cnt : 0);
         if (have > 0) {
             res |= (1 << b);

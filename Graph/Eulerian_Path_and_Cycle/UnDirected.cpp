@@ -26,6 +26,7 @@ using namespace std;
 int n, m;
 vector<vector<pair<int, int>>> adj; // this will include the vertex and edge id
 vector<int> deg;
+
 bool Undirected_Euler() // this function for path & circuit
 {
     int st = -1, cycle_st = -1, odds = 0;
