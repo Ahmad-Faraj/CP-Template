@@ -174,6 +174,7 @@ class Segment_Tree {
     }
 
     // Build tree
+    // the nums is 0 based
     void init(const vector<int> &nums) {
         init(nums, 1, 1, size);
     }
@@ -198,3 +199,5 @@ class Segment_Tree {
         return get_first_P(l, r, x, 1, 1, size);
     }
 };
+
+
