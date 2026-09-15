@@ -1,27 +1,31 @@
-#include "../../core.h"
+#include <bits/stdc++.h>
+using namespace std;
 
-struct ZAlgorithm {
-    string s;
-    int n;
-    vector<int> z;
+#define ll long long
+#define sz(x) (int)x.size()
+#define nl '\n'
 
-    explicit ZAlgorithm(const string& str) : s(str), n(str.size()) {
-        z.assign(n, 0);
-        for (int i = 1, l = 0, r = 0; i < n; i++) {
-            if (i <= r) {
-                z[i] = min(r - i + 1, z[i - l]);
-            }
-            while (i + z[i] < n && s[z[i]] == s[i + z[i]]) {
-                z[i]++;
-            }
-            if (i + z[i] - 1 > r) {
-                l = i;
-                r = i + z[i] - 1;
-            }
+vector<int> Z_function(const string &s) {
+    int n = s.size();
+
+    vector<int> z(n);
+
+    int l = 0, r = 0;
+
+    for (int i = 1; i < n; i++) {
+        if (i < r) {
+            z[i] = min(r - i, z[i - l]);
+        }
+
+        while (i + z[i] < n && s[z[i]] == s[i + z[i]]) {
+            z[i]++;
+        }
+
+        if (i + z[i] > r) {
+            l = i;
+            r = i + z[i];
         }
     }
 
-    int operator[](int i) const {
-        return z[i];
-    }
-};
+    return z;
+}
