@@ -20,19 +20,16 @@ struct Hash {
     int Base, Mod, inv, n;
     vector<ll> pw{1}, invpw{1}, pref{0};
 
-    Hash() {
-    }
+    Hash() {}
 
     Hash(const string &s, int m = MOD, int b = BASE) {
         Mod = m;
         Base = b;
         n = s.size();
 
-        // Calculate Base^(-1) using Fermat's Little Theorem
         inv = 1;
         ll curr = Base;
         int e = Mod - 2;
-
         while (e) {
             if (e & 1) inv = (inv * curr) % Mod;
 
