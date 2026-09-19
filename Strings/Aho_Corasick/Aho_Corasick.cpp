@@ -1,89 +1,133 @@
-// Aho-Corasick: every occurrence of every pattern from a set, found inside one text in a single pass.
-// Use when: "match many patterns against one text at once", forbidden-substring DP, counting dictionary hits.
-// Handles: overlapping matches, duplicate patterns, reports start / end / which pattern. Lowercase a-z only.
-// Time: build O(sum of pattern lengths) | search O(|s| * L), L = longest chain of fail links that end a pattern
-// Indexing: 0-based positions in the text; a pattern is identified by the index you passed to insert()
-// Note: call build() once after every insert(). Change 26 and the 'a' offset for a different alphabet.
-
 #include <bits/stdc++.h>
 using namespace std;
-using ll = long long;
+
+#define ll long long
+#define sz(x) (int)x.size()
+#define nl '\n'
 
 struct Aho {
-    struct Node {
-        Node *fail = nullptr;
-        Node *child[26];
-        vector<int> pat; // indices ending here; more than one only when the same pattern is given twice
-        int patLen = 0;  // a trie node is exactly one string, so one length covers them all
-        vector<char> chars;
-        Node() { memset(child, 0, sizeof child); }
-    };
+    int N, P;
+    vector<vector<int>> next, out;
+    vector<int> link, out_link, pat_len;
 
-    Node *root;
-
-    Aho() { root = new Node(); }
-
-    Aho(const vector<string> &patterns) {
-        root = new Node();
-        for (int i = 0; i < (int)patterns.size(); i++) insert(patterns[i], i);
-        build();
+    int node() {
+        next.emplace_back(26, 0);
+        out.emplace_back(0);
+        link.emplace_back(0);
+        out_link.emplace_back(0);
+        return N++;
     }
 
-    void insert(const string &s, int idx) { // register pattern number idx
-        Node *cur = root;
-        for (char ch : s) {
-            int c = ch - 'a';
-            if (!cur->child[c]) cur->child[c] = new Node(), cur->chars.push_back((char)c);
-            cur = cur->child[c];
-        }
-        cur->pat.push_back(idx), cur->patLen = (int)s.size();
+    Aho() : N(0), P(0) {
+        node();
     }
 
-    void build() { // link failures; call once, after all inserts
-        queue<Node *> q;
-        for (int i = 0; i < 26; i++) {
-            if (root->child[i])
-                root->child[i]->fail = root, q.push(root->child[i]);
-            else
-                root->child[i] = root;
+    inline int get(char c) {
+        return c - 'a';
+    }
+
+    void insert(const string &pattern, int idx) {
+        int u = 0;
+        for (auto &c : pattern) {
+            if (!next[u][get(c)]) next[u][get(c)] = node();
+
+            u = next[u][get(c)];
         }
-        while (q.size()) {
-            Node *cur = q.front();
+
+        out[u].push_back(idx);
+
+        if (idx >= (int)pat_len.size()) pat_len.resize(idx + 1);
+        pat_len[idx] = (int)pattern.size();
+    }
+
+    void compute() {
+        queue<int> q;
+
+        for (int c = 0; c < 26; c++) {
+            if (next[0][c]) q.push(next[0][c]);
+        }
+
+        while (!q.empty()) {
+            int u = q.front();
             q.pop();
-            for (char ch : cur->chars) {
-                int c = ch;
-                Node *next = cur->child[c], *fail = cur->fail;
-                while (fail != root && !fail->child[c]) fail = fail->fail;
-                next->fail = fail->child[c] ? fail->child[c] : root;
-                q.push(next);
+
+            for (int c = 0; c < 26; c++) {
+                int v = next[u][c];
+                if (!v) {
+                    next[u][c] = next[link[u]][c];
+                } else {
+                    link[v] = (u ? next[link[u]][c] : 0);
+                    int l = link[v];
+                    out_link[v] = (!out[l].empty() ? l : out_link[l]);
+                    q.push(v);
+                }
             }
         }
     }
 
-    vector<array<int, 3>> search(const string &s) { // {start, end, pattern index} for every occurrence
-        vector<array<int, 3>> hits;
-        Node *cur = root;
-        for (int i = 0; i < (int)s.size(); i++) {
-            int c = s[i] - 'a';
-            while (cur != root && !cur->child[c]) cur = cur->fail;
-            if (cur->child[c]) cur = cur->child[c];
-            for (Node *t = cur; t != root; t = t->fail)
-                for (int idx : t->pat) hits.push_back({i - t->patLen + 1, i, idx});
-        }
-        return hits;
+    int advance(int u, char c) {
+        while (u && !next[u][get(c)]) u = link[u];
+        u = next[u][get(c)];
+        return u;
     }
 
-    ll count_occurrences(const string &s) { return (ll)search(s).size(); } // total matches, overlaps included
+    vector<array<int, 3>> match(const string &T) {
+        vector<array<int, 3>> res;
+        int u = 0;
+        for (int i = 0; i < T.size(); i++) {
+            u = next[u][get(T[i])];
+            for (int temp = u; temp; temp = out_link[temp]) {
+                for (auto id : out[temp]) {
+                    int len = pat_len[id];
+                    res.push_back({i - len + 1, i, id});
+                }
+            }
+        }
+
+        return res;
+    }
+
+    void mark_matches(const string &T, vector<bool> &good) {
+        int u = 0;
+        vector<bool> visited(N, false);
+
+        for (int i = 0; i < (int)T.size(); i++) {
+            u = next[u][get(T[i])];
+
+            int temp = u;
+            while (temp && !visited[temp]) {
+                visited[temp] = true;
+                for (auto id : out[temp]) good[id] = true;
+
+                temp = out_link[temp];
+            }
+        }
+    }
+
+    int count(const string &s) {
+        return match(s).size();
+    }
 };
 
-// Standard problem: n patterns then a text; report every match as "start end pattern"
-void solve() {
+int main() {
+    ios_base::sync_with_stdio(false);
+    cin.tie(nullptr);
+
+    string t;
+    cin >> t;
+
     int n;
     cin >> n;
-    vector<string> patterns(n);
-    for (auto &p : patterns) cin >> p;
-    string s;
-    cin >> s;
-    Aho ac(patterns);
-    for (auto &h : ac.search(s)) cout << h[0] << ' ' << h[1] << ' ' << h[2] << '\n';
+    Aho aho;
+    for (int i = 0; i < n; i++) {
+        string s;
+        cin >> s;
+
+        aho.insert(s, i);
+    }
+
+    aho.compute();
+
+    vector<array<int, 3>> arr = aho.match(t);
+    for (auto [l, r, id] : arr) cout << l << " " << r << " " << id << nl;
 }
