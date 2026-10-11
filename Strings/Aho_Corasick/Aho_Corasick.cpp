@@ -6,7 +6,7 @@ using namespace std;
 #define nl '\n'
 
 struct Aho {
-    int N, P;
+    int N;
     vector<vector<int>> next, out;
     vector<int> link, out_link, pat_len;
 
@@ -18,7 +18,7 @@ struct Aho {
         return N++;
     }
 
-    Aho() : N(0), P(0) {
+    Aho() : N(0) {
         node();
     }
 
@@ -57,8 +57,7 @@ struct Aho {
                     next[u][c] = next[link[u]][c];
                 } else {
                     link[v] = (u ? next[link[u]][c] : 0);
-                    int l = link[v];
-                    out_link[v] = (!out[l].empty() ? l : out_link[l]);
+                    out_link[v] = (!out[link[v]].empty() ? link[v] : out_link[link[v]]);
                     q.push(v);
                 }
             }
@@ -71,41 +70,48 @@ struct Aho {
         return u;
     }
 
-    vector<array<int, 3>> match(const string &T) {
-        vector<array<int, 3>> res;
+    vector<vector<int>> match(const string &T) // {l, r , idx}
+    {
+        vector<vector<int>> res;
         int u = 0;
         for (int i = 0; i < T.size(); i++) {
-            u = next[u][get(T[i])];
-            for (int temp = u; temp; temp = out_link[temp]) {
-                for (auto id : out[temp]) {
+            char c = T[i];
+            u = advance(u, c);
+
+            int v = u;
+            while (v) {
+                for (auto id : out[v]) {
+
                     int len = pat_len[id];
-                    res.push_back({i - len + 1, i, id});
+                    res.push_back({i - len + 1, i, id}); // be careful here (memory)
                 }
+
+                v = out_link[v];
             }
         }
 
         return res;
     }
 
-    void mark_matches(const string &T, vector<bool> &good) {
-        int u = 0;
-        vector<bool> visited(N, false);
-
-        for (int i = 0; i < (int)T.size(); i++) {
-            u = next[u][get(T[i])];
-
-            int temp = u;
-            while (temp && !visited[temp]) {
-                visited[temp] = true;
-                for (auto id : out[temp]) good[id] = true;
-
-                temp = out_link[temp];
-            }
-        }
-    }
-
     int count(const string &s) {
         return match(s).size();
+    }
+
+    string smallest(int l) {
+        string res = "";
+        int u = 0;
+        for (int i = 0; i < l; i++) {
+            for (int c = 0; c < 26; c++) {
+                int v = next[u][c];
+                if (out[v].empty()) {
+                    res += char('a' + c);
+                    u = v;
+                    break;
+                }
+            }
+        }
+
+        return res;
     }
 };
 
@@ -118,16 +124,40 @@ int main() {
 
     int n;
     cin >> n;
-    Aho aho;
-    for (int i = 0; i < n; i++) {
-        string s;
-        cin >> s;
 
-        aho.insert(s, i);
+    vector<string> arr(n);
+    vector<int> pos(n);
+    map<string, int> fm;
+    Aho aho;
+
+    for (int i = 0; i < n; i++) {
+        cin >> arr[i];
+        string curr = arr[i];
+
+        // this methods to avoid inserting the same elements (avoid tle)
+        if (fm.count(curr)) {
+            pos[i] = fm[curr];
+        } else {
+            pos[i] = fm[curr] = i;
+
+            aho.insert(curr, i);
+        }
     }
 
     aho.compute();
+    int u = 0;
+    vector<int> freq(n + 5);
+    for (int i = 0; i < t.size(); i++) {
+        char c = t[i];
+        u = aho.advance(u, c);
+        int v = u;
+        while (v) {
+            for (auto &x : aho.out[v]) freq[x]++;
+            v = aho.out_link[v];
+        }
+    }
 
-    vector<array<int, 3>> arr = aho.match(t);
-    for (auto [l, r, id] : arr) cout << l << " " << r << " " << id << nl;
+    for (int i = 0; i < n; i++) {
+        cout << freq[pos[i]] << '\n';
+    }
 }
