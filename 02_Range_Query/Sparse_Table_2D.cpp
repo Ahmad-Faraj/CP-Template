@@ -1,101 +1,44 @@
+// Sparse Table 2D: max over any submatrix of a static grid in O(1).
+// Use when: "max/min/gcd of the submatrix (x1,y1)..(x2,y2)", no updates, very many queries.
+// Usage: SparseTable2D<int> st(grid); st.query(x1, y1, x2, y2);
+// Handles: idempotent merges only (max, min, gcd, and, or). Static grid, no updates.
+// Time: build O(n m log n log m) | query O(1) | memory O(n m log n log m)
+// Indexing: 0-based, rectangles inclusive (x = row, y = column); grid must be non-empty
+// Note: 500 x 500 ints take ~65 MB. To change the operation, edit merge() only.
+
 #include <bits/stdc++.h>
 using namespace std;
 
-// 0-based indexing
-const int N = 505, LG = 10;
+template <typename T> struct SparseTable2D {
+    vector<vector<vector<vector<T>>>> st; // st[a][b][i][j] = merge of the 2^a x 2^b block at (i, j)
 
-int st[N][N][LG][LG];
-int a[N][N], lg2[N];
+    T merge(T a, T b) { return max(a, b); }
 
-int yo(int x1, int y1, int x2, int y2) {
-    x2++;
-    y2++;
-    int a = lg2[x2 - x1], b = lg2[y2 - y1];
-    return max(max(st[x1][y1][a][b], st[x2 - (1 << a)][y1][a][b]),
-               max(st[x1][y2 - (1 << b)][a][b], st[x2 - (1 << a)][y2 - (1 << b)][a][b]));
-}
-
-void build(int n, int m) { // 0 indexed
-    for (int i = 2; i < N; i++) lg2[i] = lg2[i >> 1] + 1;
-    for (int i = 0; i < n; i++) {
-        for (int j = 0; j < m; j++) {
-            st[i][j][0][0] = a[i][j];
-        }
-    }
-    for (int a = 0; a < LG; a++) {
-        for (int b = 0; b < LG; b++) {
-            if (a + b == 0) continue;
-            for (int i = 0; i + (1 << a) <= n; i++) {
-                for (int j = 0; j + (1 << b) <= m; j++) {
-                    if (!a) {
-                        st[i][j][a][b] = max(st[i][j][a][b - 1], st[i][j + (1 << (b - 1))][a][b - 1]);
-                    } else {
-                        st[i][j][a][b] = max(st[i][j][a - 1][b], st[i + (1 << (a - 1))][j][a - 1][b]);
+    SparseTable2D(const vector<vector<T>> &grid) {
+        int n = (int)grid.size(), m = (int)grid[0].size();
+        int LN = __lg(n) + 1, LM = __lg(m) + 1;
+        st.assign(LN, vector<vector<vector<T>>>(LM));
+        for (int a = 0; a < LN; a++)
+            for (int b = 0; b < LM; b++) {
+                st[a][b].assign(n - (1 << a) + 1, vector<T>(m - (1 << b) + 1));
+                for (int i = 0; i + (1 << a) <= n; i++)
+                    for (int j = 0; j + (1 << b) <= m; j++) {
+                        if (a + b == 0) st[a][b][i][j] = grid[i][j];
+                        else if (!a)
+                            st[a][b][i][j] =
+                                merge(st[a][b - 1][i][j], st[a][b - 1][i][j + (1 << (b - 1))]);
+                        else
+                            st[a][b][i][j] =
+                                merge(st[a - 1][b][i][j], st[a - 1][b][i + (1 << (a - 1))][j]);
                     }
-                }
             }
-        }
     }
-}
 
-string s[N];
-int l[N][N], u[N][N];
-
-int32_t main() {
-    ios_base::sync_with_stdio(0);
-    cin.tie(0);
-
-    int n, m;
-    cin >> n >> m;
-    for (int i = 0; i < n; i++) {
-        cin >> s[i];
+    T query(int x1, int y1, int x2, int y2) { // rows [x1, x2] x cols [y1, y2]
+        x2++, y2++;
+        int a = __lg(x2 - x1), b = __lg(y2 - y1);
+        auto &t = st[a][b];
+        return merge(merge(t[x1][y1], t[x2 - (1 << a)][y1]),
+                     merge(t[x1][y2 - (1 << b)], t[x2 - (1 << a)][y2 - (1 << b)]));
     }
-    for (int i = 0; i < n; i++) {
-        for (int j = 0; j < m; j++) {
-            if (!j)
-                l[i][j] = 1;
-            else
-                l[i][j] = 1 + (s[i][j - 1] <= s[i][j] ? l[i][j - 1] : 0);
-        }
-    }
-    for (int j = 0; j < m; j++) {
-        for (int i = 0; i < n; i++) {
-            if (!i)
-                u[i][j] = 1;
-            else
-                u[i][j] = 1 + (s[i - 1][j] <= s[i][j] ? u[i - 1][j] : 0);
-        }
-    }
-    for (int i = 0; i < n; i++) {
-        for (int j = 0; j < m; j++) {
-            int nw = 1, mnx = u[i][j], mny = l[i][j];
-            for (int len = 1; len <= min(i, j); len++) {
-                mnx = min(mnx, u[i][j - len]);
-                mny = min(mny, l[i - len][j]);
-                if (min(mnx, mny) >= len + 1)
-                    nw++;
-                else
-                    break;
-            }
-            a[i][j] = nw;
-        }
-    }
-    build(n, m);
-    int q;
-    cin >> q;
-    while (q--) {
-        int x1, y1, x2, y2;
-        cin >> x1 >> y1 >> x2 >> y2;
-        x1--, y1--, x2--, y2--;
-        int l = 1, r = min(x2 - x1 + 1, y2 - y1 + 1), ans = 0;
-        while (l <= r) {
-            int mid = l + r >> 1;
-            if (yo(x1 + mid - 1, y1 + mid - 1, x2, y2) >= mid)
-                ans = mid, l = mid + 1;
-            else
-                r = mid - 1;
-        }
-        cout << ans << '\n';
-    }
-    return 0;
-}
+};

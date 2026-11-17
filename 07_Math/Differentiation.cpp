@@ -1,21 +1,18 @@
+// Differentiation: numerical 1st and 2nd derivative of a function at a point (central differences).
+// Use when: slope / rate of change of a function you can only evaluate, Newton steps, flat points.
+// Usage: auto f = [](double x) { return x * x; };  first_derivative(f, x); second_derivative(f, x);
+// Time: O(1): two or three calls to f
+// Indexing: not applicable
+// Note: rounding error ~ 1e-16 |f| / h (1st) or / h^2 (2nd), so the 2nd needs a LARGER step (1e-4).
+//       Tested: |err| <= 1e-7 |f'| + 1e-9 |f| (1st) and <= 1e-5 |f''| + 1e-7 |f| (2nd).
+
 #include <bits/stdc++.h>
 using namespace std;
 
-const double h = 1e-6;
+template <class F> double first_derivative(F f, double x, double h = 1e-6) {
+    return (f(x + h) - f(x - h)) / (2.0 * h);
+}
 
-// Example function: f(x) = x^2 + 3x + 2
-double f(double x) { return x * x + 3 * x + 2; }
-
-// First derivative: f'(x) ≈ (f(x + h) - f(x - h)) / (2h)
-double first_derivative(double x) { return (f(x + h) - f(x - h)) / (2.0 * h); }
-
-// Second derivative: f''(x) ≈ (f(x + h) - 2f(x) + f(x - h)) / (h^2)
-double second_derivative(double x) { return (f(x + h) - 2.0 * f(x) + f(x - h)) / (h * h); }
-
-int main() {
-    double x;
-    cin >> x;
-    cout << fixed << setprecision(10);
-    cout << first_derivative(x) << '\n';
-    return 0;
+template <class F> double second_derivative(F f, double x, double h = 1e-4) {
+    return (f(x + h) - 2.0 * f(x) + f(x - h)) / (h * h);
 }

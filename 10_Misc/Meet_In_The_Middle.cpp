@@ -1,45 +1,34 @@
+// Meet In The Middle: counts the subsets with sum exactly x by splitting the array in two halves.
+// Use when: n up to ~40, values too large for a knapsack, "how many subsets sum to x".
+// Usage: ll ways = count_subsets_with_sum(a, x);
+// Handles: negatives, zeros, duplicates, the empty subset (counted when x == 0), n = 0.
+// Time: O(2^(n/2) * n)  |  Memory: O(2^(n/2))
+// Indexing: 0-based; subset_sums(a, l, r) covers a[l..r] inclusive
+// Note: n > ~44 does not fit in memory. Sums and the answer (up to 2^n) are long long.
+
 #include <bits/stdc++.h>
 using namespace std;
 using ll = long long;
 
-int main() {
-    int n, x;
-    cin >> n >> x;
-    vector<int> a(n);
-    for (int i = 0; i < n; i++) {
-        cin >> a[i];
+vector<ll> subset_sums(const vector<ll> &a, int l, int r) { // all 2^(r-l+1) sums, empty included
+    int len = r - l + 1;
+    vector<ll> res;
+    for (int i = 0; i < (1 << len); i++) {
+        ll sum = 0;
+        for (int j = 0; j < len; j++)
+            if (i >> j & 1) sum += a[l + j];
+        res.push_back(sum);
     }
+    return res;
+}
 
-    // stores all possible subset sums in the interval [l, r]
-    auto get_subset_sums = [&](int l, int r) -> vector<ll> {
-        int len = r - l + 1;
-        vector<ll> res;
-
-        // loop through all subsets
-        for (int i = 0; i < (1 << len); i++) {
-            ll sum = 0;
-            for (int j = 0; j < len; j++) {
-                if (i & (1 << j)) {
-                    sum += a[l + j];
-                }
-            }
-            res.push_back(sum);
-        }
-
-        return res;
-    };
-
-    vector<ll> left = get_subset_sums(0, n / 2 - 1);
-    vector<ll> right = get_subset_sums(n / 2, n - 1);
-    sort(left.begin(), left.end());
+ll count_subsets_with_sum(const vector<ll> &a, ll x) {
+    int n = a.size();
+    vector<ll> left = subset_sums(a, 0, n / 2 - 1), right = subset_sums(a, n / 2, n - 1);
     sort(right.begin(), right.end());
-
     ll ans = 0;
-    for (ll i : left) {
-        auto low_iterator = lower_bound(right.begin(), right.end(), x - i);
-        auto high_iterator = upper_bound(right.begin(), right.end(), x - i);
-        ans += high_iterator - low_iterator;
-    }
-
-    cout << ans << endl;
+    for (ll s : left)
+        ans += upper_bound(right.begin(), right.end(), x - s) -
+               lower_bound(right.begin(), right.end(), x - s);
+    return ans;
 }

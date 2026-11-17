@@ -1,49 +1,35 @@
-// Optimise from O(NK^2) to O(NK) by answering min/max queries among k consecutive elements in O(1) in DP transition
-// Problem link: https://codeforces.com/contest/1077/problem/F2
+// Deque Trick: DP whose transition is a max over the last k states, kept in a monotonic deque.
+// Use when: dp[i][j] = a[i] + max(dp[i-k..i-1][j-1]), "every k consecutive must contain a pick"
+// (CF 1077F2), any sliding-window max/min inside a DP transition.
+// Usage: ll best = max_pick_every_k(a, k, x); // exactly x picks, every k in a row has one, else -1
+// Handles: impossible (-1), k >= n, x = 0, x > n. The deque turns O(n * k * x) into O(n * x).
+// Time: O(n * x), memory O(n)
+// Indexing: a is 0-based; dp index i = "a[i-1] is the last pick" (1-based, 0 = nothing picked yet)
+// Note: needs a[i] >= 0 (-1 means impossible). For a min window pop on <= and use +INF for "none".
 
 #include <bits/stdc++.h>
-
 using namespace std;
+using ll = long long;
 
-#define ar array
-#define ll long long
-
-const int MAX_N = 1e5 + 1;
-const ll MOD = 1e9 + 7;
-const ll INF = 1e9;
-
-
-
-void solve() {
-    int n, k, x; cin >> n >> k >> x;
-    vector<int> a(n + 1);
-    for (int i = 1; i <= n; i++) cin >> a[i];
-    ll dp[n + 1][x + 1]; // dp[i][j] = answer using j pictures from the first i-th pictures
-    memset(dp, -0x3f, sizeof dp);
-    dp[0][0] = 0;
+ll max_pick_every_k(const vector<ll> &a, int k, int x) {
+    int n = a.size();
+    if (x > n) return -1;
+    const ll NEG = LLONG_MIN / 4;
+    vector<ll> prv(n + 1, NEG), cur(n + 1); // prv[i] = dp[i][j-1], cur[i] = dp[i][j]
+    prv[0] = 0;
     for (int j = 1; j <= x; j++) {
-        deque<ar<ll,2>> dq; // {id, value}
-        dq.push_back({j - 1, dp[j - 1][j - 1]});
+        fill(cur.begin(), cur.end(), NEG);
+        deque<array<ll, 2>> dq; // {index, prv[index]}, values decreasing front to back
+        dq.push_back({j - 1, prv[j - 1]});
         for (int i = j; i <= n; i++) {
-            while (dq.size() && dq.front()[0] < i - k) dq.pop_front();
-            dp[i][j] = dq.front()[1] + a[i];
-            while (dq.size() && dp[i][j - 1] >= dq.back()[1]) dq.pop_back();
-            dq.push_back({i, dp[i][j - 1]});
+            while (dq.size() && dq.front()[0] < i - k) dq.pop_front(); // keep indices in [i-k, i-1]
+            if (dq.size() && dq.front()[1] > NEG) cur[i] = dq.front()[1] + a[i - 1];
+            while (dq.size() && prv[i] >= dq.back()[1]) dq.pop_back();
+            dq.push_back({i, prv[i]});
         }
-
+        swap(prv, cur);
     }
-    ll ans = -1;
-    for (int i = 0; i < k; i++) ans = max(ans, dp[n - i][x]);
-    cout << ans << "\n";
-}
-
-int main() {
-    ios_base::sync_with_stdio(0);
-    cin.tie(0); cout.tie(0);
-    int tc = 1; 
-    // cin >> tc;
-    for (int t = 1; t <= tc; t++) {
-        // cout << "Case #" << t  << ": ";
-        solve();
-    }
+    ll ans = -1; // the last pick must be within the last k positions
+    for (int i = n; i >= 0 && i > n - k; i--) ans = max(ans, prv[i]);
+    return ans;
 }

@@ -1,78 +1,41 @@
+// DnC Optimization: min cost to split items 1..n into exactly k non-empty consecutive groups.
+// Use when: dp[i][j] = min over t < j of dp[i-1][t] + cost(t+1, j) and the best t never moves
+// left as j grows: cost = (group sum)^2, "pairs inside a group" (CF 321E), quadrangle inequality.
+// Usage: ll best = dnc_dp(n, k, [&](int l, int r) -> ll { return cost of items l..r; });
+// Handles: k = 1, k = n; k > n or k = 0 give LLONG_MAX / 4. Max: pass -cost, negate the answer.
+// Time: O(k * n log n) calls of cost, recursion depth O(log n)
+// Indexing: 1-based items; cost(l, r) is called with 1 <= l <= r <= n
+// Note: cost must be O(1) (prefix sums). Without the monotone split point it is silently wrong.
+
 #include <bits/stdc++.h>
 using namespace std;
+using ll = long long;
 
-#define ll long long
-const int N = 4010, inf = 1e9;
-
-int sc() {
-    int c = getchar();
-    int x = 0;
-    int neg = 0;
-    for (; ((c < 48 || c > 57) && c != '-'); c = getchar());
-    if (c == '-') {
-        neg = 1;
-        c = getchar();
-    }
-    for (; c > 47 && c < 58; c = getchar()) {
-        x = (x << 1) + (x << 3) + c - 48;
-    }
-    if (neg) x = -x;
-    return x;
-}
-
-// Divide 1,2,3...n people in k consecutive parts so that sum of cost of each individual part is minimum
-int a[N][N], c[N][N], dp[810][N]; // dp[i][j]=minimum cost for dividing [1...j] into i parts
-int cost(int i, int j) {
-    // assert(i <= j);
-    return c[j][j] - c[i - 1][j] - c[j][i - 1] + c[i - 1][i - 1];
-}
-void yo(int i, int l, int r, int optl, int optr) {
-    if (l > r) return;
-    int mid = (l + r) / 2;
-    dp[i][mid] = inf; // for maximum cost change it to 0
-    int opt = -1;
-    for (int k = optl; k <= min(mid - 1, optr); k++) {
-        int c = dp[i - 1][k] + cost(k + 1, mid);
-        if (c < dp[i][mid]) { // for maximum cost just change < to > only and rest of the algo should not be changed
-            dp[i][mid] = c;
-            opt = k;
+template <class F> ll dnc_dp(int n, int k, F cost) {
+    const ll INF = LLONG_MAX / 4;
+    vector<ll> prv(n + 1, INF), cur(n + 1); // prv[j] = dp[i-1][j], cur[j] = dp[i][j]
+    for (int j = 1; j <= n; j++) prv[j] = cost(1, j);
+    // fills cur[l..r] knowing their best split points lie in [optl, optr]
+    auto rec = [&](auto &&self, int l, int r, int optl, int optr) -> void {
+        if (l > r) return;
+        int mid = (l + r) / 2, opt = -1;
+        cur[mid] = INF;
+        for (int t = optl; t <= min(mid - 1, optr); t++) {
+            if (prv[t] >= INF) continue;
+            ll c = prv[t] + cost(t + 1, mid);
+            if (c < cur[mid]) cur[mid] = c, opt = t;
         }
-    }
-    // for opt[1..j] <= opt[1...j+1]
-    if (opt == -1) {
-        // if we can't divide into k parts, then go right
-        yo(i, mid + 1, r, optl, optr);
-        return;
-    }
-    yo(i, l, mid - 1, optl, opt);
-    yo(i, mid + 1, r, opt, optr);
-
-    // for opt[1...j] >= opt[1...j+1]
-    // yo(i, l, mid-1, opt, optr);
-    // yo(i, mid+1, r, optl, opt);
-}
-int main() {
-    ios_base::sync_with_stdio(0);
-    cin.tie(0);
-
-    int i, j, k, n, m;
-    n = sc();
-    k = sc();
-    for (i = 1; i <= n; i++)
-        for (j = 1; j <= n; j++) a[i][j] = sc();
-    for (i = 1; i <= n; i++) {
-        for (j = 1; j <= n; j++) {
-            c[i][j] = a[i][j] + c[i - 1][j] + c[i][j - 1] - c[i - 1][j - 1];
+        if (opt == -1) { // 1..mid cannot form i groups, so neither can anything left of mid
+            for (int j = l; j < mid; j++) cur[j] = INF;
+            self(self, mid + 1, r, optl, optr);
+            return;
         }
+        self(self, l, mid - 1, optl, opt);
+        self(self, mid + 1, r, opt, optr);
+    };
+    for (int i = 2; i <= k; i++) {
+        rec(rec, 1, n, 1, n);
+        swap(prv, cur);
     }
-    for (i = 1; i <= k; i++) {
-        for (j = 1; j <= n; j++) {
-            dp[i][j] = inf;
-        }
-    }
-    for (i = 1; i <= n; i++) dp[1][i] = cost(1, i);
-    for (i = 2; i <= k; i++) yo(i, 1, n, 1, n);
-    cout << dp[k][n] / 2 << endl;
-    return 0;
+    return k >= 1 && k <= n ? prv[n] : INF;
 }
-// https://codeforces.com/contest/321/problem/E

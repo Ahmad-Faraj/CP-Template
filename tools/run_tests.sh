@@ -6,6 +6,7 @@ root="$(cd "$(dirname "$0")/.." && pwd)"
 build="${TMPDIR:-/tmp}/cp-template-tests"
 mkdir -p "$build"
 ulimit -s unlimited 2>/dev/null || true
+export ASAN_OPTIONS=detect_leaks=0 # contest code never frees; leaks are not bugs here
 fails=0
 for t in $(find "$root/tests" -name '*.cpp' | sort); do
     name="$(basename "$(dirname "$t")")/$(basename "$t" .cpp)"

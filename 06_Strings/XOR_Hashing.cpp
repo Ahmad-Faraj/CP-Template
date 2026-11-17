@@ -1,66 +1,34 @@
-#include <chrono>
-#include <iostream>
-#include <map>
-#include <random>
-#include <set>
-#include <vector>
+// XOR Hashing: gives every distinct value a random 64-bit tag, so a SET of values hashes to one XOR.
+// Use when: "do prefixes a[0..x] and b[0..y] contain the same set of distinct values", set equality
+//           where multiplicity and order do not matter.
+// Usage: XorHashing h; auto pa = h.prefix(a), pb = h.prefix(b);  same set <=> pa[x] == pb[y]
+// Handles: any integer values (negative, huge), duplicates (counted once), arrays of different lengths.
+// Time: prefix O(n log n) (map + set, about 0.6 s per 1e6 elements) | each comparison O(1)
+// Indexing: 0-based; pref[i] covers a[0..i]
+// Note: every compared array must use the SAME XorHashing object (they share the tag table).
+//       Randomised: two different sets collide with probability about 2^-64 per comparison.
 
-using std::cout;
-using std::endl;
-using std::vector;
+#include <bits/stdc++.h>
+using namespace std;
 
-/** @return a random integer between 0 and INT64_MAX */
-long long rng() {
-	static std::mt19937 gen(
-	    std::chrono::steady_clock::now().time_since_epoch().count());
-	return std::uniform_int_distribution<long long>(0, INT64_MAX)(gen);
-}
+struct XorHashing {
+    map<long long, unsigned long long> tag;
+    mt19937_64 gen{(unsigned long long)chrono::steady_clock::now().time_since_epoch().count()};
 
-int main() {
-	int len;
-	std::cin >> len;
+    unsigned long long tag_of(long long v) { // random tag of v, created on first sight
+        auto it = tag.find(v);
+        if (it != tag.end()) return it->second;
+        return tag[v] = gen();
+    }
 
-	std::map<int, long long> hash_vals;
-	vector<int> a(len);
-	for (int &i : a) {
-		std::cin >> i;
-		// assign a hash value to each unique number in the array
-		if (!hash_vals.count(i)) { hash_vals[i] = rng(); }
-	}
-	vector<int> b(len);
-	for (int &i : b) {
-		std::cin >> i;
-		if (!hash_vals.count(i)) { hash_vals[i] = rng(); }
-	}
-
-	std::set<int> seen;
-	vector<long long> a_xor(len);
-	for (int i = 0; i < len; i++) {
-		// only add to prefix xor if not encountered before
-		if (!seen.count(a[i])) {
-			a_xor[i] = hash_vals[a[i]];
-			seen.insert(a[i]);
-		}
-		if (i > 0) { a_xor[i] ^= a_xor[i - 1]; }
-	}
-
-	seen.clear();
-	// do the same thing for b
-	vector<long long> b_xor(len);
-	for (int i = 0; i < len; i++) {
-		if (!seen.count(b[i])) {
-			b_xor[i] = hash_vals[b[i]];
-			seen.insert(b[i]);
-		}
-		if (i > 0) { b_xor[i] ^= b_xor[i - 1]; }
-	}
-
-	int query_num;
-	std::cin >> query_num;
-	for (int q = 0; q < query_num; q++) {
-		int a_set, b_set;
-		std::cin >> a_set >> b_set;
-		// check if the prefix xors are equal
-		cout << (a_xor[--a_set] == b_xor[--b_set] ? "Yes" : "No") << '\n';
-	}
-}
+    // pref[i] = XOR of the tags of the DISTINCT values in a[0..i]
+    template <class T> vector<unsigned long long> prefix(const vector<T> &a) {
+        set<long long> seen;
+        vector<unsigned long long> pref(a.size(), 0);
+        for (int i = 0; i < (int)a.size(); i++) {
+            if (seen.insert(a[i]).second) pref[i] = tag_of(a[i]);
+            if (i > 0) pref[i] ^= pref[i - 1];
+        }
+        return pref;
+    }
+};

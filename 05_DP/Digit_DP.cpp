@@ -1,39 +1,33 @@
-#include "../../core.h"
+// Digit DP: counts integers in [l, r] whose digit sum is divisible by k.
+// Use when: "how many numbers in [l, r] with <property of their digits>", bounds up to 1e18, answer is a count.
+// Usage: digit_dp(l, r, k) -> count. To change the property, change the state (sum) and the base case.
+// Handles: both bounds tight at once (no f(r) - f(l - 1) needed), l = 0. Not for querying one number.
+// Time: O(len * 2 * 2 * k * 10), len = number of digits of r
+// Indexing: 0-based (string index)
+// Note: sized for 0 <= l <= r < 1e19 and 1 <= k <= 90. Leading zeros of the padded l add 0 to the sum.
 
-/*
- * Topic: DP - Digit DP
- * Description: Used to count the number of integers in a range [L, R] that satisfy
- * a certain property related to their digits. It builds the number digit by digit.
- * Input: A range [L, R] and a digit-based condition.
- * Output: Count of valid integers within the given range.
- */
+#include <bits/stdc++.h>
+using namespace std;
+using ll = long long;
 
 ll dp[20][2][2][90], k;
 string L, R;
 
-ll rec(int idx = 0, bool not_smaller = true, bool not_greater = true, int sum = 0) 
-{    
-    if (idx == L.size()) return !sum;
+ll rec(int idx = 0, bool not_smaller = true, bool not_greater = true, int sum = 0) {
+    if (idx == (int)L.size()) return !sum;
     ll &ret = dp[idx][not_smaller][not_greater][sum];
- 
     if (~ret) return ret;
     int low = (not_smaller ? L[idx] - '0' : 0), high = (not_greater ? R[idx] - '0' : 9);
     ret = 0;
-
     for (int d = low; d <= high; d++)
         ret += rec(idx + 1, not_smaller & (d == (L[idx] - '0')), not_greater & (d == (R[idx] - '0')), (sum + d) % k);
- 
-    // Trick for big queries count: To reuse the DP table without clearing it between queries,
-    // only memoize states that are completely free from the prefix limits.
-    // bool is_free = (!not_smaller && !not_greater);
-    // if (is_free) memo[rem][current_sum] = result; // or in this case: dp[idx][0][0][sum] = ret;
-    
     return ret;
 }
 
-void solve(ll l, ll r) {
+ll digit_dp(ll l, ll r, ll K) {
+    k = K;
     memset(dp, -1, sizeof(dp));
-    L = to_string(l);
-    R = to_string(r);
+    L = to_string(l), R = to_string(r);
     if (L.size() < R.size()) L = string(R.size() - L.size(), '0') + L;
+    return rec();
 }

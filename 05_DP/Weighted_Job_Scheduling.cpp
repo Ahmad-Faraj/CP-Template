@@ -1,48 +1,26 @@
-// Given a list of jobs with start time, end time, and profit, find the maximum profit
-// Time complexity: O(nlogn)
-// Problem link: https://dunjudge.me/analysis/problems/414/
+// Weighted Job Scheduling: max total profit of pairwise non-overlapping jobs {start, end, profit}.
+// Use when: "choose non-overlapping intervals maximising total value" - meetings, bookings.
+// Usage: ll best = max_profit(jobs); // jobs[i] = {start, end, profit}
+// Handles: unsorted input, ties, duplicates, negative times, negative profits (skipped), n = 0.
+// Time: O(n log n)
+// Indexing: 0-based; dp[i] = best using only the first i jobs in order of end time
+// Note: intervals are CLOSED: a job ending at t and one starting at t overlap. For half-open [s, e)
+// change `j[1] < s` to `j[1] <= s`. Needs start <= end.
 
 #include <bits/stdc++.h>
-
 using namespace std;
+using ll = long long;
 
-#define ar array
-#define ll long long
-
-const int MAX_N = 1e5 + 1;
-const int MOD = 1e9 + 7;
-const int INF = 1e9;
-const ll LINF = 1e18;
-
-
-
-void solve() {
-    int n; cin >> n;
-    ar<ll,3> arr[n];
-    for (int i = 0; i < n; i++) cin >> arr[i][1] >> arr[i][0] >> arr[i][2];
-    sort(arr, arr + n); // sort based on end time
-    ll dp[n];
-    dp[0] = arr[0][2];
-    for (int i = 1; i < n; i++) {
-        int k = lower_bound(arr, arr + n, ar<ll,3>{arr[i][1], 0, 0}) - arr - 1;
-        if (k >= 0)
-            dp[i] = max(dp[i - 1], dp[k] + arr[i][2]);
-        else
-            dp[i] = max(dp[i - 1], arr[i][2]);
- 
+ll max_profit(vector<array<ll, 3>> jobs) {
+    sort(jobs.begin(), jobs.end(), [](auto &a, auto &b) { return a[1] < b[1]; }); // by end time
+    int n = jobs.size();
+    vector<ll> dp(n + 1, 0);
+    for (int i = 0; i < n; i++) {
+        ll s = jobs[i][0];
+        // k = how many jobs end strictly before job i starts (they form a prefix)
+        auto before = [&](auto &j) { return j[1] < s; };
+        int k = partition_point(jobs.begin(), jobs.begin() + i, before) - jobs.begin();
+        dp[i + 1] = max(dp[i], dp[k] + jobs[i][2]); // skip job i, or take it after the first k
     }
-    cout << dp[n - 1] << "\n";
-}
-
-int main() {
-    ios_base::sync_with_stdio(0);
-    cin.tie(0); cout.tie(0);
-    // freopen("input.txt", "r", stdin);
-    // freopen("output.txt", "w", stdout);
-
-    int tc; tc = 1;
-    for (int t = 1; t <= tc; t++) {
-        // cout << "Case #" << t  << ": ";
-        solve();
-    }
+    return dp[n];
 }

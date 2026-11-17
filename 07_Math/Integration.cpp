@@ -1,29 +1,19 @@
+// Integration: definite integral of any function over [a, b] by composite Simpson's rule.
+// Use when: "area under the curve", a curved region's area, expected value over a continuous range.
+// Usage: simpson_integration([](double x) { return sin(x); }, 0, M_PI);  // 2.0; n = 1e6 steps
+// Handles: a > b (the sign flips), a == b (0), an odd n (rounded up to even).
+// Time: O(n) calls to f
+// Indexing: not applicable
+// Note: n ~ 1e4 is plenty for smooth f (polynomials, sin, cos, exp, short interval); use ~1e6 for
+//       log, tan, 1/x or long intervals. f must be finite on all of [a, b] (both ends are used).
+
 #include <bits/stdc++.h>
 using namespace std;
 
-// o(N) - N can be smaller with smooth functions
-// 1e4 (smooth) : Polys, sin, cos, exp, Const, linear, Short interval,
-// 1e6 (curvature) : log, tan, 1/x, Long interval
-
-const int N = 1'000'000;
-
-double f(double x) { return x * x + x + 1; }
-
-double f_rad(double x) { return sin(x); }
-
-double f_deg(double x) { return sin(x * M_PI / 180.0); }
-
-double simpson_integration(double a, double b) {
-    double h = (b - a) / N;
+template <class F> double simpson_integration(F f, double a, double b, int n = 1'000'000) {
+    if (n % 2) n++;
+    double h = (b - a) / n;
     double s = f(a) + f(b);
-    for (int i = 1; i < N; ++i) {
-        double x = a + h * i;
-        s += f(x) * ((i & 1) ? 4.0 : 2.0);
-    }
+    for (int i = 1; i < n; ++i) s += f(a + h * i) * ((i & 1) ? 4.0 : 2.0);
     return s * (h / 3.0);
-}
-
-int main() {
-    double result = simpson_integration(1.0, 3.0);
-    cout << fixed << setprecision(9) << result << "\n";
 }

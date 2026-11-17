@@ -1,61 +1,31 @@
-// Find the minimum of elevator rides to move n people knowing everyone's weight and the elevator's limit
-// Time complexity: O(2^n * n)
-// Problem link: https://cses.fi/problemset/task/1653
-// Use DP with bitmask
+// Elevator Rides (bitmask DP): fewest rides of capacity x carrying people of weights w (CSES 1653).
+// Use when: "pack n <= 20 items into the fewest bins of capacity x", any subset-of-items DP.
+// Usage: int rides = elevator_rides(w, x);
+// Handles: n = 0 (0 rides). Pattern: dp[mask] = {rides closed, load of the open ride}, compared
+// lexicographically, so the last person added either joins the open ride or opens a new one.
+// Time: O(2^n * n), memory O(2^n)
+// Indexing: 0-based people, bit j of mask = person j
+// Note: needs 1 <= w[i] <= x.
 
 #include <bits/stdc++.h>
-
 using namespace std;
+using ll = long long;
 
-#define ar array
-#define ll long long
-
-const int MAX_N = 1e5 + 1;
-const int MOD = 1e9 + 7;
-const int INF = 1e9;
-const ll LINF = 1e18;
-
-
-
-void solve() {
-    int n, x; cin >> n >> x;
-    int weight[n]; 
-    for (int i = 0; i < n; i++) cin >> weight[i];
-
-    ar<int,2> dp[1 << n];
-    // dp[i][0] = the minimum number of rides for bitmask i
-    // dp[i][1] = the minimum weight of the last ride for bitmask i
+int elevator_rides(const vector<ll> &w, ll x) {
+    int n = w.size();
+    // dp[mask] = {rides closed, load of the open ride}; fewer rides first, then lighter
+    vector<pair<int, ll>> dp(1 << n);
     dp[0] = {0, 0};
-    for (int i = 1; i < (1 << n); i++) {
-        // upper bound is n + 1 rides
-        dp[i] = {n + 1, 0};
+    for (int mask = 1; mask < (1 << n); mask++) {
+        dp[mask] = {n + 1, 0};
         for (int j = 0; j < n; j++) {
-            if (i & (1 << j)) {
-                auto cur = dp[i ^ (1 << j)];
-                if (cur[1] + weight[j] <= x) { // add j to the current ride
-                    cur[1] += weight[j];
-                }
-                else { // reserves a new ride for j
-                    cur[0]++;
-                    cur[1] = weight[j];
-                }
-                dp[i] = min(dp[i], cur);
-            }
+            if (!(mask >> j & 1)) continue;
+            auto cur = dp[mask ^ (1 << j)];
+            if (cur.second + w[j] <= x) cur.second += w[j]; // j joins the open ride
+            else cur.first++, cur.second = w[j];            // close it, j opens a new one
+            dp[mask] = min(dp[mask], cur);
         }
     }
-    // if dp[i].second > 0, then the answer is dp[i].first + 1
-    cout << dp[(1 << n) - 1][0] + (dp[(1 << n) - 1][1] > 0);
-}
-
-int main() {
-    ios_base::sync_with_stdio(0);
-    cin.tie(0); cout.tie(0);
-    // freopen("input.txt", "r", stdin);
-    // freopen("output.txt", "w", stdout);
-
-    int tc; tc = 1;
-    for (int t = 1; t <= tc; t++) {
-        // cout << "Case #" << t  << ": ";
-        solve();
-    }
+    auto [closed, open] = dp[(1 << n) - 1];
+    return closed + (open > 0);
 }

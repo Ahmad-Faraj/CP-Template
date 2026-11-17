@@ -1,39 +1,36 @@
+// Treap: a balanced BST keyed by value, with order statistics - k-th smallest and the rank of a value.
+// Use when: a sorted multiset that must also answer "k-th smallest" and "how many elements are below x".
+// Handles: insert, erase, k-th, lower_bound, upper_bound, duplicates via a per-node frequency count.
+// Usage: Treap<int> t; t.insert(x); t.erase(x); t.kth(k); t.lower_bound(x); t.count(x); t.size();
+// Time: every operation O(log n) expected
+// Indexing: kth() is 0-based; lower_bound returns a rank, not an iterator
+// Note: EMPTY is one sentinel shared by every treap of a type - never delete it. upper_bound needs an integer type.
+
 #include <bits/stdc++.h>
 using namespace std;
 
-// treap
-// Balanced Binary Search Tree with random priority and it's height is around 2 * log(n)
-// can do like ordered statistics tree and more
-// basic treap
-// 1. insert
-// 2. erase
-// 3. kth element
-// 4. lower_bound
-// 5. upper_bound
-// 6. print
-//! don't forget to set the seed for random number generator
-//! don't forget to set the seed for random number generator
-
-mt19937 eng(0);
+mt19937 eng(chrono::steady_clock::now().time_since_epoch().count());
 uniform_int_distribution<int> rnd{INT_MIN + 1, INT_MAX};
-// uniform_int_distribution<int> rnd{0, 99}; //! for testing
+
 template <typename DataType> struct Treap {
     enum DIR { L, R };
-    // extern struct node *const EMPTY;
+
     struct node {
         DataType val;
         int pri, size, frq;
         node *ch[2], *par;
 
-        node() : pri(INT_MIN), size(0), ch{this, this}, par(this), frq(0) {}
-
-        node(const DataType &val) : val(val), pri(rnd(eng)), size(1), ch{EMPTY, EMPTY}, par(EMPTY), frq(1) {}
+        node() : pri(INT_MIN), size(0), frq(0), ch{this, this}, par(this) {}
+        node(const DataType &val) : val(val), pri(rnd(eng)), size(1), frq(1), ch{EMPTY, EMPTY}, par(EMPTY) {}
 
         void upd() { size = ch[L]->size + frq + ch[R]->size; }
     };
+
     static node *EMPTY;
     node *root = EMPTY;
+
     Treap() {}
+
     void link(node *p, node *c, int dir) {
         if (c != EMPTY) c->par = p;
         if (p != EMPTY) {
@@ -53,7 +50,8 @@ template <typename DataType> struct Treap {
         link(p, b, d);
         link(q, p, !d);
         link(gp, q, gd);
-    };
+    }
+
     node *balance(node *root, int d) {
         if (root->ch[d]->pri > root->pri) {
             node *tmp = root->ch[d];
@@ -61,7 +59,8 @@ template <typename DataType> struct Treap {
             return tmp;
         }
         return root;
-    };
+    }
+
     node *insert(node *root, const DataType &val) {
         if (root == EMPTY) return new node(val);
         if (root->val == val) {
@@ -72,8 +71,9 @@ template <typename DataType> struct Treap {
         int d = val > root->val;
         link(root, insert(root->ch[d], val), d);
         return balance(root, d);
-    };
-    void insert(const DataType &val) { root = insert(root, val); };
+    }
+
+    void insert(const DataType &val) { root = insert(root, val); } // add one copy of val
 
     node *erase(node *root, const DataType &val) {
         if (root == EMPTY) return root;
@@ -100,79 +100,56 @@ template <typename DataType> struct Treap {
         int d = val > root->val;
         link(root, erase(root->ch[d], val), d);
         return root;
-    };
-    void erase(const DataType &val) { root = erase(root, val); };
-    // kth element 0-indexed
-    const DataType kth(node *root, int k) {
-        if (root == EMPTY) return -1;
+    }
+
+    void erase(const DataType &val) { root = erase(root, val); } // remove one copy of val, if present
+
+    DataType kth(node *root, int k) {
+        if (root == EMPTY) return DataType();
         if (k < root->ch[L]->size) return kth(root->ch[L], k);
         if (k < root->ch[L]->size + root->frq) return root->val;
         return kth(root->ch[R], k - root->ch[L]->size - root->frq);
-    };
-    const DataType kth(int k) { return kth(root, k); };
-    // lower_bound returns the index of the first element >= val
+    }
+
+    DataType kth(int k) { return kth(root, k); } // 0-based k-th smallest, duplicates counted separately
+
     int lower_bound(node *root, const DataType &val) {
         if (root == EMPTY) return 0;
         if (val <= root->val) return lower_bound(root->ch[L], val);
         return root->ch[L]->size + root->frq + lower_bound(root->ch[R], val);
-    };
-    int lower_bound(const DataType &val) { return lower_bound(root, val); };
-    // upper_bound returns the index of the first element > val
-    int upper_bound(const DataType &val) { return lower_bound(val + 1); };
-    // print
+    }
+
+    int lower_bound(const DataType &val) { return lower_bound(root, val); } // how many elements are < val
+
+    int upper_bound(const DataType &val) { return lower_bound(val + 1); } // how many elements are <= val
+
+    int size() { return root->size; }
+
+    int count(const DataType &val) { return upper_bound(val) - lower_bound(val); } // copies of val stored
+
     void print(node *root, int d = 0) {
         if (root == EMPTY) return;
         print(root->ch[L], d + 1);
-        cout << root->val << sp << root->pri << sp << root->frq << sp << d << nl;
+        cout << root->val << ' ' << root->frq << ' ' << d << '\n';
         print(root->ch[R], d + 1);
-    };
-    void print() { print(root); };
+    }
+
+    void print() { print(root); } // in-order dump: value, count, depth
 
     void clear(node *root) {
         if (root == EMPTY) return;
         clear(root->ch[L]);
         clear(root->ch[R]);
         delete root;
-    };
+    }
+
     void clear() {
         clear(root);
         root = EMPTY;
-    };
-    ~Treap() {
-        clear(root);
-        if (EMPTY != nullptr) {
-            delete EMPTY;
-            EMPTY = nullptr;
-        }
-    };
+    }
+
+    ~Treap() { clear(root); } // EMPTY is shared, so it is deliberately not freed here
 };
+
 template <typename DataType>
 typename Treap<DataType>::node *Treap<DataType>::EMPTY = new typename Treap<DataType>::node();
-// end of treap
-// !==========================================================================
-void solve(int tc) {
-    int q;
-    cin >> q;
-    Treap<int> tp;
-    while (q--) {
-        char op;
-        int x;
-        cin >> op >> x;
-        if (op == 'I') {
-            int idx = tp.lower_bound(x);
-            if (idx == tp.root->size || idx == tp.upper_bound(x)) {
-                tp.insert(x);
-            }
-        } else if (op == 'D') {
-            tp.erase(x);
-        } else if (op == 'K') {
-            if (x > tp.root->size) {
-                cout << "invalid" << endl;
-            } else {
-                cout << tp.kth(x - 1) << endl;
-            }
-        } else {
-            cout << tp.lower_bound(x) << endl;
-        }
-    }
-}

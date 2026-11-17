@@ -1,63 +1,50 @@
+// LDE N Vars Non Negative: which totals k = sum a[i] * x[i] with all x[i] >= 0 are reachable.
+// Use when: "pay exactly k with unlimited coins a[i]", "how many k in [l, r] are reachable".
+// Usage: LDE t(a); t.can(k); t.count(l, r);
+// Handles: duplicates, gcd(a) > 1 (unreachable residues), k = 0 (always reachable), negative k / l.
+// Time: build O(min(a) * n * log(min(a))) | can O(1) | count O(min(a))
+// Indexing: 0-based a
+// Note: every a[i] > 0; min(a) is the table size, so keep min(a) <= ~1e6. k up to ~9e18. Dijkstra
+//       on residues mod x = min(a): d[r] = least reachable total = r (mod x); k ok iff d[k%x] <= k.
+
 #include <bits/stdc++.h>
 using namespace std;
-
 using ll = long long;
-const ll inf = 1e18;
 
 struct LDE { // sum(a[i] * x[i]) = k, x[i] >= 0
+    static constexpr ll inf = LLONG_MAX; // unreachable residue
     int n, x;
     vector<ll> d;
     LDE() {}
-    LDE(vector<int> a) { // O(min(a[i]) * n * log(min(a[i])))
+    template <class T> LDE(const vector<T> &a) {
         n = a.size();
         priority_queue<pair<ll, int>, vector<pair<ll, int>>, greater<pair<ll, int>>> q;
         x = *min_element(a.begin(), a.end());
         assert(x > 0);
-        d.resize(x);
-        fill(d.begin(), d.end(), inf);
+        d.assign(x, inf);
         d[0] = 0;
-        q.push(pair<ll, int>(0, 0));
+        q.push({0, 0});
         while (!q.empty()) {
-            pair<ll, int> nw = q.top();
+            auto [val, u] = q.top();
             q.pop();
-            int u = nw.second;
-            ll val = nw.first;
             if (d[u] != val) continue;
             for (int i = 0; i < n; ++i) {
                 ll tmp = val + a[i];
                 int v = tmp % x;
                 if (d[v] > tmp) {
                     d[v] = tmp;
-                    q.push(pair<ll, int>(tmp, v));
+                    q.push({tmp, v});
                 }
             }
         }
     }
-    bool can(ll k) { // if a solution exists
-        return d[k % x] <= k;
-    }
-    ll count(ll l, ll r) { // count of l <= k <= r s.t. solution for k exists
+    bool can(ll k) { return k >= 0 && d[k % x] <= k; } // is k reachable
+    ll count(ll l, ll r) { // number of reachable k with l <= k <= r
         ll ans = 0;
-        for (int i = 0; i < x; i++) { // d[i], d[i] + x, d[i] + 2 * x, ... are achievable
+        for (int i = 0; i < x; i++) { // d[i], d[i] + x, d[i] + 2x, ... are reachable
             ans += d[i] <= r ? (r - d[i]) / x + 1 : 0;
             ans -= d[i] <= l - 1 ? (l - 1 - d[i]) / x + 1 : 0;
         }
         return ans;
     }
 };
-int32_t main() {
-    ios_base::sync_with_stdio(0);
-    cin.tie(0);
-    int n;
-    ll l, r;
-    cin >> n >> l >> r;
-    vector<int> a(n);
-    for (int i = 0; i < n; i++) {
-        cin >> a[i];
-    }
-    LDE t(a);
-    cout << t.count(l, r) << '\n';
-    return 0;
-}
-// https://www.lydsy.com/JudgeOnline/problem.php?id=2118
-// https://codeforces.com/blog/entry/71230?#comment-556761
