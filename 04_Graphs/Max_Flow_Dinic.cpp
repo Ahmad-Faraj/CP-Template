@@ -1,16 +1,26 @@
+// Max Flow (Dinic): maximum s-t flow, plus the min cut and the flow decomposed into s-t paths.
+// Use when: "max throughput", "min edges/capacity to cut s from t", disjoint paths, matching as flow.
+// Usage: Dinic F(n); F.add_edge(u, v, cap, id); ll f = F.max_flow(s, t); F.get_min_cut();
+// Handles: multi-edges, self loops, 0 capacities, ids for reading flow per edge (flow_through[id]).
+// Time: O(V^2 * E); O(E * sqrt(V)) on unit bipartite matching graphs
+// Indexing: any; nodes 0..n+9 are valid (the constructor pads by 10). Edge ids are >= 0.
+// Note: s != t. Undirected edge u-v: add_edge(u, v, c) and add_edge(v, u, c). A second max_flow
+// call only adds the extra flow. get_paths() eats the flow (call it last); its paths are walks
+// that may repeat a vertex. dfs and mark_reachable recurse up to V deep.
+
 #include <bits/stdc++.h>
 using namespace std;
-const long long inf = 1LL << 61;
 
 struct Dinic {
+    static constexpr long long inf = 1LL << 61;
     struct edge {
         int to, rev;
         long long flow, w;
         int id;
     };
     int n, s, t, mxid;
-    vector<int> d, flow_through;
-    vector<int> done;
+    vector<int> d, done;
+    vector<long long> flow_through; // flow_through[id] = flow on the edge added with that id
     vector<vector<edge>> g;
     Dinic() {}
     Dinic(int _n) {
@@ -21,7 +31,7 @@ struct Dinic {
 
     void add_edge(int u, int v, long long w, int id = -1) {
         edge a = {v, (int)g[v].size(), 0, w, id};
-        edge b = {u, (int)g[u].size(), 0, 0, -2}; // for bidirectional edges cap(b) = w
+        edge b = {u, (int)g[u].size(), 0, 0, -2};
         g[u].emplace_back(a);
         g[v].emplace_back(b);
         mxid = max(mxid, id);
@@ -79,29 +89,26 @@ struct Dinic {
     vector<bool> vis;
     void mark_reachable(int u) {
         vis[u] = true;
-        for (auto &e : g[u]) {
-            if (!vis[e.to] && e.flow < e.w) // residual capacity exists
-                mark_reachable(e.to);
-        }
+        for (auto &e : g[u])
+            if (!vis[e.to] && e.flow < e.w) mark_reachable(e.to); // residual capacity exists
     }
 
-    // min-cut == max-flow
+    // after max_flow: the saturated edges (u, v) from the s side to the t side; their caps sum to
+    // the max flow. vis[u] = true marks the s side.
     vector<pair<int, int>> get_min_cut() {
         vis.assign(n, false);
         mark_reachable(s);
         vector<pair<int, int>> cut;
         for (int u = 0; u < n; ++u) {
             if (!vis[u]) continue;
-            for (auto &e : g[u]) {
-                if (!vis[e.to] && e.w > 0) {
-                    cut.emplace_back(u, e.to);
-                }
-            }
+            for (auto &e : g[u])
+                if (!vis[e.to] && e.w > 0) cut.emplace_back(u, e.to);
         }
         return cut;
     }
 
-    // Extract edge-disjoint paths
+    // after max_flow: splits the flow into unit s-t walks (a cap-c edge can appear in c of them),
+    // so with unit capacities these are the max set of edge-disjoint paths. Destroys the flow.
     vector<vector<int>> get_paths() {
         vector<vector<int>> res;
         while (1) {
@@ -127,62 +134,3 @@ struct Dinic {
         return res;
     }
 };
-
-void solve_bipartite() {
-    int n, m, p;
-    cin >> n >> m >> p;
-    int st = 0, en = n + m + 1;
-    Dinic F(n + m + 2);
-    vector<pair<int, int>> edges(p + 1);
-
-    // source -> u
-    for (int i = 1; i <= n; i++) F.add_edge(st, i, 1);
-    // v -> sink
-    for (int i = 1; i <= m; i++) F.add_edge(i + n, en, 1);
-
-    for (int i = 1; i <= p; i++) {
-        int u, v;
-        cin >> u >> v;
-        edges[i] = {u, v};
-        F.add_edge(u, v + n, 1, i);
-    }
-
-    long long flow = F.max_flow(st, en);
-    cout << flow << endl;
-
-    // all matched edges
-    for (int i = 1; i <= p; i++) {
-        if (F.flow_through[i] == 1) {
-            cout << edges[i].first << " " << edges[i].second << endl;
-        }
-    }
-}
-
-void solve_general() {
-    int n, m;
-    cin >> n >> m;
-    int st = 1, en = n;
-    Dinic F(n + 1);
-    vector<pair<int, int>> edges(m + 1);
-    for (int i = 1; i <= m; i++) {
-        int u, v;
-        cin >> u >> v;
-        edges[i] = {u, v};
-        F.add_edge(u, v, 1, i);
-    }
-
-    long long flow = F.max_flow(st, en);
-    cout << flow << endl;
-
-    auto min_cut = F.get_min_cut();
-    for (auto [u, v] : min_cut) {
-        cout << u << " " << v << endl;
-    }
-
-    auto paths = F.get_paths();
-    for (auto &p : paths) {
-        cout << p.size() << endl;
-        for (int x : p) cout << x << " ";
-        cout << endl;
-    }
-}

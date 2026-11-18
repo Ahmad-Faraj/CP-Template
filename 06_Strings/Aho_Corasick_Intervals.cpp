@@ -1,141 +1,87 @@
-int nextNodeId = 0;
+// Aho Corasick Intervals: every occurrence of every pattern in a text, as [start, end] intervals.
+// Use when: "cover / delete / count all pattern occurrences", intervals for a sweep or DP.
+// Usage: Aho ac(patterns); auto iv = ac.search(text, patterns); // iv = {start, end} pairs
+//        (or: Aho ac; ac.insert(p, idx) per pattern; ac.build();)
+// Handles: overlapping occurrences, patterns inside patterns. Equal patterns give ONE interval
+//          (the last idx inserted wins), so intervals are distinct.
+// Time: build O(26 * nodes) | search O(|text| * max |p|) (walks the fail chain per position)
+// Indexing: 0-based, inclusive [start, end] in the text; sorted by end, then by decreasing length.
+// Note: lowercase 'a'..'z' only. Empty patterns are never reported. Memory: one node per trie
+//       character (~240 bytes each). Not copyable. Long fail chains make search slow: fine
+//       for short patterns (|p| <= ~100), use Aho_Corasick.cpp output lists otherwise.
 
-#define nd Node *
-struct Aho
-{
-    struct Node
-    {
-        nd fail;
-        nd child[26];
+#include <bits/stdc++.h>
+using namespace std;
 
-        // FIX 1: Replace vector<int> with a single int. A trie node represents one unique string!
-        // Using a vector here and copying it in build() causes massive Memory Limit Exceeded.
-        int patIdx;
-        vector<char> cahrs;
-        int id;
-        Node()
-        {
-            memset(child, 0, sizeof child);
-            id = nextNodeId++;
-            patIdx = -1; // FIX 1: Initialize with -1
-        }
-        ~Node()
-        {
-            for (auto c : cahrs)
-            {
-                if (child[c])
-                    delete child[c];
-            }
+struct Aho {
+    struct Node {
+        Node *fail = nullptr;
+        Node *child[26];
+        int patIdx = -1; // pattern ending here (one per node), -1 if none
+        vector<char> chars; // real children, for build() and the destructor
+        Node() { memset(child, 0, sizeof child); }
+        ~Node() {
+            for (auto c : chars) delete child[(int)c];
         }
     };
 
-    nd root;
-    Aho()
-    {
+    Node *root;
+    Aho() { root = new Node(); }
+    Aho(const vector<string> &patterns) {
         root = new Node();
-    }
-    ~Aho()
-    {
-        if (root)
-            delete root;
-    }
-    Aho(vector<string> &patterns)
-    {
-        root = new Node();
-        for (int i = 0; i < patterns.size(); i++)
-        {
-            insert(patterns[i], i);
-        }
+        for (int i = 0; i < (int)patterns.size(); i++) insert(patterns[i], i);
         build();
     }
+    Aho(const Aho &) = delete;
+    Aho &operator=(const Aho &) = delete;
+    ~Aho() { delete root; }
 
-    void insert(string &s, int idx)
-    {
-        nd cur = root;
-        for (int i = 0; i < s.size(); i++)
-        {
+    void insert(const string &s, int idx) {
+        Node *cur = root;
+        for (int i = 0; i < (int)s.size(); i++) {
             int c = s[i] - 'a';
-            if (!cur->child[c])
-            {
+            if (!cur->child[c]) {
                 cur->child[c] = new Node();
-                cur->cahrs.push_back(c);
+                cur->chars.push_back(c);
             }
             cur = cur->child[c];
         }
-        // FIX 1: We just store the single pattern index ending at this node.
         cur->patIdx = idx;
     }
-    void build()
-    {
-        queue<nd> q;
-        for (int i = 0; i < 26; i++)
-        {
-            if (root->child[i])
-            {
+
+    void build() {
+        queue<Node *> q;
+        for (int i = 0; i < 26; i++) {
+            if (root->child[i]) {
                 root->child[i]->fail = root;
                 q.push(root->child[i]);
-            }
-            else
+            } else
                 root->child[i] = root;
         }
-        while (q.size())
-        {
-            nd cur = q.front();
+        while (q.size()) {
+            Node *cur = q.front();
             q.pop();
-            for (int i = 0; i < cur->cahrs.size(); i++)
-            {
-                char c = cur->cahrs[i];
-                nd next = cur->child[c];
-                nd fail = cur->fail;
-
-                while (fail != root && !fail->child[c])
-                {
-                    fail = fail->fail;
-                }
-                if (fail->child[c])
-                {
-                    next->fail = fail->child[c];
-                }
-                else
-                {
-                    next->fail = root;
-                }
-
-                // FIX 2: Do NOT copy `patIdx` vectors from the fail link here.
-                // Copying vectors causes an explosion in memory. We will traverse fail links in search() instead.
+            for (int i = 0; i < (int)cur->chars.size(); i++) {
+                int c = cur->chars[i];
+                Node *next = cur->child[c], *fail = cur->fail;
+                while (fail != root && !fail->child[c]) fail = fail->fail;
+                next->fail = fail->child[c] ? fail->child[c] : root;
                 q.push(next);
             }
         }
     }
 
-    // FIX 3: Return intervals directly. Creating a vector<vector<int>> res(N) uses lots of dynamic memory allocations.
-    vector<pair<long long, long long>> search(string &s, const vector<string> &pattens)
-    {
+    // patterns[idx] gives each interval's length; pass the same vector used to insert
+    vector<pair<long long, long long>> search(const string &s, const vector<string> &patterns) {
         vector<pair<long long, long long>> intervals;
-        nd cur = root;
-        for (int i = 0; i < s.size(); i++)
-        {
+        Node *cur = root;
+        for (int i = 0; i < (int)s.size(); i++) {
             int c = s[i] - 'a';
-            while (cur != root && !cur->child[c])
-            {
-                cur = cur->fail;
-            }
-            if (cur->child[c])
-            {
-                cur = cur->child[c];
-            }
-
-            // FIX 3: Traverse fail links to collect all matching patterns ending at position 'i'.
-            // Because max pattern length is 20, this traverses at most 20 nodes, staying well within time limits.
-            nd temp = cur;
-            while (temp != root)
-            {
-                if (temp->patIdx != -1)
-                {
-                    intervals.push_back({i - pattens[temp->patIdx].size() + 1, i});
-                }
-                temp = temp->fail;
-            }
+            while (cur != root && !cur->child[c]) cur = cur->fail;
+            if (cur->child[c]) cur = cur->child[c];
+            for (Node *t = cur; t != root; t = t->fail)
+                if (t->patIdx != -1)
+                    intervals.push_back({i - (long long)patterns[t->patIdx].size() + 1, i});
         }
         return intervals;
     }

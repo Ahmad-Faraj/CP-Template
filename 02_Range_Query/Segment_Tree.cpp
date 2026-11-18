@@ -1,8 +1,18 @@
+// Segment Tree: range query over any associative merge, with point assignment (recursive).
+// Use when: "range sum/min/max/gcd on [l, r]" with point updates; Node can carry several fields.
+// Usage: SegTree st; st.init(n); st.build(a); st.update(i, v); st.query(l, r);
+// Handles: any associative merge with an identity, non-commutative too (merges left to right).
+// Not: range updates - see Segment_Tree_Lazy.
+// Time: init O(n) | build O(n) | update O(log n) | query O(log n)
+// Indexing: 1-based positions, query range inclusive; build() reads a[0] into position 1
+// Note: change Node, merge() and Default together - Default must be the identity of merge().
+// build() may get fewer than n values (call it right after init: it never clears the other leaves).
+// query(l, r) with l > r returns Default.
+
 #include <bits/stdc++.h>
 using namespace std;
-#define ll long long
+using ll = long long;
 
-// 1-based indexing
 struct SegTree {
     struct Node {
         ll val;
@@ -29,11 +39,9 @@ struct SegTree {
         return res;
     }
 
-    void build(vector<int> &nums, int idx, int lx, int rx) {
+    void build(const vector<ll> &nums, int idx, int lx, int rx) {
         if (lx == rx) {
-            if (lx <= nums.size()) {
-                tree[idx] = nums[lx - 1];
-            }
+            if (lx <= (int)nums.size()) tree[idx] = nums[lx - 1];
             return;
         }
         int mx = (lx + rx) / 2;
@@ -42,9 +50,9 @@ struct SegTree {
         tree[idx] = merge(tree[2 * idx], tree[2 * idx + 1]);
     }
 
-    void build(vector<int> &nums) { build(nums, 1, 1, size); }
+    void build(const vector<ll> &nums) { build(nums, 1, 1, size); }
 
-    void update(int i, int v, int idx, int lx, int rx) {
+    void update(int i, ll v, int idx, int lx, int rx) {
         if (lx == rx) {
             tree[idx] = v;
             return;
@@ -56,7 +64,8 @@ struct SegTree {
             update(i, v, 2 * idx + 1, mx + 1, rx);
         tree[idx] = merge(tree[2 * idx], tree[2 * idx + 1]);
     }
-    void update(int i, int v) { update(i, v, 1, 1, size); }
+
+    void update(int i, ll v) { update(i, v, 1, 1, size); } // a[i] = v
 
     Node query(int l, int r, int idx, int lx, int rx) {
         if (lx > r || rx < l) return Default;
@@ -67,39 +76,5 @@ struct SegTree {
         return merge(left, right);
     }
 
-    ll query(int l, int r) { return query(l, r, 1, 1, size).val; }
+    ll query(int l, int r) { return query(l, r, 1, 1, size).val; } // merge of a[l .. r]
 };
-/*
-    // find k‑th c in [L,R], or –1
-    int kth(int L, int R, char c, int k)
-    {
-        return kth_rec(L, R, c, k, 1, 1, size);
-    }
-
-    int kth_rec(int L, int R, char c, int k,
-                int idx, int lx, int rx)
-    {
-        // no overlap
-        if (lx > R || rx < L)
-            return -1;
-
-        // fully inside [L,R], maybe finish here
-        if (lx >= L && rx <= R)
-        {
-            if (tree[idx].val < k)
-                return -1;
-            if (lx == rx)
-                return lx;
-        }
-
-        int mid = (lx + rx) / 2;
-        // count in left child ∩ [L,R]
-        Node leftNode = query(L, R, 2 * idx, lx, mid);
-        int leftCount = leftNode.val;
-
-        if (leftCount >= k)
-            return kth_rec(L, R, c, k, 2 * idx, lx, mid);
-        else
-            return kth_rec(L, R, c, k - leftCount, 2 * idx + 1, mid + 1, rx);
-    }
-*/

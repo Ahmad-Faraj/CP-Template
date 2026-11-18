@@ -1,3 +1,15 @@
+// Geometry Lib: 2D toolkit on complex<double>: lines, segments, angles, circles, polygons.
+// Use when: non-integer coordinates, rotations, angles, circle intersections, cutting a polygon.
+// Usage: using namespace geo_lib; line l(pt(0, 0), pt(3, 4)); l.side(p); seg_inters(a, b, c, d);
+// Handles: vertical lines, parallel lines, touching/overlapping segments, tangent circles.
+// Not: exact. For integer coordinates up to 1e9 use Points_And_Polygons (exact) / Convex_Hull_2.
+// Time: O(1) per call, polygons O(n)
+// Indexing: polygon = vertices in order (any orientation); cut_polygon repeats the first at the end
+// Note: EPS = 1e-9 is absolute, so keep coordinates within ~1e4. Angles are radians.
+// Note: in_angle on the two boundary rays answers 1 when b->c turns left, 0 when right.
+// Note: is_convex assumes a simple polygon (a pentagram passes); an all-collinear one passes too.
+// Note: line from two equal points, circle_points_radius_center(p, p, ..) divide by zero.
+
 #include <bits/stdc++.h>
 using namespace std;
 
@@ -6,8 +18,6 @@ namespace geo_lib {
 const double EPS = 1E-9, PI = acos(-1);
 using T = double; //  for some functions , double is a must
 typedef complex<T> pt;
-#define X real()
-#define Y imag()
 
 int dblcmp(T a, T b) { return fabs(a - b) < EPS ? 0 : a < b ? -1 : 1; }
 int sign(T val) { return (val > EPS ? +1 : val < -EPS ? -1 : 0); }
@@ -15,8 +25,8 @@ bool in_range(T l, T r, T v) { return (dblcmp(l, v) != 1 && dblcmp(v, r) != 1); 
 
 // * ------------------------- Points & Vectors -------------------------
 
-T dot(pt a, pt b) { return a.X * b.X + a.Y * b.Y; }
-T cross(pt a, pt b) { return a.X * b.Y - a.Y * b.X; }
+T dot(pt a, pt b) { return a.real() * b.real() + a.imag() * b.imag(); }
+T cross(pt a, pt b) { return a.real() * b.imag() - a.imag() * b.real(); }
 T sq(pt a) { return dot(a, a); }
 double dist(pt a, pt b) { return abs(a - b); }
 double length(pt a) { return abs(a); }
@@ -27,7 +37,7 @@ T ccw(pt a, pt b, pt c) { return cross(b - a, c - a); }
 
 pt rotate_by(pt a, double theta) { return a * polar(1.0, theta); }
 pt rotate_around(pt a, pt b, double theta) { return (a - b) * polar(1.0, theta) + b; }
-pt perp(pt p) { return pt(-p.Y, p.X); }
+pt perp(pt p) { return pt(-p.imag(), p.real()); }
 pt translate(pt a, pt b) { return a + b; }
 // scale vector p , with factor around center
 pt scale_around(pt center, double factor, pt p) { return center + (p - center) * factor; }
@@ -47,9 +57,10 @@ int in_angle(pt a, pt b, pt c, pt p) {
     return (abp >= -EPS && acp <= EPS) ^ (abc < 0);
 }
 
+// sort by angle in [0, 2pi) starting from the +x axis (the origin counts as angle 0)
 bool polar_comp(const pt &a, const pt &b) {
-    int ha = a.Y > EPS || (fabs(a.Y) < EPS && a.X >= -EPS);
-    int hb = b.Y > EPS || (fabs(b.Y) < EPS && b.X >= -EPS);
+    int ha = a.imag() > EPS || (fabs(a.imag()) < EPS && a.real() >= -EPS);
+    int hb = b.imag() > EPS || (fabs(b.imag()) < EPS && b.real() >= -EPS);
     if (ha != hb) return ha > hb;
     return cross(a, b) > 0;
 }
@@ -111,7 +122,9 @@ vector<pt> seg_inters(pt a, pt b, pt c, pt d) {
     if (on_segment(c, d, b)) ret.push_back(b);
     if (on_segment(a, b, c)) ret.push_back(c);
     if (on_segment(a, b, d)) ret.push_back(d);
-    sort(ret.begin(), ret.end(), polar_comp); // or any other comparator
+    sort(ret.begin(), ret.end(), [](pt p, pt q) { // lexicographic so equal points are adjacent
+        return make_pair(p.real(), p.imag()) < make_pair(q.real(), q.imag());
+    });
     ret.erase(unique(ret.begin(), ret.end()), ret.end());
     return ret;
 }
@@ -128,8 +141,8 @@ double segment_point_dist(pt a, pt b, pt p) {
 double seg_seg_dist(pt a, pt b, pt c, pt d) {
     pt dummy;
     if (proper_intersect(a, b, c, d, dummy)) return 0;
-    return min({segment_point_dist(a, b, c), segment_point_dist(a, b, d), segment_point_dist(c, d, a),
-                segment_point_dist(c, d, b)});
+    return min({segment_point_dist(a, b, c), segment_point_dist(a, b, d),
+                segment_point_dist(c, d, a), segment_point_dist(c, d, b)});
 }
 // * ------------------------- Angles -------------------------
 
@@ -142,20 +155,20 @@ double normalize_angle(double theta) {
 }
 double angle(pt a) {
     if (abs(a) < EPS) return 0;
-    return atan2(a.Y, a.X);
+    return atan2(a.imag(), a.real());
 }
+// counter-clockwise angle from vector a to vector b, in [0, 2pi)
 double angle(pt a, pt b) { return normalize_angle(angle(b) - angle(a)); }
-// angle between three vectors BAC (counter-clockwise)
-double oriented_angle(pt a, pt b, pt c) {
-    T ccw_val = ccw(a, b, c);
-    if (ccw_val >= -EPS) return angle(b - a, c - a);
-    return 2 * PI - angle(b - a, c - a);
-}
+// counter-clockwise angle from ray a->b to ray a->c, in [0, 2pi)
+double oriented_angle(pt a, pt b, pt c) { return angle(b - a, c - a); }
 // * ------------------------- Circles -------------------------
 
 // inside : 1 , outside -1 , boundary 0
-int point_circle_location(pt center, double radius, pt p) { return dblcmp(radius, abs(p - center)); }
+int point_circle_location(pt center, double radius, pt p) {
+    return dblcmp(radius, abs(p - center));
+}
 
+// returns the number of common points (0, 1, 2), written to out
 int intersect_circle_line(pt o, double r, line l, pair<pt, pt> &out) {
     double h2 = r * r - l.sq_dist(o);
     if (h2 < -EPS) return 0; // line not touching
@@ -166,6 +179,7 @@ int intersect_circle_line(pt o, double r, line l, pair<pt, pt> &out) {
     return 1 + (h2 > EPS);
 }
 
+// returns the number of common points (0, 1, 2); same circle INT_MAX, concentric -1
 int intersect_circles(pt o1, double r1, pt o2, double r2, pair<pt, pt> &out) {
     pt d = o2 - o1;
     double d2 = sq(d);
@@ -187,9 +201,11 @@ double radius_circumcircle(double ab, double bc, double ca) {
     return ab * bc * ca / (4.0 * area);
 }
 
-double radius_circumcircle(pt a, pt b, pt c) { return radius_circumcircle(dist(a, b), dist(b, c), dist(c, a)); }
-// given 2 points on the circle (p1 and p2) and radius r of some intersecting circle
-// determine the location of the centers(c1 and c2)
+double radius_circumcircle(pt a, pt b, pt c) {
+    return radius_circumcircle(dist(a, b), dist(b, c), dist(c, a));
+}
+// centre of a circle of radius r through p1 and p2: the one on the left of p1->p2
+// (swap p1, p2 for the other one); false when |p1 p2| > 2r
 bool circle_points_radius_center(pt p1, pt p2, double r, pt &ret) {
     double d2 = sq(p1 - p2);
     double det = r * r / d2 - 0.25;
@@ -197,7 +213,8 @@ bool circle_points_radius_center(pt p1, pt p2, double r, pt &ret) {
     if (fabs(det) < EPS) det = 0;
     double h = sqrt(det);
     // computes c1 , to get the other center reverse p1 and p2
-    ret = pt((p1.X + p2.X) * 0.5 + (p1.Y - p2.Y) * h, (p1.Y + p2.Y) * 0.5 + (p2.X - p1.X) * h);
+    ret = pt((p1.real() + p2.real()) * 0.5 + (p1.imag() - p2.imag()) * h,
+             (p1.imag() + p2.imag()) * 0.5 + (p2.real() - p1.real()) * h);
     return true;
 }
 // * ------------------------- Polygons -------------------------
@@ -216,11 +233,13 @@ bool is_convex(const vector<pt> &p) {
     return true;
 }
 
-// check if point a is (strictly) inside the polygon P ,
+// is a inside polygon p; strict = 1: boundary counts as outside, strict = 0: as inside
 bool in_polygon(const vector<pt> &p, pt a, bool strict = 1) {
-    auto above = [](pt p, pt q) { return p.Y >= q.Y - EPS; };
+    auto above = [](pt p, pt q) { return p.imag() >= q.imag() - EPS; };
     // check if [PQ] crosses ray from A
-    auto ray_cut = [above](pt a, pt p, pt q) { return (above(a, q) - above(a, p)) * ccw(a, p, q) > EPS; };
+    auto ray_cut = [above](pt a, pt p, pt q) {
+        return (above(a, q) - above(a, p)) * ccw(a, p, q) > EPS;
+    };
     bool flag = 0;
     for (int i = 0, n = p.size(); i < n; ++i) {
         if (on_segment(p[i], p[(i + 1) % n], a)) return !strict;
@@ -230,14 +249,15 @@ bool in_polygon(const vector<pt> &p, pt a, bool strict = 1) {
 }
 // compute the intersection point between segment p-q and line A-B
 pt line_intersect_seg(pt p, pt q, pt A, pt B) {
-    double a = B.Y - A.Y, b = A.X - B.X, c = B.X * A.Y - A.X * B.Y;
-    double u = fabs(a * p.X + b * p.Y + c);
-    double v = fabs(a * q.X + b * q.Y + c);
+    double a = B.imag() - A.imag(), b = A.real() - B.real();
+    double c = B.real() * A.imag() - A.real() * B.imag();
+    double u = fabs(a * p.real() + b * p.imag() + c);
+    double v = fabs(a * q.real() + b * q.imag() + c);
     if (fabs(u + v) < EPS) return p; // fallback if degenerate
-    return pt((p.X * v + q.X * u) / (u + v), (p.Y * v + q.Y * u) / (u + v));
+    return pt((p.real() * v + q.real() * u) / (u + v), (p.imag() * v + q.imag() * u) / (u + v));
 }
-// cuts polygon Q along the line formed by point A->point B (order matters)
-// (note: the last point must be the same as the first point)
+// part of polygon Q on the left of line A->B (order matters); Q and the result repeat the
+// first point at the end
 vector<pt> cut_polygon(pt A, pt B, const vector<pt> &Q) {
     vector<pt> p;
     for (int i = 0; i < (int)Q.size(); ++i) {

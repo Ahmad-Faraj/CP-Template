@@ -1,6 +1,15 @@
+// DFS: one traversal giving the DFS forest: parent, depth, subtree size, in/out times, 2-colour.
+// Use when: rooting a tree (par/depth/subtree), "is u an ancestor of v", "is the graph bipartite".
+// Usage: DFS D(n); D.add_edge(u, v, true); bool bip = D.dfs(); then D.par / depth / in / out...
+// Handles: forests / disconnected graphs (each unvisited node starts a new tree), self loops.
+// Time: O(n + m)
+// Indexing: 1-based nodes; roots get par 0, depth 0, colour 0; times run 1..2n
+// Note: dfs() returns "bipartite", meaningful only if every edge was added both ways.
+// Note: u is an ancestor of v iff in[u] <= in[v] && out[v] <= out[u].
+// Note: dfs_visit is recursive (depth = tree height), so a 2e5 path needs a big stack.
+
 #include <bits/stdc++.h>
 using namespace std;
-#define ll long long int
 
 struct DFS {
     int n;
@@ -26,7 +35,10 @@ struct DFS {
         timer = 0;
     }
 
-    void add_edge(int u, int v) { adj[u].push_back(v); }
+    void add_edge(int u, int v, bool bidirectional = false) {
+        adj[u].push_back(v);
+        if (bidirectional) adj[v].push_back(u);
+    }
 
     bool dfs() {
         for (int i = 1; i <= n; ++i) {

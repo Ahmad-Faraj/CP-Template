@@ -1,65 +1,45 @@
+// Merge Sort Tree: counts the elements of a[l..r] that are strictly greater than k, online.
+// Use when: "how many values in [l, r] exceed k" (online, so no offline sort + BIT).
+// Usage: Merge_Sort_Tree st(n, a); st.query(l, r, k); (a is a 0-based vector)
+// Handles: duplicates, negatives, any k, empty ranges (l > r gives 0).
+// Not: frequent updates - update() re-merges whole nodes and costs O(n).
+// Time: build O(n log n) | query O(log^2 n) | update O(n) | memory O(n log n)
+// Indexing: 1-based positions in query/update; the vector passed to build() is 0-based
+// Note: count <= k is (r - l + 1) - query(l, r, k); count < k is (r - l + 1) - query(l, r, k - 1).
+
 #include <bits/stdc++.h>
-#define ll long long
-#define sz(x) (int)(x.size())
 using namespace std;
 
-// 1-Based indexing
-// build: nlog(n) | query/update: log^2(n)
-struct Segment_Tree {
-
+struct Merge_Sort_Tree {
     struct Node {
         vector<int> vec;
         Node(const vector<int> &V = vector<int>()) : vec(V) {}
-        Node operator=(const int rhs) {
+        Node &operator=(const int rhs) {
             vec = vector<int>(1, rhs);
             return *this;
         }
     };
 
     int size;
-    Node DEFAULT;
     vector<Node> tree;
 
-    Segment_Tree(int n = 0) {
-        size = 1, DEFAULT = vector<int>();
+    Merge_Sort_Tree(int n = 0) {
+        size = 1;
         while (size < n) size *= 2;
-        tree = vector<Node>(2 * size, DEFAULT);
+        tree = vector<Node>(2 * size);
     }
 
-    Segment_Tree(int n, const vector<int> &nums) {
-        size = 1, DEFAULT = vector<int>();
-        while (size < n) size *= 2;
-        tree = vector<Node>(2 * size, DEFAULT);
-        build(nums);
-    }
+    Merge_Sort_Tree(int n, const vector<int> &nums) : Merge_Sort_Tree(n) { build(nums); }
 
-    // Main operation to do
     Node operation(const Node &a, const Node &b) {
-        int i = 0, j = 0;
         Node res;
-        while (i < sz(a.vec) && j < sz(b.vec)) {
-            if (a.vec[i] < b.vec[j]) {
-                res.vec.push_back(a.vec[i]);
-                i++;
-            } else {
-                res.vec.push_back(b.vec[j]);
-                j++;
-            }
-        }
-        while (i < sz(a.vec)) {
-            res.vec.push_back(a.vec[i]);
-            i++;
-        }
-        while (j < sz(b.vec)) {
-            res.vec.push_back(b.vec[j]);
-            j++;
-        }
+        res.vec.reserve(a.vec.size() + b.vec.size());
+        merge(a.vec.begin(), a.vec.end(), b.vec.begin(), b.vec.end(), back_inserter(res.vec));
         return res;
     }
 
-    // nums should be 0-based indexing
     void build(const vector<int> &nums, int idx, int lx, int rx) {
-        if (lx > sz(nums)) return;
+        if (lx > (int)nums.size()) return;
         if (rx == lx)
             tree[idx] = nums[lx - 1];
         else {
@@ -85,32 +65,17 @@ struct Segment_Tree {
         }
     }
 
-    void update(const int index, const int v) { update(index, v, 1, 1, size); }
+    void update(int index, int v) { update(index, v, 1, 1, size); } // a[index] = v, O(n)
 
     int query(int l, int r, int k, int idx, int lx, int rx) {
         if (lx > r || l > rx) return 0;
         if (lx >= l && rx <= r) {
-            auto it = tree[idx].vec.end() - upper_bound(tree[idx].vec.begin(), tree[idx].vec.end(), k);
-            return it;
+            auto &v = tree[idx].vec;
+            return (int)(v.end() - upper_bound(v.begin(), v.end(), k));
         }
         int mx = (lx + rx) / 2;
         return query(l, r, k, 2 * idx, lx, mx) + query(l, r, k, 2 * idx + 1, mx + 1, rx);
     }
 
-    int query(const int l, const int r, int k) { return query(l, r, k, 1, 1, size); }
+    int query(int l, int r, int k) { return query(l, r, k, 1, 1, size); } // #{a[l..r] > k}
 };
-
-void solve() {
-    int n;
-    cin >> n;
-    vector<int> a(n);
-    for (auto &i : a) cin >> i;
-    Segment_Tree st(n, a);
-    int q;
-    cin >> q;
-    while (q--) {
-        int l, r, k;
-        cin >> l >> r >> k;
-        cout << st.query(l, r, k) << "\n";
-    }
-}

@@ -1,5 +1,14 @@
+// HLD: path and subtree queries on a static tree; chains laid out on one array + segment tree.
+// Use when: "sum on the path u..v" / "sum over the subtree of u" with point updates.
+// Usage: HLD<int> h(n, adj, root); h.update(u, x); h.query(u, v); h.query_subtree(u);
+// Handles: values on nodes (default) or on edges via HLD<T, 1> (update(u, v, x) sets edge u-v).
+// Not: path / subtree range updates (needs a lazy segment tree); trees that change shape.
+// Time: build O(n) | query O(log^2 n) | query_subtree, update O(log n) | get_lca O(log n)
+// Indexing: 1-based nodes; adj: vector<vector<pair<nbr, weight>>> of size >= n + 1, weight unused
+// Note: operation() and query()'s accumulator are both sum - change the two together.
+// Note: update SETS a value (all start at 0). init/build recurse (depth = tree height): big stack.
+
 #include <bits/stdc++.h>
-#define ll long long
 using namespace std;
 
 template <typename T = int, int Base = 0> struct Segment_Tree {
@@ -40,7 +49,7 @@ template <typename T = int, int Base = 0> struct Segment_Tree {
     // If Base is 1 so the array is 1-based else the array is 0-based
 
     void build(const vector<T> &nums, int idx, int lx, int rx) {
-        if (Base ? lx >= sz(nums) : lx > sz(nums)) return;
+        if (Base ? lx >= (int)nums.size() : lx > (int)nums.size()) return;
         if (rx == lx)
             tree[idx] = nums[lx - !Base];
         else {
@@ -80,18 +89,13 @@ template <typename T = int, int Base = 0> struct Segment_Tree {
     T query(const int l, const int r) { return query_Node(l, r).val; }
 
     T get(const int idx) { return query_Node(idx, idx).val; }
-
-    friend ostream &operator<<(ostream &out, const Node &node) {
-        out << node.val << ' ';
-        return out;
-    }
 };
 
 template <typename T = int, const int VAL_ON_EDGE = 0> struct HLD {
     // VAL_ON_EDGE = 0 if value on nodes
     // VAL_ON_EDGE = 1 if value on edges
 
-    const vector<vector<pair<T, T>>> &adj;
+    vector<vector<pair<T, T>>> adj; // a copy: a reference member dangles if G was a temporary
     vector<T> dep, par, root, pos, SubtreeSz, child;
     int nxtPos;
     Segment_Tree<T> seg;
@@ -185,4 +189,7 @@ template <typename T = int, const int VAL_ON_EDGE = 0> struct HLD {
         for (auto &[u, v] : queryPath(u_q, v_q)) ret += seg.query(u, v);
         return ret;
     }
+
+    // subtree of u is one range (build() lays it out contiguously); edge mode skips u's parent edge
+    T query_subtree(int u) { return seg.query(pos[u] + VAL_ON_EDGE, pos[u] + SubtreeSz[u] - 1); }
 };

@@ -8,4 +8,4 @@
 | General matching with augmenting paths           | General (non-bipartite)  | No           | Max matching                  | Blossom                       | O(V³)                      |
 | Assignment problem (e.g. task to worker)         | Bipartite (n = m)        | Yes          | Optimal assignment            | Hungarian                     | O(V³)                      |
 | Online matching or dynamic graph                 | Bipartite                | Varies       | Real-time updates             | Greedy or Incremental Method  | O(1)–O(E) per update       |
-| Edge-disjoint paths / max # of s→t paths         | Directed Bipartite       | No           | Max number of disjoint paths  | Dinic / Ford-Fulkerson        | O(V² · E) or O(E · √V)     |
+| Edge-disjoint paths / max # of s→t paths         | Directed or undirected   | No           | Max number of disjoint paths  | Dinic / Ford-Fulkerson        | O(E · min(V^(2/3), √E))    |

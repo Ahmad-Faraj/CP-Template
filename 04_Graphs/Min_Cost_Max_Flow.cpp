@@ -1,16 +1,20 @@
+// Min Cost Max Flow: the cheapest way to send the maximum (or a capped) s-t flow.
+// Use when: "send k units at least cost", assignment with costs, max flow where edges have prices.
+// Usage: MCMF F(n); F.add_edge(u, v, cap, cost, id); auto [flow, cost] = F.solve(s, t, goal);
+// Handles: negative edge costs (Bellman-Ford potentials first), multi-edges, a flow cap via goal.
+// Not: negative cycles (answer is wrong). Undirected edges (directed = false) with negative cost.
+// Time: O(F * E log V) with F = total flow sent (successive shortest paths + Dijkstra)
+// Indexing: any; nodes 0..n+9 are valid (the constructor pads by 10). Edge ids are >= 0.
+// Note: max cost flow: add -cost, negate the returned cost. flow_through[id] = flow on the edge
+// with that id (only the u->v arc of an undirected edge). Call solve() once per graph.
+// send_flow recurses path-length deep.
+
 #include <bits/stdc++.h>
 using namespace std;
 
-// Complexity: O(min(E^2 *V log V, E logV * flow))
-// Works for both directed, undirected and with negative cost too
-// For finding maximum cost maximum matching
-// add -cost and return -matching()
-// fails for negative cycles
-// for undirected edges just make the directed flag false
-
-using T = long long;
-const T inf = 1LL << 61;
 struct MCMF {
+    using T = long long;
+    static constexpr T inf = 1LL << 61;
     struct edge {
         int u, v;
         T cap, cost;
@@ -31,7 +35,7 @@ struct MCMF {
     vector<int> par;
     bool neg;
     MCMF() {}
-    MCMF(int _n) { // 0-based indexing
+    MCMF(int _n) {
         n = _n + 10;
         g.assign(n, vector<int>());
         neg = false;
@@ -69,12 +73,10 @@ struct MCMF {
                 }
             }
         }
-        for (int i = 0; i < n; i++) {
+        for (int i = 0; i < n; i++)
             if (d[i] < inf) d[i] += (potential[i] - potential[s]);
-        }
-        for (int i = 0; i < n; i++) {
+        for (int i = 0; i < n; i++)
             if (d[i] < inf) potential[i] = d[i];
-        }
         return d[t] != inf;
     }
 
@@ -90,7 +92,7 @@ struct MCMF {
         return f;
     }
 
-    // returns {maxflow, mincost}
+    // returns {flow, min cost}; flow = min(max flow, goal)
     pair<T, T> solve(int _s, int _t, T goal = inf) {
         s = _s;
         t = _t;
@@ -103,6 +105,7 @@ struct MCMF {
             for (int i = 0; i < n && relax; i++) {
                 relax = false;
                 for (int u = 0; u < n; u++) {
+                    if (d[u] == inf) continue;
                     for (int k = 0; k < (int)g[u].size(); k++) {
                         int id = g[u][k];
                         int v = e[id].v;
@@ -119,62 +122,9 @@ struct MCMF {
         }
         while (flow < goal && dijkstra()) flow += send_flow(t, goal - flow);
         flow_through.assign(mxid + 10, 0);
-        for (int u = 0; u < n; u++) {
-            for (auto v : g[u]) {
+        for (int u = 0; u < n; u++)
+            for (auto v : g[u])
                 if (e[v].id >= 0) flow_through[e[v].id] = e[v ^ 1].cap;
-            }
-        }
         return make_pair(flow, cost);
     }
 };
-
-void solve_bipartite() {
-    int n;
-    cin >> n;
-    MCMF F(2 * n + 3);
-    for (int i = 0; i < n; i++) {
-        for (int j = 0; j < n; j++) {
-            int k;
-            cin >> k;
-            F.add_edge(i, j + n, 1, k, i * n + j);
-        }
-    }
-    int s = 2 * n + 1, t = s + 1;
-    // link source to u // link v to sink
-    for (int i = 0; i < n; i++) {
-        F.add_edge(s, i, 1, 0);
-        F.add_edge(i + n, t, 1, 0);
-    }
-    auto cost = F.solve(s, t).second;
-    cout << cost << endl;
-    long long number_of_matched = 0;
-    for (int i = 0; i < n; i++) {
-        for (int j = 0; j < n; j++) {
-            int p = i * n + j;
-            if (F.flow_through[p] > 0) {
-                cout << i + 1 << " " << j + 1 << endl;
-                number_of_matched += F.flow_through[p];
-            }
-        }
-    }
-    cout << number_of_matched << endl;
-}
-
-void solve_general() {
-    int n, m, k;
-    cin >> n >> m >> k;
-    MCMF F(n + 3);
-    int st = 1, en = n + 1;
-    for (int i = 1; i <= m; i++) {
-        int u, v, r, c;
-        cin >> u >> v >> r >> c;
-        F.add_edge(u, v, r, c, i);
-    }
-    F.add_edge(n, en, k, 0, m + 1);
-    auto ans = F.solve(st, en);
-    if (ans.first < k) {
-        cout << -1 << endl;
-        return;
-    }
-    cout << ans.second << '\n';
-}

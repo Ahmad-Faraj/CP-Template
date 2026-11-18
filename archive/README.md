@@ -27,6 +27,12 @@ They will be deleted after ACPC 2026 unless someone wants something from them.
 | Hashing_3.cpp | 06_Strings | Duplicate of Hashing_Dynamic; fixed 1e5 power table read out of bounds past 1e5 pushes |
 | Hashing_Prefix.cpp | 06_Strings | Single-mod duplicate of Hashing.cpp; 'A'-based values collide on lowercase ("Ba" == "CB"); crashed on an empty string |
 | Binary_Trie_2.cpp | 01_Data_Structures | Same algorithm and API as Binary_Trie; its features (search, count, count_greater, template T/LOG) merged into Binary_Trie.cpp |
+| Convex_Hull_Complex.cpp | 09_Geometry | Duplicate float hull (global pivot); crashed on empty input; Convex_Hull + Convex_Hull_2 cover it |
+| KMP_2.cpp | 06_Strings | Same KMP struct; its extra features (build_non_overlapping, countInAnother) merged into KMP.cpp |
+| LDE.cpp | 07_Math | Identical to Extended_GCD.cpp (same extended_gcd + find_any_solution) |
+| KMP_2.cpp | 06_Strings | Same KMP class as KMP.cpp; every feature (match, borders, prefix counts, non-overlapping borders) merged into KMP.cpp |
+| LDE.cpp | 07_Math | find_any_solution / extended_gcd are also in LDE_All_Solutions.cpp |
+| Convex_Hull_Complex.cpp | 09_Geometry | Second floating-point hull; Convex_Hull.cpp (complex, monotone chain) and Convex_Hull_2.cpp (exact integers) cover it |
 
 Also renamed: `04_Graphs/Bipartite_Matching.cpp` → `04_Graphs/Bipartite_Check.cpp` (it checks bipartiteness; it is not a matching).
 
@@ -118,3 +124,111 @@ independent brute-force test calling every public method, in a `-O2` build and a
 | Ordered_Set | own + trivial fixes | The macro named ordered_set was really a less_equal multiset (find/erase silently fail, lower/upper_bound swapped). Now ordered_set / ordered_multiset aliases + multiset_erase; pb_ds included safely under #define int long long |
 | Inversions | own + one fix | o_set<int> dropped duplicates: [2,1,1] gave 1 (want 2). Now count_inversions(a) with (value, index) keys |
 | Aho_Corasick_Dynamic | own + trivial fixes | No bug; delete_word rebuilds the whole bucket (slow) - Note gives the two-automaton workaround |
+| MEX_With_Updates | own + 2 fixes | class made the constructor private (unusable); update put negative old values back: Mex m({-1}); update(0,5); mex() = -1 |
+| Segment_Tree_2D | own + init-order fix | Default declared after t, which read it uninitialised |
+| Monotonic_Queue | own, vectors | Fixed 3e5 arrays overflowed after 3e5 total pushes |
+| MO | normalize struct | Globals, fixed vis[1e6]; shrank left before growing (negative counts break most add/remove) |
+| Merge_Sort_Tree | own, cleaned | No logic bug; update is O(n), not O(log^2 n) as claimed |
+| DSU_Rollback | own, solve() removed | No bug |
+| Max_Flow_Dinic | own + fix | flow_through was vector<int>: per-edge flow > 2^31 truncated (capacity 4e12 reported wrong) |
+| Min_Cost_Max_Flow | own + guard | No wrong answers; Bellman-Ford relaxed from unreachable nodes; header wrongly said undirected + negative costs work together |
+| Hungarian | own + fixes | Clearing an unmatched row left r[] pointing back (1x2 / 2x1 sparse cases wrong); fixed [505][505] arrays (2 MB, n > 504 overflowed) |
+| Online_Bridges | own + fix | make_root read the size from v, not its root: small-to-large broken (counts right, complexity not) |
+| Segment_Tree | own + trivial | update took int (values > int truncated) |
+| Segment_Tree_Dynamic | own + fixes | rx - lx overflowed int on default [-1e9,1e9]; sums in int overflowed |
+| Games_On_Graph | own as struct | No algorithm bug; was globals only |
+| Impartial_Games | own correct parts + normalize Grundy | Dropped 7 wrong functions: remoteness/suspense stubs returned 1 (conjunctive games meaningless); misere_selective wrong (single 1-pile said win); misere_disjunctive_long sum overflowed |
+| All_Permutations | own, printing -> visitor | No bug |
+| Bases | own + fixes | Negative input indexed with a negative; lowercase 'a' read as 42; "7FFFFFFFFFFFFFFF" overflowed |
+| Bits | macros -> functions | 1 << i was 32-bit (bits >= 31 of ll wrong); popcount truncated ll; check_bit returned the mask |
+| Gray_Code | own, g/rev_g -> gray/rev_gray | rev_g looped forever on negatives |
+| Misc_Helpers | own + fixes | sumall overflowed past 3.04e9; sumeven(x) returned x(x+1) (now sum of evens <= x - meaning changed); get_log(1000,10) floors to 2 (added log_floor) |
+| Geometry_Lib | own + 2 fixes | oriented_angle((0,0),(1,0),(0,-1)) gave pi/2 (want 3pi/2); seg_inters returned a point twice; #define X/Y broke variables named X, Y |
+| Points_And_Polygons | own, header | No bug; exact ll geometry (kept next to float Geometry_Lib) |
+| Convex_Hull | own, header | No bug |
+| KMP | own + KMP_2 merged + fixes | build_non_overlapping wrong in every copy ("aaaa" gave 0, want 2) - REWRITTEN by the agent (NOI 2014 Zoo technique), review it; count(str) skipped str[0] and added 1 ("a" in "ba" = 2) |
+| Hashing | own + fixes | {0} vs {0,0} equal; huge/negative values overflowed; free rng() clashed with mt19937 rng; both mods could be equal; Base=1 read past the end |
+| Manacher | own, cleaned | No bug |
+| Booth | own, headers | No bug |
+| Aho_Corasick_Intervals | own + fixes | Copyable struct (double free); fail uninitialised; global counter |
+| Combinatorics | own + fixes | CountLib(0) wrote out of bounds; stars_bars(0,0) returned 0 |
+| Euler_Phi | own, defensive i <= n/i | No bug |
+| Exponentiation | own + fixes | pow_mod(-2,1,7) = -2; pow_mod(5,0,1) = 1; base never reduced (1e12^2 overflow); bin_pow(2,62) UB |
+| Extended_GCD | own, ll | find_any_solution(0,0,c) divided by zero |
+| Fibonacci | own + modulus | No modulus; fib_pair in int (fib_pair(47) negative); fib(93+) overflow |
+| Gaussian_Elimination | normalize version (Gauss + Gauss_XOR) | No zero-pivot check: singular systems returned NaN; could not report none/infinite |
+| LDE_All_Solutions | own + zero-coefficient cases | a = 0 or b = 0 divided by zero |
+| Mod_Arithmetic | macros -> functions | sub_mod(-5,3,7) = -1; base never reduced; Big_Mod overflowed for m > 9e17 |
+| Centroid_Decomposition | own, cleaned | No bug |
+| DSU_On_Tree | own as struct (normalize counter) | Recorded cnt[u] (count of the colour numbered u): n=1, col=5 gave 0, want 1; fixed 1e5 arrays |
+| HLD | own + fixes | Did not compile (sz macro undefined); held the adjacency by reference (dangling). Added query_subtree |
+| Tree_Isomorphism | normalize version | Treated index 0 as a node; n=2 popped an empty queue. Not O(n log n): a 5e4 path takes 5.6 s / 2.5 GB |
+| Bipartite_Check | own as struct | Printed and called exit(0) inside the search |
+| DFS | own, header | No bug |
+
+## unverified/ (2026-11-18)
+
+Rewrites whose tests could not be written (the writes were refused). The live templates are still main's
+originals; move a file back only after it passes a brute-force test.
+
+| File | What changed | Why it matters |
+|---|---|---|
+| Segment_Tree_Lazy | macros removed, `ll` values | cleanup only |
+| Segment_Tree_Lazy_Iterative | pending map always combined, compared to identity | original treats `mod[p][0] == 0` as "no change": on [1..8], 3->5 then 5->7 over the whole range returns 1..8 unchanged |
+| Segment_Tree_Lazy_Persistent | `cur()`, `revert()` from normalize | new methods |
+| Segment_Tree_Persistent | value merge, no allocation in query, 64-bit midpoint | original `get()` does not compile; merge/query allocate nodes (467 MB at n = q = 2e5) |
+| Partitions | new: p(0..n) by the pentagonal recurrence (Shohag) | no test yet |
+| Aho_Corasick_Intervals | own + fixes | Copyable struct (double free); fail uninitialised; global counter |
+| All_Permutations | own, printing -> visitor | No bug |
+| Bases | own + fixes | Negative input indexed with a negative; lowercase 'a' read as 42; "7FFFFFFFFFFFFFFF" overflowed |
+| Bipartite_Check | own as struct | Printed and called exit(0) inside the search |
+| Bits | macros -> functions | 1 << i was 32-bit (bits >= 31 of ll wrong); popcount truncated ll; check_bit returned the mask |
+| Booth | own, headers | No bug |
+| Centroid_Decomposition | own, cleaned | No bug |
+| Combinatorics | own + fixes | CountLib(0) wrote out of bounds; stars_bars(0,0) returned 0 |
+| Convex_Hull | own, header | No bug |
+| DFS | own, header | No bug |
+| DSU_On_Tree | own as struct (normalize counter) | Recorded cnt[u] (count of the colour numbered u): n=1, col=5 gave 0, want 1; fixed 1e5 arrays |
+| DSU_Rollback | own, solve() removed | No bug |
+| Euler_Phi | own, defensive i <= n/i | No bug |
+| Exponentiation | own + fixes | pow_mod(-2,1,7) = -2; pow_mod(5,0,1) = 1; base never reduced (1e12^2 overflow); bin_pow(2,62) UB |
+| Extended_GCD | own, ll | find_any_solution(0,0,c) divided by zero |
+| Fibonacci | own + modulus | No modulus; fib_pair in int (fib_pair(47) negative); fib(93+) overflow |
+| Games_On_Graph | own as struct | No algorithm bug; was globals only |
+| Gaussian_Elimination | normalize version (Gauss + Gauss_XOR) | No zero-pivot check: singular systems returned NaN; could not report none/infinite |
+| Geometry_Lib | own + 2 fixes | oriented_angle((0,0),(1,0),(0,-1)) gave pi/2 (want 3pi/2); seg_inters returned a point twice; #define X/Y broke variables named X, Y |
+| Gray_Code | own, g/rev_g -> gray/rev_gray | rev_g looped forever on negatives |
+| HLD | own + fixes | Did not compile (sz macro undefined); held the adjacency by reference (dangling). Added query_subtree |
+| Hashing | own + fixes | {0} vs {0,0} equal; huge/negative values overflowed; free rng() clashed with mt19937 rng; both mods could be equal; Base=1 read past the end |
+| Hungarian | own + fixes | Clearing an unmatched row left r[] pointing back (1x2 / 2x1 sparse cases wrong); fixed [505][505] arrays (2 MB, n > 504 overflowed) |
+| Impartial_Games | own correct parts + normalize Grundy | Dropped 7 wrong functions: remoteness/suspense stubs returned 1 (conjunctive games meaningless); misere_selective wrong (single 1-pile said win); misere_disjunctive_long sum overflowed |
+| KMP | own + KMP_2 merged + fixes | build_non_overlapping wrong in every copy ("aaaa" gave 0, want 2) - REWRITTEN by the agent (NOI 2014 Zoo technique), review it; count(str) skipped str[0] and added 1 ("a" in "ba" = 2) |
+| LDE_All_Solutions | own + zero-coefficient cases | a = 0 or b = 0 divided by zero |
+| MEX_With_Updates | own + 2 fixes | class made the constructor private (unusable); update put negative old values back: Mex m({-1}); update(0,5); mex() = -1 |
+| MO | normalize struct | Globals, fixed vis[1e6]; shrank left before growing (negative counts break most add/remove) |
+| Manacher | own, cleaned | No bug |
+| Max_Flow_Dinic | own + fix | flow_through was vector<int>: per-edge flow > 2^31 truncated (capacity 4e12 reported wrong) |
+| Merge_Sort_Tree | own, cleaned | No logic bug; update is O(n), not O(log^2 n) as claimed |
+| Min_Cost_Max_Flow | own + guard | No wrong answers; Bellman-Ford relaxed from unreachable nodes; header wrongly said undirected + negative costs work together |
+| Misc_Helpers | own + fixes | sumall overflowed past 3.04e9; sumeven(x) returned x(x+1) (now sum of evens <= x - meaning changed); get_log(1000,10) floors to 2 (added log_floor) |
+| Mod_Arithmetic | macros -> functions | sub_mod(-5,3,7) = -1; base never reduced; Big_Mod overflowed for m > 9e17 |
+| Monotonic_Queue | own, vectors | Fixed 3e5 arrays overflowed after 3e5 total pushes |
+| Online_Bridges | own + fix | make_root read the size from v, not its root: small-to-large broken (counts right, complexity not) |
+| Points_And_Polygons | own, header | No bug; exact ll geometry (kept next to float Geometry_Lib) |
+| Segment_Tree | own + trivial | update took int (values > int truncated) |
+| Segment_Tree_2D | own + init-order fix | Default declared after t, which read it uninitialised |
+| Segment_Tree_Dynamic | own + fixes | rx - lx overflowed int on default [-1e9,1e9]; sums in int overflowed |
+| Tree_Isomorphism | normalize version | Treated index 0 as a node; n=2 popped an empty queue. Not O(n log n): a 5e4 path takes 5.6 s / 2.5 GB |
+
+## New templates (2026-11-18)
+
+| Template | Source | Notes |
+|---|---|---|
+| DSU_Range_Parallel | Library Checker range_parallel_unionfind reference (read only) | verified; judge.yosupo.jp/problem/range_parallel_unionfind |
+| Li_Chao_Persistent | Shohag (Hamza's had a leaf-overwrite bug: lines y=-2x+1, 2x, 2x+2 on [0,2): query(0)=1 want 0) | verified; ACPC 2024 E, CEOI09 Harbingers |
+| Mod_Int | 7oSkaaa (other/hossam) + fixes (negatives kept negative; += int unreduced; negative power returned 1) | verified; CSES 1079 |
+| Matrix_Power | Mazen + Matrix_Jumper | -O2 PASS seen by me; sanitizer not yet; yosupo pow_of_matrix, CSES 1096 |
+| Poly_Inverse | Shohag inverse on repo NTT | verified; yosupo inv_of_formal_power_series |
+| Aho_Corasick_Automaton | cp-algorithms | verified; yosupo aho_corasick, CSES 2103, CF 696D |
+| Block_Cut_Tree | Shohag | verified; yosupo biconnected_components |
+| Euler_Path | normalize + KACTL edge ids | verified (normalize returned {} for an edgeless graph); yosupo eulerian_trail_directed/undirected, CSES 1691, 1693 |

@@ -1,10 +1,19 @@
+// Manacher: longest palindrome around every center, so any range is checked for palindrome in O(1).
+// Use when: "longest palindromic substring", "is s[l..r] a palindrome" many times.
+// Usage: manacher m(s); m.getLongest(c, odd); m.checkPalindrome(l, r);
+// Handles: odd and even palindromes, any alphabet except '#'.
+// Time: build O(n) | getLongest O(1) | checkPalindrome O(1)
+// Indexing: 0-based over the original string. getLongest(c, true) = longest odd palindrome
+//           centred at c; getLongest(c, false) = longest even one between c and c + 1 (0 if none).
+// Note: after construction s is the '#'-padded string t ("#a#b#"), and p[i] - 1 is the length in
+//       the original string of the longest palindrome centred at t[i].
+//       Longest overall: max p[i] - 1, starting at (i - p[i] + 1) / 2 in the original string.
+
 #include <bits/stdc++.h>
 using namespace std;
-#define sz(x) ((int)(x).size())
-#define ll long long
 
 struct manacher {
-    vector<ll> p;
+    vector<long long> p;
     string s;
     manacher(string str) {
         s = str;
@@ -13,14 +22,14 @@ struct manacher {
     void build() {
         string t = "#";
         for (auto c : s) t += c, t += "#";
-        int n = sz(t);
+        int n = t.size();
         s = t;
         p.assign(n, 1);
         run_manacher(t);
     }
-    void run_manacher(string t) {
-        int n = sz(t);
-        ll l = 0, r = 0;
+    void run_manacher(const string &t) {
+        int n = t.size();
+        long long l = 0, r = 0;
         for (int i = 1; i < n; i++) {
             if (i <= r)
                 p[i] = min(p[l + r - i], r - i + 1);
@@ -34,8 +43,8 @@ struct manacher {
             }
         }
     }
-    ll getLongest(int cen, bool odd) {
-        ll pos = 2 * cen + 1 + (!odd);
+    long long getLongest(int cen, bool odd) {
+        long long pos = 2 * cen + 1 + (!odd);
         return p[pos] - 1;
     }
     bool checkPalindrome(int l, int r) {
@@ -45,24 +54,3 @@ struct manacher {
         return getLongest(cen, false) >= len;
     }
 };
-
-void solve() {
-    string s;
-    cin >> s;
-    manacher m(s);
-    vector<ll> &p = m.p;
-    int n = (int)p.size();
-
-    ll mx = 0;
-    int idx = 0;
-    for (int i = 0; i < n; i++) {
-        if (p[i] > mx) {
-            mx = p[i];
-            idx = i;
-        }
-    }
-
-    // mx is radius in transformed string; palindrome length = mx - 1
-    int start = (idx - mx + 1) / 2; // map back to original string index
-    cout << s.substr(start, mx - 1) << endl;
-}

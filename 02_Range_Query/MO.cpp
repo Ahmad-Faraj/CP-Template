@@ -1,54 +1,58 @@
-#include <bits/stdc++.h>
-#define ll long long
-using namespace std;
+// MO: answers offline range queries by moving a window [l, r] in sqrt-sized steps.
+// Use when: many "[l, r]" queries, no updates, adding/removing one element is O(1) but ranges
+// cannot be merged. The default statistic is sum over values x of cnt(x)^2 * x (CF 86D).
+// Usage: MO mo(a, max_val); mo.add_query(l, r) per query; vector<ll> ans = mo.run();
+// Handles: any window statistic with O(1) add/remove - edit add(), remove(), cur and cnt.
+// Not: updates (use MO with time), tree paths (MO_On_Tree).
+// Time: O((n + q) * sqrt(q)) calls to add/remove
+// Indexing: 0-based, ranges inclusive; answers come back in the order queries were added
+// Note: values index cnt directly, so they must be in [0, max_val] - compress first.
 
-const int N = 200000 + 5;
-const int SQ = 450;
-struct Query {
-    int l, r, q_idx, blk_idx;
-    Query() {}
-    Query(int l, int r, int q_idx) {
-        this->l = l;
-        this->r = r;
-        this->q_idx = q_idx;
-        blk_idx = l / SQ;
+#include <bits/stdc++.h>
+using namespace std;
+using ll = long long;
+
+struct MO {
+    struct Query {
+        int l, r, idx;
+    };
+
+    int n;
+    vector<ll> a, cnt;
+    vector<Query> qs;
+    ll cur = 0;
+
+    MO(const vector<ll> &v, int max_val) : n((int)v.size()), a(v), cnt(max_val + 1, 0) {}
+
+    void add(int i) { // bring a[i] into the window
+        cur -= cnt[a[i]] * cnt[a[i]] * a[i];
+        cnt[a[i]]++;
+        cur += cnt[a[i]] * cnt[a[i]] * a[i];
     }
-    bool operator<(const Query &other) const {
-        if (blk_idx != other.blk_idx) return blk_idx < other.blk_idx;
-        return r < other.r;
+
+    void remove(int i) { // drop a[i] from the window
+        cur -= cnt[a[i]] * cnt[a[i]] * a[i];
+        cnt[a[i]]--;
+        cur += cnt[a[i]] * cnt[a[i]] * a[i];
+    }
+
+    void add_query(int l, int r) { qs.push_back({l, r, (int)qs.size()}); }
+
+    vector<ll> run() {
+        vector<ll> ans(qs.size());
+        int block = max<int>(1, (int)(n / sqrt((double)qs.size() + 1)));
+        sort(qs.begin(), qs.end(), [&](const Query &x, const Query &y) {
+            if (x.l / block != y.l / block) return x.l / block < y.l / block;
+            return (x.l / block) & 1 ? x.r > y.r : x.r < y.r;
+        });
+        int l = 0, r = -1;
+        for (auto &q : qs) { // grow before shrinking, so the window is never "negative"
+            while (r < q.r) add(++r);
+            while (l > q.l) add(--l);
+            while (r > q.r) remove(r--);
+            while (l < q.l) remove(l++);
+            ans[q.idx] = cur;
+        }
+        return ans;
     }
 };
-ll n, q, arr[N], vis[1000006], ans[200005], res = 0;
-Query query[200005];
-void add(int idx) {
-    res -= (vis[arr[idx]] * vis[arr[idx]] * arr[idx]);
-    vis[arr[idx]]++;
-    res += (vis[arr[idx]] * vis[arr[idx]] * arr[idx]);
-}
-void remove(int idx) {
-    res -= (vis[arr[idx]] * vis[arr[idx]] * arr[idx]);
-    vis[arr[idx]]--;
-    res += (vis[arr[idx]] * vis[arr[idx]] * arr[idx]);
-}
-void procces() {
-    sort(query, query + q);
-    int l = 1, r = 0;
-    for (int i = 0; i < q; i++) {
-        while (l < query[i].l) remove(l++);
-        while (l > query[i].l) add(--l);
-        while (r < query[i].r) add(++r);
-        while (r > query[i].r) remove(r--);
-        ans[query[i].q_idx] = res;
-    }
-}
-void solve(int tc) {
-    cin >> n >> q;
-    for (int i = 0; i < n; i++) cin >> arr[i];
-    for (int i = 0; i < q; i++) {
-        int l, r;
-        cin >> l >> r;
-        query[i] = Query(--l, --r, i); // 0 based indexing
-    }
-    procces();
-    for (int i = 0; i < q; i++) cout << ans[i] << "\n";
-}

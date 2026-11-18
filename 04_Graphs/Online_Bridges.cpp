@@ -1,7 +1,16 @@
+// Online Bridges: keeps the number of bridges while undirected edges are added one at a time.
+// Use when: "after each new road, how many critical roads are there", incremental 2-edge-connectivity.
+// Usage: OnlineBridges ob(n); ob.add_edge(u, v); ob.count_bridges(); ob.is_bridge(u, v);
+// Handles: multi-edges (a parallel edge kills the bridge), self loops (ignored), disconnected graphs.
+// Not: edge deletions (go offline with Dynamic_Connectivity.cpp).
+// Time: O(n log n + m) total, amortized
+// Indexing: 0-based nodes 0..n-1; for 1-based use OnlineBridges(n + 1)
+// Note: is_bridge(u, v) assumes u-v is an edge already added (it is "different 2-edge-connected
+// components"). find_2ecc / find_cc are recursive DSU finds (depth can reach n).
+
 #include <bits/stdc++.h>
 using namespace std;
 
-// 0-based indexing if you want 1-based, use OnlineBridges(n + 1)
 struct OnlineBridges {
     int n;
     vector<int> par, dsu_2ecc, dsu_cc, dsu_cc_size;
@@ -35,7 +44,7 @@ struct OnlineBridges {
     void make_root(int v) {
         v = find_2ecc(v);
         int root = v, child = -1;
-        int comp_size = dsu_cc_size[v];
+        int comp_size = dsu_cc_size[find_cc(v)]; // the size lives on the old root
         while (v != -1) {
             int p = find_2ecc(par[v]);
             par[v] = child;
@@ -113,21 +122,3 @@ struct OnlineBridges {
         return u != v;
     }
 };
-
-void solve() {
-    int n, m, q;
-    cin >> n >> m;
-    OnlineBridges ob(n + 1);
-    for (int i = 0; i < m; i++) {
-        int u, v;
-        cin >> u >> v;
-        ob.add_edge(u, v);
-    }
-    cin >> q;
-    while (q--) {
-        int u, v;
-        cin >> u >> v;
-        ob.add_edge(u, v);
-        cout << ob.count_bridges() << '\n';
-    }
-}

@@ -1,34 +1,29 @@
+// Hungarian: min-cost maximum matching in a bipartite graph with edge costs (assignment problem).
+// Use when: "assign workers to jobs at least total cost", n <= ~500, a dense cost matrix.
+// Usage: Hungarian M(n1, n2); M.add_edge(u, v, cost); ll c = M.maximum_matching(); M.l[u];
+// Handles: rectangular (pads to max(n1, n2)), missing edges, negative costs, multi-edges (min kept).
+// Time: O(n^3) with n = max(n1, n2)
+// Indexing: 1-based both sides: left 1..n1, right 1..n2. l[u] = right partner (0 = none), r[v].
+// Note: matches as many pairs as possible, then minimises cost (needs |cost| * n << 1e18).
+// Max cost: add -cost, negate the answer. Max weight with ANY number of pairs: add_edge(u, v, 0)
+// for every pair too, add -w for real edges, answer = -result (pairs with l[u] at a 0 edge are
+// unmatched). Call maximum_matching() once.
+
 #include <bits/stdc++.h>
 using namespace std;
-#define int long long
-const int MAXN = 505;
-const int64_t INF = (int64_t)4e18;
-
-/* 1-indexed / Complexity: O(n^3) but optimized
-It finds minimum cost maximum matching.
-For finding maximum cost maximum matching
-add -cost and return -matching()
-c[i][j] = inf -> min;
-c[i][j] = 0 -> max;
-*/
-
-const int N = 505;
 
 struct Hungarian {
-    long long c[N][N], fx[N], fy[N], d[N];
-    int l[N], r[N], arg[N], trace[N];
+    vector<vector<long long>> c;
+    vector<long long> fx, fy, d;
+    vector<int> l, r, arg, trace;
     queue<int> q;
     int start, finish, n;
     const long long inf = 1e18;
     Hungarian() {}
     Hungarian(int n1, int n2) : n(max(n1, n2)) {
-        for (int i = 1; i <= n; ++i) {
-            fy[i] = l[i] = r[i] = 0;
-            for (int j = 1; j <= n; ++j)
-                c[i][j] = inf; // make it 0 for maximum cost matching 
-                // (not necessarily with max count of matching)
-                // if you need max flow with max flow
-        }
+        c.assign(n + 1, vector<long long>(n + 1, inf));
+        fx.assign(n + 1, 0), fy.assign(n + 1, 0), d.assign(n + 1, 0);
+        l.assign(n + 1, 0), r.assign(n + 1, 0), arg.assign(n + 1, 0), trace.assign(n + 1, 0);
     }
     void add_edge(int u, int v, long long cost) { c[u][v] = min(c[u][v], cost); }
     inline long long getC(int u, int v) { return c[u][v] - fx[u] - fy[v]; }
@@ -67,9 +62,7 @@ struct Hungarian {
     void subX_addY() {
         long long delta = inf;
         for (int v = 1; v <= n; ++v)
-            if (trace[v] == 0 && d[v] < delta) {
-                delta = d[v];
-            }
+            if (trace[v] == 0 && d[v] < delta) delta = d[v];
         // Rotate
         fx[start] += delta;
         for (int v = 1; v <= n; ++v)
@@ -98,18 +91,15 @@ struct Hungarian {
             finish = nxt;
         } while (finish);
     }
+    // returns the min total cost over the maximum number of real (added) edges
     long long maximum_matching() {
         for (int u = 1; u <= n; ++u) {
             fx[u] = c[u][1];
-            for (int v = 1; v <= n; ++v) {
-                fx[u] = min(fx[u], c[u][v]);
-            }
+            for (int v = 1; v <= n; ++v) fx[u] = min(fx[u], c[u][v]);
         }
         for (int v = 1; v <= n; ++v) {
             fy[v] = c[1][v] - fx[1];
-            for (int u = 1; u <= n; ++u) {
-                fy[v] = min(fy[v], c[u][v] - fx[u]);
-            }
+            for (int u = 1; u <= n; ++u) fy[v] = min(fy[v], c[u][v] - fx[u]);
         }
         for (int u = 1; u <= n; ++u) {
             start = u;
@@ -125,27 +115,8 @@ struct Hungarian {
             if (c[i][l[i]] != inf)
                 ans += c[i][l[i]];
             else
-                l[i] = 0;
+                r[l[i]] = 0, l[i] = 0;
         }
         return ans;
     }
 };
-
-void solve() {
-    int n;
-    cin >> n;
-    Hungarian M(n, n);
-    for (int i = 1; i <= n; ++i) {
-        for (int j = 1; j <= n; ++j) {
-            int cost;
-            cin >> cost;
-            M.add_edge(i, j, cost);
-        }
-    }
-    int total = M.maximum_matching();
-    cout << total << '\n';
-    // Print matched nodes
-    for (int i = 1; i <= n; ++i) {
-        cout << i << ' ' << M.l[i] << '\n';
-    }
-}

@@ -1,3 +1,13 @@
+// Points And Polygons: exact Point<T> with dot/cross, side of line, on segment, point in polygon.
+// Use when: integer coordinates up to 1e9, "is the point inside/on/outside the polygon", left turn.
+// Usage: Point<ll> p(x, y); pointInPolygon(p, poly); pointOnLineLeft(p, Line(a, b));
+// Handles: boundary points (pointInPolygon counts them inside), vertical edges, either orientation.
+// Not: lineIntersection divides, so call it with Point<long double> / Point<double>.
+// Time: O(1) per call, pointInPolygon O(n)
+// Indexing: polygon = vertices of a simple polygon in order, either orientation, last != first
+// Note: Point<ll> with |coordinates| <= 1e9 keeps cross of differences inside long long.
+// Note: sgn(v) = 1 on the upper half plane and the +x axis, else -1 (origin -1): a polar sort key.
+
 #include <bits/stdc++.h>
 using namespace std;
 
@@ -104,15 +114,17 @@ template<class T> bool pointOnLineLeft(Point<T> p, Line<T> l) {
 }
 
 template<class T> Point<T> lineIntersection(Line<T> l1, Line<T> l2) {
-    return l1.a + (l1.b - l1.a) * (cross(l2.b - l2.a, l1.a - l2.a) / cross(l2.b - l2.a, l1.a - l1.b));
+    return l1.a +
+           (l1.b - l1.a) * (cross(l2.b - l2.a, l1.a - l2.a) / cross(l2.b - l2.a, l1.a - l1.b));
 }
 
 template<class T> bool pointOnSegment(Point<T> p, Line<T> l) {
-    return cross(p - l.a, l.b - l.a) == 0 && std::min(l.a.x, l.b.x) <= p.x && p.x <= std::max(l.a.x, l.b.x) && std::min(
-            l.a.y, l.b.y) <= p.y && p.y <= std::max(l.a.y, l.b.y);
+    return cross(p - l.a, l.b - l.a) == 0 && std::min(l.a.x, l.b.x) <= p.x &&
+           p.x <= std::max(l.a.x, l.b.x) && std::min(l.a.y, l.b.y) <= p.y &&
+           p.y <= std::max(l.a.y, l.b.y);
 }
 
-template<class T> bool pointInPolygon(Point<T> a, std::vector<Point<T>> p) {
+template<class T> bool pointInPolygon(Point<T> a, const std::vector<Point<T>>& p) {
     int n = p.size();
     for(int i = 0; i < n; i++) {
         if(pointOnSegment(a, Line(p[i], p[(i + 1) % n]))) {
