@@ -1,8 +1,14 @@
+// Lazy Segment Tree: range add and range sum, both O(log n).
+// Use when: "add v to every a[i] in [l, r]" mixed with "sum of a[l..r]".
+// Usage: Lazy_Segment_Tree st; st.init(n); st.build(a); st.update(l, r, v); st.query(l, r);
+// Time: init/build O(n) | update, query O(log n)
+// Indexing: 1-based positions l..r inclusive; build(a) takes a 0-based vector (a[0] -> position 1)
+// Note: for other operations change merge(), push() and the update at a full cover together.
+
 #include <bits/stdc++.h>
 using namespace std;
-#define ll long long
+using ll = long long;
 
-// 1-based indexing
 struct Lazy_Segment_Tree {
     struct Node {
         ll val, lazy;
@@ -26,9 +32,9 @@ struct Lazy_Segment_Tree {
     }
     Node merge(Node &a, Node &b) { return a.val + b.val; }
 
-    void build(vector<int> &nums, int idx, int lx, int rx) {
+    void build(const vector<ll> &nums, int idx, int lx, int rx) {
         if (lx == rx) {
-            if (lx <= nums.size()) tree[idx] = nums[lx - 1];
+            if (lx <= (int)nums.size()) tree[idx] = nums[lx - 1];
             return;
         }
         int mx = (lx + rx) / 2;
@@ -36,11 +42,11 @@ struct Lazy_Segment_Tree {
         build(nums, 2 * idx + 1, mx + 1, rx);
         tree[idx] = merge(tree[2 * idx], tree[2 * idx + 1]);
     }
-    void build(vector<int> &nums) { build(nums, 1, 1, size); }
+    void build(const vector<ll> &nums) { build(nums, 1, 1, size); }
 
     void push(int idx, int lx, int rx) {
         if (tree[idx].lazy == 0) return;
-        tree[idx].val += (rx - lx + 1) * tree[idx].lazy;
+        tree[idx].val += (ll)(rx - lx + 1) * tree[idx].lazy;
         if (lx != rx) {
             tree[2 * idx].lazy += tree[idx].lazy;
             tree[2 * idx + 1].lazy += tree[idx].lazy;
@@ -48,7 +54,7 @@ struct Lazy_Segment_Tree {
         tree[idx].lazy = 0;
     }
 
-    void update(int l, int r, int v, int idx, int lx, int rx) {
+    void update(int l, int r, ll v, int idx, int lx, int rx) {
         push(idx, lx, rx);
         if (rx < l || lx > r) return;
         if (lx >= l && rx <= r) {
@@ -62,7 +68,7 @@ struct Lazy_Segment_Tree {
         tree[idx] = merge(tree[2 * idx], tree[2 * idx + 1]);
     }
 
-    void update(int l, int r, int v) { update(l, r, v, 1, 1, size); }
+    void update(int l, int r, ll v) { update(l, r, v, 1, 1, size); }
 
     Node query(int l, int r, int idx, int lx, int rx) {
         push(idx, lx, rx);

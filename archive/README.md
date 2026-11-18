@@ -173,10 +173,6 @@ originals; move a file back only after it passes a brute-force test.
 
 | File | What changed | Why it matters |
 |---|---|---|
-| Segment_Tree_Lazy | macros removed, `ll` values | cleanup only |
-| Segment_Tree_Lazy_Iterative | pending map always combined, compared to identity | original treats `mod[p][0] == 0` as "no change": on [1..8], 3->5 then 5->7 over the whole range returns 1..8 unchanged |
-| Segment_Tree_Lazy_Persistent | `cur()`, `revert()` from normalize | new methods |
-| Segment_Tree_Persistent | value merge, no allocation in query, 64-bit midpoint | original `get()` does not compile; merge/query allocate nodes (467 MB at n = q = 2e5) |
 | Partitions | new: p(0..n) by the pentagonal recurrence (Shohag) | no test yet |
 | Aho_Corasick_Intervals | own + fixes | Copyable struct (double free); fail uninitialised; global counter |
 | All_Permutations | own, printing -> visitor | No bug |
@@ -219,6 +215,14 @@ originals; move a file back only after it passes a brute-force test.
 | Segment_Tree_2D | own + init-order fix | Default declared after t, which read it uninitialised |
 | Segment_Tree_Dynamic | own + fixes | rx - lx overflowed int on default [-1e9,1e9]; sums in int overflowed |
 | Tree_Isomorphism | normalize version | Treated index 0 as a node; n=2 popped an empty queue. Not O(n log n): a 5e4 path takes 5.6 s / 2.5 GB |
+| Segment_Tree_Lazy | macros removed, `ll` values | cleanup only |
+| Segment_Tree_Lazy_Iterative | pending map always combined, compared to identity | original treats `mod[p][0] == 0` as "no change": on [1..8], 3->5 then 5->7 over the whole range returns 1..8 unchanged |
+| Segment_Tree_Lazy_Persistent | `cur()`, `revert()` from normalize | new methods |
+| Segment_Tree_Persistent | value merge, no allocation in query, 64-bit midpoint | original `get()` does not compile; merge/query allocate nodes (467 MB at n = q = 2e5) |
+| Segment_Tree_Lazy | own + trivial fixes | No bug; `#define ll`, update took an int value |
+| Segment_Tree_Lazy_Iterative | own + fix | Treated any map with m[0] == 0 as "no pending map": on [1..8], 3->5 then 5->7 over the whole range left the array unchanged (want 1 2 7 4 7 6 7 8) |
+| Segment_Tree_Persistent | own + fixes | get() did not compile; merge and query allocated a node on every call; rx - lx overflowed int on the default [-1e9, 1e9] |
+| Segment_Tree_Lazy_Persistent | own + fixes | Took only vector<int>; lazy * length overflowed with T = int (default is now ll) |
 
 ## New templates (2026-11-18)
 
@@ -227,8 +231,9 @@ originals; move a file back only after it passes a brute-force test.
 | DSU_Range_Parallel | Library Checker range_parallel_unionfind reference (read only) | verified; judge.yosupo.jp/problem/range_parallel_unionfind |
 | Li_Chao_Persistent | Shohag (Hamza's had a leaf-overwrite bug: lines y=-2x+1, 2x, 2x+2 on [0,2): query(0)=1 want 0) | verified; ACPC 2024 E, CEOI09 Harbingers |
 | Mod_Int | 7oSkaaa (other/hossam) + fixes (negatives kept negative; += int unreduced; negative power returned 1) | verified; CSES 1079 |
-| Matrix_Power | Mazen + Matrix_Jumper | -O2 PASS seen by me; sanitizer not yet; yosupo pow_of_matrix, CSES 1096 |
+| Matrix_Power | Mazen + Matrix_Jumper | verified (-O2 and sanitizers); yosupo pow_of_matrix, CSES 1096 |
 | Poly_Inverse | Shohag inverse on repo NTT | verified; yosupo inv_of_formal_power_series |
 | Aho_Corasick_Automaton | cp-algorithms | verified; yosupo aho_corasick, CSES 2103, CF 696D |
 | Block_Cut_Tree | Shohag | verified; yosupo biconnected_components |
 | Euler_Path | normalize + KACTL edge ids | verified (normalize returned {} for an edgeless graph); yosupo eulerian_trail_directed/undirected, CSES 1691, 1693 |
+| Partitions | Shohag "Partition Function" (plain ll) | verified vs O(n^2) DP; judge.yosupo.jp/problem/partition_function |

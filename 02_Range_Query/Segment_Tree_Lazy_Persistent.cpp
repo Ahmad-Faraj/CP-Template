@@ -1,8 +1,17 @@
+// Segment Tree Lazy Persistent: range add, range sum, and every old version stays queryable.
+// Use when: "add v on [l, r] creating a new version; sum on [l, r] of version k; go back to k"
+//           (SPOJ TTM, "To the moon").
+// Usage: PersistentSegTree<ll> t(n, a);  (version 0 = a)
+//        t.update(ver, l, r, v) -> new newest version; t.query(ver, l, r); t.roots.resize(k + 1)
+// Time: build O(n) | update, query O(log n); each update or query may add O(log n) nodes
+// Indexing: 1-based positions, a[i - 1] is position i; versions 0-based in creation order
+// Note: n >= 1. Use T = ll: lazy * length overflows int. Going back = roots.resize(k + 1).
+
 #include <bits/stdc++.h>
 using namespace std;
+using ll = long long;
 
-// 1-based indexing
-template <typename T = int> struct PersistentSegTree {
+template <typename T = ll> struct PersistentSegTree {
     struct Node {
         T val, lazy;
         Node *l, *r;
@@ -16,7 +25,7 @@ template <typename T = int> struct PersistentSegTree {
     int N;
     vector<Node *> roots;
 
-    PersistentSegTree(int n, vector<int> nums) : N(n) {
+    PersistentSegTree(int n, const vector<T> &nums) : N(n) {
         if (EMPTY == nullptr) {
             EMPTY = new Node();
             EMPTY->l = EMPTY->r = EMPTY;
@@ -24,7 +33,7 @@ template <typename T = int> struct PersistentSegTree {
         roots.push_back(build(1, N, nums));
     }
 
-    Node *build(int L, int R, vector<int> &nums) {
+    Node *build(int L, int R, const vector<T> &nums) {
         if (L == R) return new Node(nums[L - 1]);
         int M = (L + R) >> 1;
         Node *node = new Node();
@@ -40,9 +49,9 @@ template <typename T = int> struct PersistentSegTree {
             node->l = new Node(*node->l);
             node->r = new Node(*node->r);
             node->l->lazy += node->lazy;
-            node->l->val += node->lazy * (M - L + 1);
+            node->l->val += node->lazy * (T)(M - L + 1);
             node->r->lazy += node->lazy;
-            node->r->val += node->lazy * (R - M);
+            node->r->val += node->lazy * (T)(R - M);
             node->lazy = 0;
         }
     }
@@ -52,7 +61,7 @@ template <typename T = int> struct PersistentSegTree {
         Node *node = new Node(*cur);
         if (i <= L && R <= j) {
             node->lazy += v;
-            node->val += v * (R - L + 1);
+            node->val += v * (T)(R - L + 1);
             return node;
         }
         push(node, L, R);
@@ -77,34 +86,3 @@ template <typename T = int> struct PersistentSegTree {
 };
 
 template <typename T> typename PersistentSegTree<T>::Node *PersistentSegTree<T>::EMPTY = nullptr;
-
-void solve() {
-    int n, q;
-    cin >> n >> q;
-    vector<int> arr(n);
-    for (auto &x : arr) cin >> x;
-
-    PersistentSegTree<> pst(n, arr);
-
-    while (q--) {
-        char op;
-        cin >> op;
-        if (op == 'C') { // add and create and new version
-            int l, r, v;
-            cin >> l >> r >> v;
-            pst.update((int)pst.roots.size() - 1, l, r, v);
-        } else if (op == 'Q') { // Query [l,r] of current version
-            int l, r;
-            cin >> l >> r;
-            cout << pst.query((int)pst.roots.size() - 1, l, r) << endl;
-        } else if (op == 'H') { // Query [l,r] of ver version
-            int l, r, ver;
-            cin >> l >> r >> ver;
-            cout << pst.query(ver, l, r) << endl;
-        } else if (op == 'B') { // Back to ver version
-            int ver;
-            cin >> ver;
-            pst.roots.resize(ver + 1);
-        }
-    }
-}

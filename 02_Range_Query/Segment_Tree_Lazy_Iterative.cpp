@@ -1,10 +1,12 @@
+// Lazy Segment Tree Iterative: applies a value map f: {0..100} -> {0..100} to a range; point query.
+// Use when: "in a[l..r) turn every x into y" many times (CF 911G), values small, maps compose.
+// Usage: LazyBinTreeUniversal t(a); auto m = t.modInit(); m[x] = y; t.modify(l, r, m); t.query(i);
+// Time: modify O(log n * 101) | query O(log n * 101)
+// Indexing: 0-based, half-open [l, r)
+// Note: n >= 1 and values in [0, 100]. Any map is allowed; later maps apply after earlier ones.
+
 #include <bits/stdc++.h>
 using namespace std;
-#define ll long long
-
-// 0-based, half-open interval [l, r)
-// 1 l r x y   change all elements in range from l to R has value x to y
-// 2 idx       query the value at index idx
 struct LazyBinTreeUniversal {
     using T = int;
     using TMod = array<uint8_t, 101>;
@@ -12,21 +14,20 @@ struct LazyBinTreeUniversal {
     vector<T> t;
     vector<TMod> mod;
     size_t h;
+    TMod ident = modInit();
 
-    LazyBinTreeUniversal(size_t N) : size(N), t(2 * N), mod(N, modInit()), h(32 - __builtin_clz(N)) {}
+    LazyBinTreeUniversal(size_t N)
+        : size(N), t(2 * N), mod(N, modInit()), h(32 - __builtin_clz(N)) {}
 
     LazyBinTreeUniversal(const vector<T> &other)
-        : size(other.size()), t(2 * other.size()), mod(other.size(), modInit()), h(32 - __builtin_clz(other.size())) {
+        : size(other.size()), t(2 * other.size()), mod(other.size(), modInit()),
+          h(32 - __builtin_clz(other.size())) {
         copy(other.begin(), other.end(), t.begin() + size);
     }
 
     void apply(size_t p, const TMod &up_mod) {
         if (p < size) {
-            if (mod[p][0] == 0) {
-                mod[p] = up_mod;
-            } else {
-                mod[p] = combineMod(mod[p], up_mod);
-            }
+            mod[p] = combineMod(mod[p], up_mod);
         } else {
             t[p] = combineValue(t[p], up_mod);
         }
@@ -35,10 +36,10 @@ struct LazyBinTreeUniversal {
     void push(size_t p) {
         for (size_t s = h; s > 0; s--) {
             size_t pos = p >> s;
-            if (mod[pos][0] != 0) {
+            if (mod[pos] != ident) {
                 apply(2 * pos, mod[pos]);
                 apply(2 * pos + 1, mod[pos]);
-                mod[pos] = modInit();
+                mod[pos] = ident;
             }
         }
     }
@@ -80,9 +81,8 @@ struct LazyBinTreeUniversal {
 
     T combineValue(T value, const TMod &up_mod) { return up_mod[value]; }
 
-    T init() { return 0; }
-
-    TMod modInit() {
+  public:
+    TMod modInit() { // identity map; set m[x] = y to build "x -> y"
         TMod result = {};
         iota(result.begin(), result.end(), 0);
         return result;
