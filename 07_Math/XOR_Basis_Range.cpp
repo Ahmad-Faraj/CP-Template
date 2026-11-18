@@ -1,9 +1,15 @@
-// XOR Basis Range: an XOR basis that also remembers how recent each vector is, so a suffix can be queried.
-// Use when: "largest XOR of a subset of a[l..r]" with r fixed at the end, or many queries sharing a right endpoint.
-// Handles: duplicates and zeros, any suffix start l, and rank or reachability restricted to that suffix.
+// XOR Basis Range: an XOR basis that also remembers how recent each vector is, so a suffix can be
+//                  queried.
+// Use when: "largest XOR of a subset of a[l..r]" with r fixed at the end, or many queries sharing a
+//           right endpoint.
+// Usage: XOR_Basis_Range<> b; b.add(a[i], i) for i <= r; then b.max_xor_from(l), b.can_make_from(x,
+//        l);
+// Handles: duplicates and zeros, any suffix start l, and rank or reachability restricted to that
+//          suffix.
 // Time: add O(BITS) | every suffix query O(BITS)
 // Indexing: 0-based positions, added in increasing order; queries take the suffix start l
-// Note: this answers SUFFIX queries [l, current end). For arbitrary [l, r] add elements up to r, then query with l.
+// Note: this answers SUFFIX queries [l, current end). For arbitrary [l, r] add elements up to r,
+//       then query with l.
 
 #include <bits/stdc++.h>
 using namespace std;
@@ -11,7 +17,8 @@ using ll = long long;
 
 template <typename T = ll, int BITS = 62> struct XOR_Basis_Range {
     array<T, BITS> basis{};
-    array<int, BITS> newest{}; // newest[i] = the largest position that contributed this basis vector
+    // newest[i] = the largest position that contributed this basis vector
+    array<int, BITS> newest{};
     ll count = 0;
 
     XOR_Basis_Range() {

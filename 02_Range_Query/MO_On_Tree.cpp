@@ -1,9 +1,13 @@
-// MO on Tree: offline path queries on a tree - by default, the number of distinct values on the path u..v.
-// Use when: "q queries each asking something about the path between u and v", no updates, ranges cannot be merged.
-// Handles: values on nodes (default) or on edges via MoTree<int, true>. Hilbert-order sorted. Offline only.
+// MO on Tree: offline path queries on a tree - by default, the number of distinct values on the
+//             path u..v.
+// Use when: "q queries each asking something about the path between u and v", no updates, ranges
+//           cannot be merged.
+// Handles: values on nodes (default) or on edges via MoTree<int, true>. Hilbert-order sorted.
+//          Offline only.
 // Time: O((n + q) * sqrt(q)) calls to add/remove
 // Indexing: 1-based nodes; answers come back in the order the queries were added
-// Note: values must be small non-negative ints - compress them first. Edit add()/remove() per problem.
+// Note: values must be small non-negative ints - compress them first. Edit add()/remove() per
+//       problem.
 // Usage: MoTree<int> mo(n, q, G, V); mo.add_query(u, v) per query; auto ans = mo.run();
 
 #include <bits/stdc++.h>
@@ -28,7 +32,8 @@ template <typename T = int, bool VAL_ON_EDGE = false> class MoTree {
         bool operator<(const Query &rhs) const { return ord < rhs.ord; }
     };
 
-    // G[u] holds {v, w}. With VAL_ON_EDGE the w of the edge into v becomes val[v]; otherwise pass V per node.
+    // G[u] holds {v, w}. With VAL_ON_EDGE the w of the edge into v becomes val[v];
+    // otherwise pass V per node.
     MoTree(int N, int M, vector<vector<pair<int, int>>> &G, vector<T> V = vector<T>(), int root = 1)
         : curr_l(1), curr_r(0), n(N), m(M), timer(1), ans(0), answers(M), val(V), adj(G) {
         LOG = calcLog(N);

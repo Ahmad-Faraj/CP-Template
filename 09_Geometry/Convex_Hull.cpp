@@ -29,7 +29,8 @@ struct CH {
         });
         pts.erase(unique(pts.begin(), pts.end(),
                          [&](const pt &a, const pt &b) {
-                             return fabs(a.real() - b.real()) < EPS && fabs(a.imag() - b.imag()) < EPS;
+                             return fabs(a.real() - b.real()) < EPS &&
+                                    fabs(a.imag() - b.imag()) < EPS;
                          }),
                   pts.end());
         int n2 = pts.size();

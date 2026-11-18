@@ -1,6 +1,9 @@
-// Bellman Ford SPFA: the queue-based Bellman Ford - only re-examines a node when its distance actually improved.
-// Use when: you need negative weights but O(n*m) is too slow in practice; typical graphs run far below the bound.
-// Handles: negative weights, negative-cycle detection, unreachable nodes, directed or undirected, path recovery.
+// Bellman Ford SPFA: the queue-based Bellman Ford - only re-examines a node when its distance
+//                    actually improved.
+// Use when: you need negative weights but O(n*m) is too slow in practice; typical graphs run far
+//           below the bound.
+// Handles: negative weights, negative-cycle detection, unreachable nodes, directed or undirected,
+//          path recovery.
 // Usage: SPFA<ll> g(n); g.add_edge(u, v, w); auto d = g.shortest_path(src); if (g.neg_cycle) ...
 // Time: O(n * m) worst case, close to O(n + m) on typical graphs
 // Indexing: 1-based nodes; the constructor takes the node count

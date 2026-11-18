@@ -1,10 +1,14 @@
-// Treap: a balanced BST keyed by value, with order statistics - k-th smallest and the rank of a value.
-// Use when: a sorted multiset that must also answer "k-th smallest" and "how many elements are below x".
-// Handles: insert, erase, k-th, lower_bound, upper_bound, duplicates via a per-node frequency count.
+// Treap: a balanced BST keyed by value, with order statistics - k-th smallest and the rank of a
+//        value.
+// Use when: a sorted multiset that must also answer "k-th smallest" and "how many elements are
+//           below x".
+// Handles: insert, erase, k-th, lower_bound, upper_bound, duplicates via a per-node frequency
+//          count.
 // Usage: Treap<int> t; t.insert(x); t.erase(x); t.kth(k); t.lower_bound(x); t.count(x); t.size();
 // Time: every operation O(log n) expected
 // Indexing: kth() is 0-based; lower_bound returns a rank, not an iterator
-// Note: EMPTY is one sentinel shared by every treap of a type - never delete it. upper_bound needs an integer type.
+// Note: EMPTY is one sentinel shared by every treap of a type - never delete it. upper_bound needs
+//       an integer type.
 
 #include <bits/stdc++.h>
 using namespace std;
@@ -21,7 +25,8 @@ template <typename DataType> struct Treap {
         node *ch[2], *par;
 
         node() : pri(INT_MIN), size(0), frq(0), ch{this, this}, par(this) {}
-        node(const DataType &val) : val(val), pri(rnd(eng)), size(1), frq(1), ch{EMPTY, EMPTY}, par(EMPTY) {}
+        node(const DataType &val)
+            : val(val), pri(rnd(eng)), size(1), frq(1), ch{EMPTY, EMPTY}, par(EMPTY) {}
 
         void upd() { size = ch[L]->size + frq + ch[R]->size; }
     };
@@ -102,7 +107,8 @@ template <typename DataType> struct Treap {
         return root;
     }
 
-    void erase(const DataType &val) { root = erase(root, val); } // remove one copy of val, if present
+    // remove one copy of val, if present
+    void erase(const DataType &val) { root = erase(root, val); }
 
     DataType kth(node *root, int k) {
         if (root == EMPTY) return DataType();
@@ -111,7 +117,8 @@ template <typename DataType> struct Treap {
         return kth(root->ch[R], k - root->ch[L]->size - root->frq);
     }
 
-    DataType kth(int k) { return kth(root, k); } // 0-based k-th smallest, duplicates counted separately
+    // 0-based k-th smallest, duplicates counted separately
+    DataType kth(int k) { return kth(root, k); }
 
     int lower_bound(node *root, const DataType &val) {
         if (root == EMPTY) return 0;
@@ -119,13 +126,16 @@ template <typename DataType> struct Treap {
         return root->ch[L]->size + root->frq + lower_bound(root->ch[R], val);
     }
 
-    int lower_bound(const DataType &val) { return lower_bound(root, val); } // how many elements are < val
+    // how many elements are < val
+    int lower_bound(const DataType &val) { return lower_bound(root, val); }
 
-    int upper_bound(const DataType &val) { return lower_bound(val + 1); } // how many elements are <= val
+    // how many elements are <= val
+    int upper_bound(const DataType &val) { return lower_bound(val + 1); }
 
     int size() { return root->size; }
 
-    int count(const DataType &val) { return upper_bound(val) - lower_bound(val); } // copies of val stored
+    // copies of val stored
+    int count(const DataType &val) { return upper_bound(val) - lower_bound(val); }
 
     void print(node *root, int d = 0) {
         if (root == EMPTY) return;

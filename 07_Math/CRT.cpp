@@ -1,9 +1,14 @@
-// CRT: combines congruences x = r_i (mod m_i) into one congruence, or reports that they contradict each other.
-// Use when: "x leaves remainder r_i when divided by m_i", recombining results computed under several small moduli.
-// Handles: moduli that are NOT coprime (consistency is checked), any count of congruences, large moduli via __int128.
+// CRT: combines congruences x = r_i (mod m_i) into one congruence, or reports that they contradict
+//      each other.
+// Use when: "x leaves remainder r_i when divided by m_i", recombining results computed under
+//           several small moduli.
+// Usage: bool ok; auto [r, m] = crt(rems, mods, ok);  (x = r mod m when ok)
+// Handles: moduli that are NOT coprime (consistency is checked), any count of congruences, large
+//          moduli via __int128.
 // Time: O(k log m) for k congruences
 // Indexing: 0-based parallel vectors of remainders and moduli
-// Note: returns {remainder, modulus} and sets ok = false when the system contradicts. Check ok before using it.
+// Note: returns {remainder, modulus} and sets ok = false when the system contradicts. Check ok
+//       before using it.
 
 #include <bits/stdc++.h>
 using namespace std;

@@ -1,6 +1,9 @@
 // Iterative Segment Tree: range query over any associative merge, with point assignment.
-// Use when: "range sum/min/max on [l, r] with point updates" and you want the shortest, fastest segment tree.
-// Handles: any associative merge with an identity; point assign, range query. No lazy, no range updates.
+// Use when: "range sum/min/max on [l, r] with point updates" and you want the shortest, fastest
+//           segment tree.
+// Usage: SegTree st(n); st.build(a); st.update(i, v); st.query(l, r);  (edit merge and identity)
+// Handles: any associative merge with an identity; point assign, range query. No lazy, no range
+//          updates.
 // Time: build O(n) | update O(log n) | query O(log n)
 // Indexing: 0-based, query range inclusive
 // Note: change merge() and none together - none must be the identity element of merge().
@@ -32,7 +35,8 @@ struct SegTree {
         for (idx >>= 1; idx >= 1; idx >>= 1) seg[idx] = merge(seg[idx << 1], seg[idx << 1 | 1]);
     }
 
-    ll query(int l, int r) { // merge over a[l .. r], in left-to-right order (KACTL SegmentTree.h loop)
+    // merge over a[l .. r], in left-to-right order (KACTL SegmentTree.h loop)
+    ll query(int l, int r) {
         ll ra = none, rb = none;
         for (l += n, r += n + 1; l < r; l >>= 1, r >>= 1) {
             if (l & 1) ra = merge(ra, seg[l++]);

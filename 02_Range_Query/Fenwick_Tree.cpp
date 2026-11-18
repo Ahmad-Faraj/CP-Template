@@ -1,9 +1,12 @@
 // Fenwick Tree: prefix and range sums under point updates, plus search by prefix sum.
 // Use when: "sum on [l, r] with updates", counting inversions, k-th smallest over a value axis.
-// Handles: point add/set, range sum, range add + point read, prefix-sum lower/upper bound, 0- or 1-based.
+// Usage: FenwickTree<> ft(n) or ft(a); ft.add(i, d); ft.sum(l, r); ft.set(i, v); ft.lower_bound(x);
+// Handles: point add/set, range sum, range add + point read, prefix-sum lower/upper bound, 0- or
+//          1-based.
 // Time: build O(n log n) | add O(log n) | sum O(log n) | lower_bound O(log n)
 // Indexing: 1-based by default; FenwickTree<false> for 0-based
-// Note: update_range() makes the tree a difference array - read a point with sum(idx), and never call sum(l, r).
+// Note: update_range() makes the tree a difference array - read a point with sum(idx), and never
+//       call sum(l, r).
 
 #include <bits/stdc++.h>
 using namespace std;
@@ -35,7 +38,8 @@ template <bool one_based = true> struct FenwickTree {
 
     void set(int idx, ll val) { add(idx, val - get(idx)); } // a[idx] = val
 
-    void update_range(int l, int r, ll val) { add(l, val), add(r + 1, -val); } // a[l .. r] += val, read via sum(idx)
+    // a[l .. r] += val, read via sum(idx)
+    void update_range(int l, int r, ll val) { add(l, val), add(r + 1, -val); }
 
     int lower_bound(ll x) { // smallest idx whose prefix sum is >= x; values must be non-negative
         int idx = 0, mask = 1;

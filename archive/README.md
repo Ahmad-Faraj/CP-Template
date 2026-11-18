@@ -93,7 +93,7 @@ independent brute-force test calling every public method, in a `-O2` build and a
 | 2_SAT | own | ok() used resize, so a second call after new clauses returned the old answer |
 | Hopcroft_Karp | own | Second maximum_matching() call returned only the extra pairs |
 | Diameter | own | No bug; diameter() now returns {len, a, b} |
-| DSU_On_Tree_2 | own as Small_To_Large struct | No bug |
+| DSU_On_Tree_2 (now Small_To_Large) | own as Small_To_Large struct | No bug; renamed 2026-11-18 |
 | Euler_Tour | own (tour only) | No bug; the bundled segment tree was dropped (02_Range_Query covers it); endd -> finish |
 | Strong_Orientation | own as a struct | No bug; static timer and globals removed; 0-based |
 | Big_Int | own + fixes | (-7)/2 gave q=-3 r=1 (q*b+r != a); gcd(-4,-6) hung; 5 + (-5) gave -0; * and / took int (BigInt(1)*1e10 wrong); % (ll) wrong past INT_MAX; FFT multiply dropped the top carry (~9000+ digits); shift UB; BigInt(LLONG_MIN) overflow |

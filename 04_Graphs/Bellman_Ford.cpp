@@ -1,12 +1,14 @@
-#include <bits/stdc++.h>
-using namespace std;
-
-// Bellman Ford: shortest paths from one source when edges may be negative, and detects negative cycles.
-// Use when: weights can be negative, "is there an ever-cheaper cycle", maximise a path by negating weights.
-// Handles: negative weights, negative cycles (naming every node affected), unreachable nodes, multi-edges.
+// Bellman Ford: shortest paths from one source with negative edges; finds negative cycles.
+// Use when: weights can be negative, "is there an ever-cheaper cycle", longest path via negation.
+// Usage: Bellman_Ford<ll> g(n); g.add_edge(u, v, w); auto d = g.shortest_path(src); g.path(s, t);
+// Handles: negative weights, negative cycles (every affected node), unreachable nodes, multi-edges.
 // Time: O(n * m)
 // Indexing: 1-based nodes; the constructor takes the node count
-// Note: nodes driven down forever by a negative cycle come back NEG, unreachable ones INF. Use is_neg / is_inf.
+// Note: nodes pulled down forever by a negative cycle get NEG, unreachable ones INF:
+//       test with is_neg / is_inf, never compare to them directly.
+
+#include <bits/stdc++.h>
+using namespace std;
 
 using ll = long long;
 
@@ -34,7 +36,8 @@ template <typename T = ll> struct Bellman_Ford {
     static bool is_inf(T d) { return d >= INF; }
     static bool is_neg(T d) { return d <= NEG; }
 
-    vector<T> shortest_path(int src) { // INF if unreachable, NEG if a negative cycle drives it down forever
+    // INF if unreachable, NEG if a negative cycle drives it down forever
+    vector<T> shortest_path(int src) {
         dist.assign(n + 1, INF);
         par.assign(n + 1, -1);
         dist[src] = 0;
@@ -78,7 +81,8 @@ template <typename T = ll> struct Bellman_Ford {
         return false;
     }
 
-    vector<int> path(int src, int dest) { // empty if unreachable or if the distance is unbounded below
+    // empty if unreachable or if the distance is unbounded below
+    vector<int> path(int src, int dest) {
         shortest_path(src);
         if (is_inf(dist[dest]) || is_neg(dist[dest])) return {};
         vector<int> p;

@@ -1,7 +1,16 @@
+// Articulation Points: the vertices whose removal increases the number of connected components.
+// Use when: "which cities are critical", "removing one node disconnects the network".
+// Usage: Articulation_points<> ap(n); ap.add_edge(u, v); ap.solve();
+//        set<int> s = ap.get_articulation_points();
+// Handles: disconnected graphs and isolated vertices. Undirected edges.
+// Time: O(n + m)
+// Indexing: 1-based nodes
+// Note: tarjan() is recursive (depth up to n): it can overflow an 8 MB stack near 2e5 nodes.
+//       Call solve() once.
+
 #include <bits/stdc++.h>
 using namespace std;
 
-// Articulation points is a vertex in a graph, that if removed, will make the graph disconnected.
 template <typename T = int> struct Articulation_points {
 
     T dfs_timer;

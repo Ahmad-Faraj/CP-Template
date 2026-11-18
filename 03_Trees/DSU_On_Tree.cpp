@@ -2,7 +2,7 @@
 // Use when: "for each subtree: how many distinct colours / most frequent value / count of c".
 // Usage: DSU_On_Tree D(n); D.add_edge(u, v); D.col[u] = c; vector<int> ans = D.run(root);
 // Handles: any statistic you can add / remove one node at a time; n = 1. Subtrees only.
-// Not: small-to-large set merging (that is DSU_On_Tree_2.cpp, O(n log^2 n)).
+// Not: small-to-large set merging (that is Small_To_Large.cpp, O(n log^2 n)).
 // Time: O(n log n) calls to add
 // Indexing: 1-based nodes; colours >= 0, cnt is sized max colour + 1 (compress big colours)
 // Note: the problem-specific parts are add()'s counter update and the line recording ans[u].

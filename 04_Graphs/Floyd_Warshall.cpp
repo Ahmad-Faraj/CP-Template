@@ -1,12 +1,14 @@
+// Floyd Warshall: shortest paths between every pair of nodes in one O(n^3) pass.
+// Use when: n up to a few hundred and all pairs are needed, transitive closure.
+// Usage: Floyd<ll> f(n); f.add_edge(u, v, w); f.build(); f.get(u, v); f.path(u, v);
+// Handles: negative weights, negative cycles, unreachable pairs, multi-edges, paths, edges added
+//          after build (add_edge_after_build).
+// Time: build O(n^3) | get O(1) | add_edge_after_build O(n^2)
+// Indexing: 1-based nodes; the constructor takes the node count
+// Note: call build() once after all add_edge calls. Unreachable pairs stay INF: use is_inf.
+
 #include <bits/stdc++.h>
 using namespace std;
-
-// Floyd Warshall: shortest paths between every pair of nodes, in one O(n^3) pass over the distance matrix.
-// Use when: n is small (a few hundred) and you need all pairs, "distance between every two cities", transitive closure.
-// Handles: negative weights, negative-cycle detection, unreachable pairs, multi-edges, paths, later edge additions.
-// Time: build O(n^3) | query O(1) | add_edge_after_build O(n^2)
-// Indexing: 1-based nodes; the constructor takes the node count
-// Note: call build() once after all add_edge calls. Unreachable pairs stay INF; use is_inf rather than comparing to it.
 
 using ll = long long;
 
@@ -34,7 +36,8 @@ template <typename T = ll> struct Floyd {
                 if (is_inf(dist[u][k])) continue; // skip, or INF + INF silently overflows
                 for (int v = 1; v <= n; v++) {
                     if (is_inf(dist[k][v])) continue;
-                    T nd = max(dist[u][k] + dist[k][v], -INF); // clamp (KACTL): negative cycles would overflow
+                    // clamp (KACTL): negative cycles would overflow
+                    T nd = max(dist[u][k] + dist[k][v], -INF);
                     if (nd < dist[u][v]) {
                         dist[u][v] = nd;
                         nxt[u][v] = nxt[u][k];
@@ -70,7 +73,8 @@ template <typename T = ll> struct Floyd {
         return p;
     }
 
-    void add_edge_after_build(int u, int v, T w, bool bidirectional = false) { // repairs all pairs in O(n^2)
+    // repairs all pairs in O(n^2)
+    void add_edge_after_build(int u, int v, T w, bool bidirectional = false) {
         auto relax = [&](int a, int b, T weight) {
             if (weight >= dist[a][b]) return;
             dist[a][b] = weight, nxt[a][b] = b;

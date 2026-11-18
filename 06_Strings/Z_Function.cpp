@@ -1,12 +1,15 @@
 // Z Function: z[i] = length of the longest common prefix of s and the suffix of s starting at i.
-// Use when: "all occurrences of p in s", LCP of a string with each of its suffixes, periods, borders.
+// Use when: "all occurrences of p in s", LCP of a string with each of its suffixes, periods,
+//           borders.
 // Usage: Zfunctions z; z.build(s); z[i] / z.z[i];  vector<int> pos = z.match(text, pattern);
 // Handles: any alphabet; match() reports overlapping occurrences; minString(a, b) as below.
 // Time: build O(n) | match O(|text| + |pattern|) | minString O(|a| + |b|)
 // Indexing: 0-based; z[0] = 0; match() returns 0-based start positions in the text
 // Note: match() builds z over pattern + '#' + text, so '#' must not occur in either string; pattern
-//       must be non-empty. match() overwrites z. minString(a, b) = shortest string that starts with b
-//       and contains a (b, or b + the part of a not covered by the longest suffix of b = prefix of a).
+//       must be non-empty. match() overwrites z. minString(a, b) = shortest string that starts with
+//       b
+//       and contains a (b, or b + the part of a not covered by the longest suffix of b = prefix of
+//       a).
 
 #include <bits/stdc++.h>
 using namespace std;

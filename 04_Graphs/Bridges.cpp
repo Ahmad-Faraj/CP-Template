@@ -1,9 +1,14 @@
-// Bridges: the edges whose removal disconnects the graph, plus the two-edge-connected components they separate.
-// Use when: "which roads are critical", "how many edges must fail to split the network", building a bridge tree.
+// Bridges: the edges whose removal disconnects the graph, plus the two-edge-connected components
+//          they separate.
+// Use when: "which roads are critical", "how many edges must fail to split the network", building a
+//           bridge tree.
+// Usage: Bridges b(n); b.add_edge(u, v); b.run(); b.bridge_list; b.component_of(u);
+//        b.bridge_tree();
 // Handles: multi-edges (two parallel edges are never a bridge), self loops, disconnected graphs.
 // Time: O(n + m)
 // Indexing: 1-based nodes; component ids run 1..component_count
-// Note: run() is recursive. A bridge is an EDGE - for the vertex version see Articulation_Points.cpp.
+// Note: run() is recursive. A bridge is an EDGE - for the vertex version see
+//       Articulation_Points.cpp.
 
 #include <bits/stdc++.h>
 using namespace std;
@@ -26,7 +31,8 @@ struct Bridges {
     void dfs(int u, int in_edge) {
         tin[u] = low[u] = ++timer;
         for (auto [v, id] : adj[u]) {
-            if (id == in_edge) continue; // skip the one edge we arrived on, not every edge to the parent
+            // skip the one edge we arrived on, not every edge to the parent
+            if (id == in_edge) continue;
             if (tin[v])
                 low[u] = min(low[u], tin[v]);
             else {
@@ -71,7 +77,8 @@ struct Bridges {
 
     vector<vector<int>> bridge_tree() { // the tree over two-edge-connected components
         vector<vector<int>> tree(comp_count + 1);
-        for (auto [u, v] : bridge_list) tree[comp[u]].push_back(comp[v]), tree[comp[v]].push_back(comp[u]);
+        for (auto [u, v] : bridge_list)
+            tree[comp[u]].push_back(comp[v]), tree[comp[v]].push_back(comp[u]);
         return tree;
     }
 };

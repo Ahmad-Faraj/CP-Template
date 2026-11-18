@@ -1,9 +1,15 @@
-// Sieve: primes up to n, plus a smallest-prime-factor table that factorizes any number below n in O(log n).
-// Use when: "all primes up to n", "is this prime", factorizing many numbers, divisor or Mobius tables.
-// Handles: n = 0 and 1, a single primality test past the sieve limit via trial division, and repeated factorizations.
-// Time: sieve O(n log log n) | smallest_prime_factor build O(n) | factorize O(log n) | is_prime O(sqrt(n))
+// Sieve: primes up to n, plus a smallest-prime-factor table that factorizes any number below n in
+//        O(log n).
+// Use when: "all primes up to n", "is this prime", factorizing many numbers, divisor or Mobius
+//           tables.
+// Usage: Sieve s(1e7); s.prime(x); s.factorize(x); s.divisors(x);  primes_up_to(n); is_prime(x);
+// Handles: n = 0 and 1, a single primality test past the sieve limit via trial division, and
+//          repeated factorizations.
+// Time: sieve O(n log log n) | smallest_prime_factor build O(n) | factorize O(log n) | is_prime
+//       O(sqrt(n))
 // Indexing: 0-based tables of length n + 1, so index i describes the number i
-// Note: build the table once and reuse it. factorize only works for values <= the limit; is_prime works for any value.
+// Note: build the table once and reuse it. factorize only works for values <= the limit; is_prime
+//       works for any value.
 
 #include <bits/stdc++.h>
 using namespace std;
@@ -25,7 +31,8 @@ vector<int> primes_up_to(int n) {
     for (int i = 2; i <= n; i++) {
         if (composite[i]) continue;
         primes.push_back(i);
-        for (ll j = (ll)i * i; j <= n; j += i) composite[j] = 1; // ll, or i * i overflows past 46341
+        // ll, or i * i overflows past 46341
+        for (ll j = (ll)i * i; j <= n; j += i) composite[j] = 1;
     }
     return primes;
 }

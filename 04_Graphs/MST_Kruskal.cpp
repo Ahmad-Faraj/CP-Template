@@ -1,12 +1,14 @@
-#include <bits/stdc++.h>
-using namespace std;
-
-// MST Kruskal: the cheapest set of edges connecting every node, by sorting edges and joining with a DSU.
-// Use when: "connect all cities as cheaply as possible", "the widest bottleneck edge", maximum spanning trees.
-// Handles: disconnected graphs (a spanning forest), multi-edges, self loops, negative weights, maximum variants.
+// MST Kruskal: the cheapest set of edges connecting every node (sort edges, join with a DSU).
+// Use when: "connect all cities as cheaply as possible", bottleneck edges, maximum spanning tree.
+// Usage: MST_Kruskal k(n); k.add_edge(u, v, w); ll c = k.build(); if (k.is_spanning()) ...
+// Handles: disconnected graphs (spanning forest), multi-edges, self loops, negative weights,
+//          maximum spanning tree via build(true).
 // Time: O(m log m)
 // Indexing: 1-based nodes; edge ids are 0-based in the order added
-// Note: call build() once. Check is_spanning before trusting the cost - a disconnected graph gives a forest.
+// Note: call build() once. Check is_spanning() before trusting the cost.
+
+#include <bits/stdc++.h>
+using namespace std;
 
 using ll = long long;
 
@@ -21,7 +23,9 @@ struct MST_Kruskal {
     vector<int> parent, rnk, chosen; // chosen holds edge ids, in increasing weight order
     ll total = 0;
 
-    MST_Kruskal(int n) : n(n), parent(n + 1), rnk(n + 1, 0) { iota(parent.begin(), parent.end(), 0); }
+    MST_Kruskal(int n) : n(n), parent(n + 1), rnk(n + 1, 0) {
+        iota(parent.begin(), parent.end(), 0);
+    }
 
     void add_edge(int u, int v, ll w) { edges.push_back({(int)edges.size(), u, v, w}); }
 

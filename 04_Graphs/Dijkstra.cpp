@@ -1,12 +1,14 @@
-#include <bits/stdc++.h>
-using namespace std;
-
-// Dijkstra: shortest paths from one or several sources on a graph with non-negative weights.
-// Use when: "cheapest route from a to b", "shortest time to reach every city", grid shortest path with costs.
-// Handles: directed or undirected, multi-edges, self loops, several sources, path recovery. Not negative weights.
+// Dijkstra: shortest paths from one or several sources with non-negative weights.
+// Use when: "cheapest route from a to b", "shortest time to every city", weighted grid paths.
+// Usage: Dijkstra<ll> g(n); g.add_edge(u, v, w); auto d = g.shortest_path(src); g.path(s, t);
+// Handles: directed or undirected (add_edge is undirected by default), multi-edges, self loops,
+//          several sources, path recovery. Not: negative weights.
 // Time: O((n + m) log n)
 // Indexing: 1-based nodes; the constructor takes the node count, not the edge count
-// Note: unreachable nodes come back as INF, and path() comes back empty. Every call recomputes from scratch.
+// Note: unreachable nodes get INF and path() is empty. Every call recomputes from scratch.
+
+#include <bits/stdc++.h>
+using namespace std;
 
 using ll = long long;
 
@@ -32,7 +34,8 @@ template <typename T = ll> struct Dijkstra {
         if (bidirectional) adj[v].push_back(Edge(u, w));
     }
 
-    vector<T> shortest_path(const vector<int> &srcs) { // distance to every node from the nearest source
+    // distance to every node from the nearest source
+    vector<T> shortest_path(const vector<int> &srcs) {
         dist.assign(n + 1, INF);
         par.assign(n + 1, -1);
         priority_queue<Edge> pq;
@@ -57,7 +60,8 @@ template <typename T = ll> struct Dijkstra {
 
     vector<T> shortest_path(int src) { return shortest_path(vector<int>{src}); }
 
-    T shortest_path(int src, int dest) { return shortest_path(src)[dest]; } // INF if dest is unreachable
+    // INF if dest is unreachable
+    T shortest_path(int src, int dest) { return shortest_path(src)[dest]; }
 
     vector<int> path(int src, int dest) { // the nodes src..dest, or empty if unreachable
         shortest_path(src);

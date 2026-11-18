@@ -1,11 +1,14 @@
 // Palindromic Tree (Eertree): one node per distinct palindromic substring, with occurrence counts.
-// Use when: "count distinct palindromic substrings", total palindromic substrings, palindromic suffixes.
+// Use when: "count distinct palindromic substrings", total palindromic substrings, palindromic
+//           suffixes.
 // Usage: PalindromicTree pt(n, 26, 'a'); pt.build(s);  (or addChar(s[i], i + 1) per i, then
 //        propagateOccurrences())  -> pt.distinctCount(), pt.totalOccurrences(), pt.tree[v].occ
 // Handles: any contiguous alphabet via sigma and base; per-node len, occ, firstPos, suffix link.
 // Time: addChar O(1) amortized | propagateOccurrences O(k log k), k = distinct palindromes
-// Indexing: characters go in at 1-based positions 1, 2, 3, ...; nodes 0 (len -1) and 1 (len 0) are the
-//           two roots, real palindromes are nodes 2 .. tree.size() - 1; firstPos = 1-based END position
+// Indexing: characters go in at 1-based positions 1, 2, 3, ...; nodes 0 (len -1) and 1 (len 0) are
+//           the
+//           two roots, real palindromes are nodes 2 .. tree.size() - 1; firstPos = 1-based END
+//           position
 // Note: call propagateOccurrences() exactly once, after the last addChar, before reading occ.
 //       Memory: sigma ints per node (26 * 4 bytes * n), about 100 MB at n = 1e6.
 //       Characters must be in [base, base + sigma) and must not be '#'.

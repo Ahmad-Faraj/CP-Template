@@ -1,7 +1,8 @@
 // Hungarian: min-cost maximum matching in a bipartite graph with edge costs (assignment problem).
 // Use when: "assign workers to jobs at least total cost", n <= ~500, a dense cost matrix.
 // Usage: Hungarian M(n1, n2); M.add_edge(u, v, cost); ll c = M.maximum_matching(); M.l[u];
-// Handles: rectangular (pads to max(n1, n2)), missing edges, negative costs, multi-edges (min kept).
+// Handles: rectangular (pads to max(n1, n2)), missing edges, negative costs, multi-edges (min
+//          kept).
 // Time: O(n^3) with n = max(n1, n2)
 // Indexing: 1-based both sides: left 1..n1, right 1..n2. l[u] = right partner (0 = none), r[v].
 // Note: matches as many pairs as possible, then minimises cost (needs |cost| * n << 1e18).

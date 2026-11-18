@@ -1,9 +1,15 @@
-// Strongly Connected Components: groups a digraph into maximal sets where every node reaches every other, by Tarjan.
-// Use when: "collapse the cycles", 2-SAT, "can everyone reach everyone", running a DAG algorithm on a cyclic graph.
-// Handles: self loops, multi-edges, disconnected graphs. Also builds the condensation DAG and answers ancestor queries.
+// Strongly Connected Components: groups a digraph into maximal sets where every node reaches every
+//                                other, by Tarjan.
+// Use when: "collapse the cycles", 2-SAT, "can everyone reach everyone", running a DAG algorithm on
+//           a cyclic graph.
+// Usage: Strongly_Connected_Components g(n); g.add_edge(u, v); g.run(); g.component_of(u);
+//        g.condensation();
+// Handles: self loops, multi-edges, disconnected graphs. Also builds the condensation DAG and
+//          answers ancestor queries.
 // Time: O(n + m)
 // Indexing: 1-based nodes; component ids run 1..count
-// Note: run() is recursive, so ~1e5 deep needs a bigger stack. Component ids come out in reverse topological order.
+// Note: run() is recursive, so ~1e5 deep needs a bigger stack. Component ids come out in reverse
+//       topological order.
 
 #include <bits/stdc++.h>
 using namespace std;
@@ -16,7 +22,8 @@ struct Strongly_Connected_Components {
     stack<int> st;
 
     Strongly_Connected_Components(int n)
-        : n(n), adj(n + 1), tin(n + 1, 0), low(n + 1, 0), tout(n + 1, 0), comp(n + 1, 0), on_stack(n + 1, 0) {}
+        : n(n), adj(n + 1), tin(n + 1, 0), low(n + 1, 0), tout(n + 1, 0), comp(n + 1, 0),
+          on_stack(n + 1, 0) {}
 
     void add_edge(int u, int v, bool bidirectional = false) {
         adj[u].push_back(v);

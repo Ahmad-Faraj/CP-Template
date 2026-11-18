@@ -1,10 +1,13 @@
 // Trie: a multiset of strings supporting insert, erase, exact search and prefix queries.
-// Use when: "how many words start with this prefix", dictionary lookups, autocomplete, prefix-driven DP.
-// Handles: insert, erase, exact match, prefix test, prefix count. Mode selects lowercase / uppercase / digits.
+// Use when: "how many words start with this prefix", dictionary lookups, autocomplete, prefix-
+//           driven DP.
+// Handles: insert, erase, exact match, prefix test, prefix count. Mode selects lowercase /
+//          uppercase / digits.
 // Time: every operation O(length of the word)
 // Usage: Trie<> t; t.insert(s); t.erase(s); t.search(s); t.is_prefix(p); t.count_prefix(p);
 // Indexing: none
-// Note: erase() removes one occurrence and only if the word is present. Set Mode to match your alphabet.
+// Note: erase() removes one occurrence and only if the word is present. Set Mode to match your
+//       alphabet.
 // count_prefix("") returns 0, not the word count. Nodes are never freed except by erase.
 
 #include <bits/stdc++.h>

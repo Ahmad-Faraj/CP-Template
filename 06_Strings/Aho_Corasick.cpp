@@ -1,13 +1,18 @@
 // Aho-Corasick: finds every occurrence of every pattern of a fixed set inside a text in one pass.
-// Use when: "match many patterns against one text", dictionary hits, which patterns end at each position.
-// Usage: AhoCorasick ac(patterns);  auto res = ac.search(text);  res[i] = patterns ending at text[i]
+// Use when: "match many patterns against one text", dictionary hits, which patterns end at each
+//           position.
+// Usage: AhoCorasick ac(patterns);  auto res = ac.search(text);  res[i] = patterns ending at
+//        text[i]
 //        (or: AhoCorasick ac; ac.insert(p, idx) for each pattern; ac.build();)
-// Handles: overlapping matches, duplicate patterns (both indices reported), patterns inside patterns.
+// Handles: overlapping matches, duplicate patterns (both indices reported), patterns inside
+//          patterns.
 // Time: build O(26 + sum |p| + copied indices) | search O(|text| + number of matches)
 // Indexing: 0-based text positions; res[i] lists pattern indices whose occurrence ENDS at i
-//           (start = i - |pattern| + 1). Indices are those given to insert (vector order in the ctor).
+//           (start = i - |pattern| + 1). Indices are those given to insert (vector order in the
+//           ctor).
 // Note: lowercase 'a'..'z' only, non-empty patterns. Call build() once, after the last insert.
-//       Output (and memory: each node copies its fail chain's indices) can reach |text| * sqrt(2 * sum |p|).
+//       Output (and memory: each node copies its fail chain's indices) can reach |text| * sqrt(2 *
+//       sum |p|).
 
 #include <bits/stdc++.h>
 using namespace std;

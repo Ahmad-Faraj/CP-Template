@@ -1,5 +1,6 @@
 // Max Flow (Dinic): maximum s-t flow, plus the min cut and the flow decomposed into s-t paths.
-// Use when: "max throughput", "min edges/capacity to cut s from t", disjoint paths, matching as flow.
+// Use when: "max throughput", "min edges/capacity to cut s from t", disjoint paths, matching as
+//           flow.
 // Usage: Dinic F(n); F.add_edge(u, v, cap, id); ll f = F.max_flow(s, t); F.get_min_cut();
 // Handles: multi-edges, self loops, 0 capacities, ids for reading flow per edge (flow_through[id]).
 // Time: O(V^2 * E); O(E * sqrt(V)) on unit bipartite matching graphs

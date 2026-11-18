@@ -1,7 +1,9 @@
 // Online Bridges: keeps the number of bridges while undirected edges are added one at a time.
-// Use when: "after each new road, how many critical roads are there", incremental 2-edge-connectivity.
+// Use when: "after each new road, how many critical roads are there", incremental 2-edge-
+//           connectivity.
 // Usage: OnlineBridges ob(n); ob.add_edge(u, v); ob.count_bridges(); ob.is_bridge(u, v);
-// Handles: multi-edges (a parallel edge kills the bridge), self loops (ignored), disconnected graphs.
+// Handles: multi-edges (a parallel edge kills the bridge), self loops (ignored), disconnected
+//          graphs.
 // Not: edge deletions (go offline with Dynamic_Connectivity.cpp).
 // Time: O(n log n + m) total, amortized
 // Indexing: 0-based nodes 0..n-1; for 1-based use OnlineBridges(n + 1)

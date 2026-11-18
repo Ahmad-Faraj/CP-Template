@@ -1,7 +1,7 @@
-// Test for 03_Trees/DSU_On_Tree_2.cpp (Small To Large) against walking each subtree into a set.
+// Test for 03_Trees/Small_To_Large.cpp (Small To Large) against walking each subtree into a set.
 // Every public method is checked: add_edge, colors[] (one and several values per node), run(root),
 // and the distinct_num member it fills.
-#include "../../03_Trees/DSU_On_Tree_2.cpp"
+#include "../../03_Trees/Small_To_Large.cpp"
 
 map<string, pair<long long, long long>> cov;
 mt19937 rng(23);

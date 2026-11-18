@@ -1,9 +1,15 @@
-// LCA: lowest common ancestor, k-th ancestor, and distance between any two nodes, by binary lifting.
-// Use when: "LCA of u and v", "distance between u and v", "k-th ancestor of u", any path query on a rooted tree.
-// Handles: any rooted tree, k-th ancestor, LCA, edge-count distance. Static - edges cannot change after build().
+// LCA: lowest common ancestor, k-th ancestor, and distance between any two nodes, by binary
+//      lifting.
+// Use when: "LCA of u and v", "distance between u and v", "k-th ancestor of u", any path query on a
+//           rooted tree.
+// Usage: LCA g(n); g.add_edge(u, v); g.build(root); g.get_lca(u, v); g.dist(u, v);
+//        g.kth_ancestor(u, k);
+// Handles: any rooted tree, k-th ancestor, LCA, edge-count distance. Static - edges cannot change
+//          after build().
 // Time: build O(n log n) | get_lca O(log n) | kth_ancestor O(log n) | dist O(log n)
 // Indexing: 1-based nodes
-// Note: call build(root) once, after every add_edge. The traversal is iterative, so a path-shaped tree is fine.
+// Note: call build(root) once, after every add_edge. The traversal is iterative, so a path-shaped
+//       tree is fine.
 
 #include <bits/stdc++.h>
 using namespace std;
@@ -59,5 +65,6 @@ struct LCA {
         return anc[u][0];
     }
 
-    int dist(int u, int v) { return dep[u] + dep[v] - 2 * dep[get_lca(u, v)]; } // edges on the path u..v
+    // edges on the path u..v
+    int dist(int u, int v) { return dep[u] + dep[v] - 2 * dep[get_lca(u, v)]; }
 };

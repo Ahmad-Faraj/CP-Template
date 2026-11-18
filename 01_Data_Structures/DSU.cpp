@@ -1,3 +1,12 @@
+// DSU: union-find by size with path compression that also lists the members of every set.
+// Use when: "merge groups, are u and v together", component sizes, number of components,
+//           "print every group" after unions.
+// Usage: DSU<> d(n); d.union_sets(u, v); d.is_same_sets(u, v); d.get_size(u);
+//        d.get_components_number(); d.get_components();
+// Time: union / find almost O(1) amortised | get_components O(n)
+// Indexing: Base = 1 (default) means nodes 1..n; DSU<int, 0> for nodes 0..n-1
+// Note: find_leader is recursive, but path compression keeps it shallow in practice.
+
 #include <bits/stdc++.h>
 using namespace std;
 
@@ -13,7 +22,9 @@ template <typename T = int, int Base = 1> struct DSU {
         }
     }
 
-    T find_leader(int node) { return parent[node] = (parent[node] == node ? node : find_leader(parent[node])); }
+    T find_leader(int node) {
+        return parent[node] = (parent[node] == node ? node : find_leader(parent[node]));
+    }
 
     bool is_same_sets(int u, int v) { return find_leader(u) == find_leader(v); }
 

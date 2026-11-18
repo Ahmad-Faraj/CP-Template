@@ -1,8 +1,10 @@
-// XOR Hashing: gives every distinct value a random 64-bit tag, so a SET of values hashes to one XOR.
+// XOR Hashing: gives every distinct value a random 64-bit tag, so a SET of values hashes to one
+//              XOR.
 // Use when: "do prefixes a[0..x] and b[0..y] contain the same set of distinct values", set equality
 //           where multiplicity and order do not matter.
 // Usage: XorHashing h; auto pa = h.prefix(a), pb = h.prefix(b);  same set <=> pa[x] == pb[y]
-// Handles: any integer values (negative, huge), duplicates (counted once), arrays of different lengths.
+// Handles: any integer values (negative, huge), duplicates (counted once), arrays of different
+//          lengths.
 // Time: prefix O(n log n) (map + set, about 0.6 s per 1e6 elements) | each comparison O(1)
 // Indexing: 0-based; pref[i] covers a[0..i]
 // Note: every compared array must use the SAME XorHashing object (they share the tag table).

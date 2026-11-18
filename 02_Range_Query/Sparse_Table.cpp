@@ -1,9 +1,13 @@
 // Sparse Table: range query on a static array - no updates, ever.
-// Use when: "min/max/gcd on [l, r]" with no updates and many queries; RMQ in O(1) after an O(n log n) build.
-// Handles: idempotent merges in O(1) via query(); any associative merge in O(log n) via query_any(). Static only.
+// Use when: "min/max/gcd on [l, r]" with no updates and many queries; RMQ in O(1) after an O(n log
+//           n) build.
+// Usage: SparseTable<int> sp(a); sp.query(l, r);  (edit merge(); query_any for non-idempotent)
+// Handles: idempotent merges in O(1) via query(); any associative merge in O(log n) via
+//          query_any(). Static only.
 // Time: build O(n log n) | query O(1) | query_any O(log n) | memory O(n log n)
 // Indexing: 0-based, ranges inclusive
-// Note: change merge() and none together - none is the identity. query() is valid only for idempotent merges.
+// Note: change merge() and none together - none is the identity. query() is valid only for
+//       idempotent merges.
 
 #include <bits/stdc++.h>
 using namespace std;

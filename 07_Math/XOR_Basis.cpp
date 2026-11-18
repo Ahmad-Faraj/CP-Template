@@ -1,11 +1,19 @@
-// XOR Basis: a maximal independent set of values under XOR, so any reachable XOR is a combination of the basis.
-// Use when: "largest XOR of a subset", "is x reachable", "k-th smallest reachable XOR", counting distinct XORs.
-// Handles: duplicate and zero inputs, the empty subset, and counting how many subsets give a particular value.
+// XOR Basis: a maximal independent set of values under XOR, so any reachable XOR is a combination
+//            of the basis.
+// Use when: "largest XOR of a subset", "is x reachable", "k-th smallest reachable XOR", counting
+//           distinct XORs.
+// Usage: XOR_Basis<> b; b.add(x); b.can_make(x); b.max_xor(); b.kth_smallest(k);
+//        b.distinct_count();
+// Handles: duplicate and zero inputs, the empty subset, and counting how many subsets give a
+//          particular value.
 // Time: add O(BITS) | every query O(BITS)
 // Indexing: bit positions 0..BITS-1, most significant first
-// Note: the number of DISTINCT reachable values is 2^rank; the number of SUBSETS giving one value is 2^(count - rank).
-// Note: values must be < 2^BITS (2^62 by default). subsets_making overflows once count - rank >= 63.
-// Source: normalize-verify-templates XOR_Basis + can_make(exclude_empty), kth_largest from main's XOR_Basis,
+// Note: the number of DISTINCT reachable values is 2^rank; the number of SUBSETS giving one value
+//       is 2^(count - rank).
+// Note: values must be < 2^BITS (2^62 by default). subsets_making overflows once count - rank >=
+//       63.
+// Source: normalize-verify-templates XOR_Basis + can_make(exclude_empty), kth_largest from main's
+//         XOR_Basis,
 //         count_lt and clear from the XOR_Basis_2 rewrite.
 
 #include <bits/stdc++.h>
