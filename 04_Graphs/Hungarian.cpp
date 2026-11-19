@@ -64,7 +64,6 @@ struct Hungarian {
         long long delta = inf;
         for (int v = 1; v <= n; ++v)
             if (trace[v] == 0 && d[v] < delta) delta = d[v];
-        // Rotate
         fx[start] += delta;
         for (int v = 1; v <= n; ++v)
             if (trace[v]) {

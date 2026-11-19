@@ -14,7 +14,7 @@ struct LCT {
     struct node {
         int p = 0, c[2] = {0, 0}, pp = 0;
         bool flip = 0;
-        int sz = 0, ssz = 0, vsz = 0; // splay size, subtree size in rep. tree, virtual size
+        int sz = 0, ssz = 0, vsz = 0;
         ll val = 0, sum = 0, lazy = 0, subsum = 0, vsum = 0;
         node() {}
         node(ll x) : sz(1), ssz(1), val(x), sum(x), subsum(x) {}
@@ -22,7 +22,6 @@ struct LCT {
     vector<node> t;
     LCT(int n) : t(n + 1, node(0)) { t[0] = node(); }
 
-    // splay tree on the preferred paths
     int dir(int x, int y) { return t[x].c[1] == y; }
     void set(int x, int d, int y) {
         if (x) t[x].c[d] = y, pull(x);
@@ -49,7 +48,7 @@ struct LCT {
         if (t[x].lazy) {
             t[x].val += t[x].lazy;
             t[x].sum += t[x].lazy * t[x].sz;
-            t[x].subsum += t[x].lazy * t[x].sz; // only path nodes change, not virtual subtrees
+            t[x].subsum += t[x].lazy * t[x].sz;
             if (l) t[l].lazy += t[x].lazy;
             if (r) t[r].lazy += t[x].lazy;
             t[x].lazy = 0;
@@ -82,14 +81,14 @@ struct LCT {
         t[u].vsum += t[l].subsum;
         set(u, 0, 0);
     }
-    int access(int _u) { // root..u becomes the preferred path; returns the last path-parent
+    int access(int _u) {
         int last = _u;
         for (int v = 0, u = _u; u; u = t[v = u].pp) {
             splay(u), splay(v);
             t[u].vsz -= t[v].ssz;
             t[u].vsum -= t[v].subsum;
             int r = t[u].c[1];
-            push(r); // apply pending path adds before r's subsum goes virtual
+            push(r);
             t[u].vsz += t[r].ssz;
             t[u].vsum += t[r].subsum;
             t[v].pp = 0;

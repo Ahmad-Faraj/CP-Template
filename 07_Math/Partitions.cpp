@@ -1,10 +1,9 @@
 // Partitions: p(0..n) = number of ways to write i as an unordered sum of positive integers, mod m.
 // Use when: "count multisets of positive integers summing to n", n up to ~5e5, generating
-//           function prod 1 / (1 - x^k) (ACPC 2025 H: multiply by a sparse product afterwards).
+//           function prod 1 / (1 - x^k).
 // Usage: vector<ll> p = partitions(n, 1000000007);
-// Time: O(n sqrt n) (Euler's pentagonal theorem: p(i) = sum over k of +-p(i - k(3k -+ 1) / 2))
+// Time: O(n sqrt n)
 // Indexing: p[i] for i in 0..n, p[0] = 1
-// Source: Shahjalal Shohag, "Partition Function" (modint replaced by plain ll).
 // Note: only + and - are used, so any modulus m <= 4e18 works (m = 0 is not allowed).
 
 #include <bits/stdc++.h>
@@ -13,7 +12,7 @@ using ll = long long;
 
 vector<ll> partitions(int n, ll mod) {
     vector<ll> p(n + 1, 0);
-    vector<pair<int, ll>> gp; // (sign, generalized pentagonal number)
+    vector<pair<int, ll>> gp;
     for (ll k = 1; k * (3 * k - 1) / 2 <= n; k++) {
         gp.push_back({k % 2 ? 1 : -1, k * (3 * k - 1) / 2});
         gp.push_back({k % 2 ? 1 : -1, k * (3 * k + 1) / 2});

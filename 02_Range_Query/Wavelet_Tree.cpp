@@ -14,13 +14,13 @@ using ll = long long;
 struct wavelet_tree {
     int lo = 1, hi = 0;
     wavelet_tree *l = nullptr, *r = nullptr;
-    vector<int> b; // b[i] = how many of the first i elements go to the left child (<= mid)
-    vector<ll> c;  // c[i] = sum of the first i elements
+    vector<int> b;
+    vector<ll> c;
 
     void init(int *from, int *to, int x, int y) {
         lo = x, hi = y;
         if (from >= to) return;
-        int mid = (int)(((ll)lo + hi) >> 1); // floor, no overflow
+        int mid = (int)(((ll)lo + hi) >> 1);
         auto f = [mid](int x) { return x <= mid; };
         int n = (int)(to - from);
         b.assign(n + 1, 0), c.assign(n + 1, 0);

@@ -1,11 +1,11 @@
 // Exponentiation: binary power of a number (plain or mod m) and of a permutation, O(log n) steps.
 // Use when: "a^n mod m" with huge n, inverse mod a prime, "where is each item after k shuffles".
 // Usage: pow_mod(a, n, m);  mod_inv(a, p);  bin_pow(a, n);  permute_k_times(a, p, k);
-// Handles: n = 0, negative a, a >= m, m = 1 (gives 0), any m up to 9e18 (__int128 products).
+// Handles: n = 0, negative a, a >= m, m = 1 (gives 0), any m up to 9e18.
 // Time: O(log n) | permute_k_times O(size * log k)
 // Indexing: permutations 0-based; apply_permutation(a, p)[i] = a[p[i]]
 // Note: bin_pow has no modulus and silently overflows past 2^63.
-//       mod_inv is Fermat: needs a PRIME p and a % p != 0.
+//       mod_inv needs a PRIME p and a % p != 0.
 
 #include <bits/stdc++.h>
 using namespace std;
@@ -16,7 +16,7 @@ ll bin_pow(ll x, ll n) {
     while (n) {
         if (n & 1) res = res * x;
         n >>= 1;
-        if (n) x = x * x; // squaring after the last bit would overflow for no reason
+        if (n) x = x * x;
     }
     return res;
 }

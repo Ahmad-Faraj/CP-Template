@@ -27,7 +27,6 @@ struct Small_To_Large {
         for (int child : adj[node]) {
             if (child == par) continue;
             dfs(child, node);
-            // make node the larger set always
             if (colors[node].size() < colors[child].size()) swap(colors[node], colors[child]);
             for (int item : colors[child]) colors[node].insert(item);
             colors[child].clear();

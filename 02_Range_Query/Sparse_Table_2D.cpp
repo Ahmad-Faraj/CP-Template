@@ -10,7 +10,7 @@
 using namespace std;
 
 template <typename T> struct SparseTable2D {
-    vector<vector<vector<vector<T>>>> st; // st[a][b][i][j] = merge of the 2^a x 2^b block at (i, j)
+    vector<vector<vector<vector<T>>>> st;
 
     T merge(T a, T b) { return max(a, b); }
 

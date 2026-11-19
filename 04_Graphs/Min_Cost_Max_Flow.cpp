@@ -1,9 +1,9 @@
 // Min Cost Max Flow: the cheapest way to send the maximum (or a capped) s-t flow.
 // Use when: "send k units at least cost", assignment with costs, max flow where edges have prices.
 // Usage: MCMF F(n); F.add_edge(u, v, cap, cost, id); auto [flow, cost] = F.solve(s, t, goal);
-// Handles: negative edge costs (Bellman-Ford potentials first), multi-edges, a flow cap via goal.
+// Handles: negative edge costs, multi-edges, a flow cap via goal.
 // Not: negative cycles (answer is wrong). Undirected edges (directed = false) with negative cost.
-// Time: O(F * E log V) with F = total flow sent (successive shortest paths + Dijkstra)
+// Time: O(F * E log V) with F = total flow sent
 // Indexing: any; nodes 0..n+9 are valid (the constructor pads by 10). Edge ids are >= 0.
 // Note: max cost flow: add -cost, negate the returned cost. flow_through[id] = flow on the edge
 // with that id (only the u->v arc of an undirected edge). Call solve() once per graph.

@@ -1,14 +1,11 @@
-// CRT: combines congruences x = r_i (mod m_i) into one congruence, or reports that they contradict
-//      each other.
-// Use when: "x leaves remainder r_i when divided by m_i", recombining results computed under
-//           several small moduli.
+// CRT: combines congruences x = r_i (mod m_i) into one, or reports that they contradict.
+// Use when: "x leaves remainder r_i when divided by m_i", recombining results under small moduli.
 // Usage: bool ok; auto [r, m] = crt(rems, mods, ok);  (x = r mod m when ok)
 // Handles: moduli that are NOT coprime (consistency is checked), any count of congruences, large
-//          moduli via __int128.
+//          moduli (up to 9e18).
 // Time: O(k log m) for k congruences
 // Indexing: 0-based parallel vectors of remainders and moduli
-// Note: returns {remainder, modulus} and sets ok = false when the system contradicts. Check ok
-//       before using it.
+// Note: ok = false when the system contradicts. Check ok before using {r, m}.
 
 #include <bits/stdc++.h>
 using namespace std;
@@ -29,14 +26,13 @@ ll extended_gcd(ll a, ll b, ll &x, ll &y) {
 // merges x = r1 (mod m1) with x = r2 (mod m2); ok is false when they contradict
 pair<ll, ll> crt_pair(ll r1, ll m1, ll r2, ll m2, bool &ok) {
     ll p, q;
-    ll g = extended_gcd(m1, m2, p, q); // p is the coefficient of m1, which is what we step by
+    ll g = extended_gcd(m1, m2, p, q);
     ll diff = r2 - r1;
     if (diff % g != 0) {
         ok = false;
         return {0, 0};
     }
     ll lcm = m1 / g * m2;
-    // step m1 forward by (diff / g) * p, reduced so the multiplication cannot overflow
     ll mul = (__int128)(diff / g) % (m2 / g) * (p % (m2 / g)) % (m2 / g);
     ll rem = (ll)(((__int128)m1 * mul + r1) % lcm);
     if (rem < 0) rem += lcm;

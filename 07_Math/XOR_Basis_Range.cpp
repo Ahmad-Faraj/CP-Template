@@ -1,11 +1,8 @@
-// XOR Basis Range: an XOR basis that also remembers how recent each vector is, so a suffix can be
-//                  queried.
-// Use when: "largest XOR of a subset of a[l..r]" with r fixed at the end, or many queries sharing a
-//           right endpoint.
-// Usage: XOR_Basis_Range<> b; b.add(a[i], i) for i <= r; then b.max_xor_from(l), b.can_make_from(x,
-//        l);
-// Handles: duplicates and zeros, any suffix start l, and rank or reachability restricted to that
-//          suffix.
+// XOR Basis Range: an XOR basis over a[l..current end], answering for any suffix start l.
+// Use when: "largest XOR of a subset of a[l..r]", queries sharing a right end (sort by r).
+// Usage: XOR_Basis_Range<> b; b.add(a[i], i) for i <= r; then
+//        b.max_xor_from(l), b.can_make_from(x, l);
+// Handles: duplicates and zeros, any suffix start l, rank / reachability within that suffix.
 // Time: add O(BITS) | every suffix query O(BITS)
 // Indexing: 0-based positions, added in increasing order; queries take the suffix start l
 // Note: this answers SUFFIX queries [l, current end). For arbitrary [l, r] add elements up to r,
@@ -17,7 +14,6 @@ using ll = long long;
 
 template <typename T = ll, int BITS = 62> struct XOR_Basis_Range {
     array<T, BITS> basis{};
-    // newest[i] = the largest position that contributed this basis vector
     array<int, BITS> newest{};
     ll count = 0;
 
@@ -31,11 +27,11 @@ template <typename T = ll, int BITS = 62> struct XOR_Basis_Range {
         count++;
         for (int i = BITS - 1; i >= 0; i--) {
             if (!((x >> i) & 1)) continue;
-            if (newest[i] < pos) { // keep the fresher vector here and push the older one down
+            if (newest[i] < pos) {
                 swap(basis[i], x);
                 swap(newest[i], pos);
             }
-            if (!basis[i]) { // the slot was empty, so x settled here
+            if (!basis[i]) {
                 basis[i] = x;
                 newest[i] = pos;
                 return;

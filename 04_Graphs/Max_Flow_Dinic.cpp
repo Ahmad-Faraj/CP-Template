@@ -91,7 +91,7 @@ struct Dinic {
     void mark_reachable(int u) {
         vis[u] = true;
         for (auto &e : g[u])
-            if (!vis[e.to] && e.flow < e.w) mark_reachable(e.to); // residual capacity exists
+            if (!vis[e.to] && e.flow < e.w) mark_reachable(e.to);
     }
 
     // after max_flow: the saturated edges (u, v) from the s side to the t side; their caps sum to

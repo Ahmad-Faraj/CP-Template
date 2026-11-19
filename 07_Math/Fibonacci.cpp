@@ -1,7 +1,7 @@
 // Fibonacci: F(n) mod m - linear loop, 2x2 matrix power, or fast doubling giving (F(n), F(n+1)).
 // Use when: "n-th Fibonacci number modulo m" with n up to 1e18; any 2-term recurrence via matpow.
 // Usage: fib(n, m);  fib_pair(n, m).first;  matpow(matrix{{{1, 1}, {1, 0}}}, n, m).mat[0][1];
-// Handles: n = 0, m = 1, n up to 9e18, m up to 9e18 (__int128 products).
+// Handles: n = 0, m = 1, n up to 9e18, m up to 9e18.
 // Time: fibonacci O(n) | fib, fib_pair O(log n)
 // Indexing: F(0) = 0, F(1) = 1, F(2) = 1
 // Note: every value is taken mod m (F(93) already overflows a long long). fib_pair recurses
@@ -11,7 +11,6 @@
 using namespace std;
 using ll = long long;
 
-// O(n)
 ll fibonacci(ll n, ll m = 1e9 + 7) {
     ll a = 0, b = 1 % m;
     for (ll i = 0; i < n; i++) {
@@ -47,13 +46,12 @@ matrix matpow(matrix base, ll n, ll m) { // entries of base must be in [0, m)
     return ans;
 }
 
-// O(log n)
 ll fib(ll n, ll m = 1e9 + 7) {
     matrix base{{{1 % m, 1 % m}, {1 % m, 0}}};
     return matpow(base, n, m).mat[0][1];
 }
 
-// O(log n) -- returns {F(n), F(n+1)} mod m
+// returns {F(n), F(n+1)} mod m
 pair<ll, ll> fib_pair(ll n, ll m = 1e9 + 7) {
     if (n == 0) return {0, 1 % m};
     auto p = fib_pair(n >> 1, m);

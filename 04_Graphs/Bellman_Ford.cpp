@@ -42,7 +42,7 @@ template <typename T = ll> struct Bellman_Ford {
         par.assign(n + 1, -1);
         dist[src] = 0;
         for (int i = 0; i < n - 1; i++) {
-            bool updated = false; // reset each round, so the early exit actually fires
+            bool updated = false;
             for (const Edge &e : edges)
                 if (dist[e.u] != INF && dist[e.u] + e.w < dist[e.v]) {
                     dist[e.v] = dist[e.u] + e.w;
@@ -52,12 +52,11 @@ template <typename T = ll> struct Bellman_Ford {
             if (!updated) break;
         }
 
-        // one more round: anything that still improves sits on or below a negative cycle
         vector<int> queue_;
         for (const Edge &e : edges)
             if (dist[e.u] != INF && dist[e.u] + e.w < dist[e.v]) queue_.push_back(e.v);
 
-        if (!queue_.empty()) { // spread NEG to everything reachable from those nodes
+        if (!queue_.empty()) {
             vector<vector<int>> adj(n + 1);
             for (const Edge &e : edges) adj[e.u].push_back(e.v);
             vector<char> seen(n + 1, 0);

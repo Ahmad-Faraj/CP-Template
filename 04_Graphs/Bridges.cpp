@@ -15,7 +15,7 @@ using namespace std;
 
 struct Bridges {
     int n, timer = 0, edges = 0, comp_count = 0;
-    vector<vector<pair<int, int>>> adj; // (neighbour, edge id)
+    vector<vector<pair<int, int>>> adj;
     vector<int> tin, low, comp;
     vector<pair<int, int>> bridge_list;
     vector<char> is_bridge_edge;
@@ -31,7 +31,6 @@ struct Bridges {
     void dfs(int u, int in_edge) {
         tin[u] = low[u] = ++timer;
         for (auto [v, id] : adj[u]) {
-            // skip the one edge we arrived on, not every edge to the parent
             if (id == in_edge) continue;
             if (tin[v])
                 low[u] = min(low[u], tin[v]);
@@ -46,7 +45,7 @@ struct Bridges {
         }
     }
 
-    void label_components() { // two-edge-connected components: the pieces left when bridges are cut
+    void label_components() {
         for (int s = 1; s <= n; s++) {
             if (comp[s]) continue;
             comp[s] = ++comp_count;

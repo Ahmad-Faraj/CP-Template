@@ -3,7 +3,8 @@
 // Usage: Lazy_Segment_Tree st; st.init(n); st.build(a); st.update(l, r, v); st.query(l, r);
 // Time: init/build O(n) | update, query O(log n)
 // Indexing: 1-based positions l..r inclusive; build(a) takes a 0-based vector (a[0] -> position 1)
-// Note: for other operations change merge(), push() and the update at a full cover together.
+// Note: for other operations change merge(), push() and the update at a full cover together,
+//       or use Segment_Tree_Lazy_Generic.cpp (plug in any node/tag, e.g. affine, assign).
 
 #include <bits/stdc++.h>
 using namespace std;

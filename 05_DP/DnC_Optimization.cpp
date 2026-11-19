@@ -13,9 +13,8 @@ using ll = long long;
 
 template <class F> ll dnc_dp(int n, int k, F cost) {
     const ll INF = LLONG_MAX / 4;
-    vector<ll> prv(n + 1, INF), cur(n + 1); // prv[j] = dp[i-1][j], cur[j] = dp[i][j]
+    vector<ll> prv(n + 1, INF), cur(n + 1);
     for (int j = 1; j <= n; j++) prv[j] = cost(1, j);
-    // fills cur[l..r] knowing their best split points lie in [optl, optr]
     auto rec = [&](auto &&self, int l, int r, int optl, int optr) -> void {
         if (l > r) return;
         int mid = (l + r) / 2, opt = -1;
@@ -25,7 +24,7 @@ template <class F> ll dnc_dp(int n, int k, F cost) {
             ll c = prv[t] + cost(t + 1, mid);
             if (c < cur[mid]) cur[mid] = c, opt = t;
         }
-        if (opt == -1) { // 1..mid cannot form i groups, so neither can anything left of mid
+        if (opt == -1) {
             for (int j = l; j < mid; j++) cur[j] = INF;
             self(self, mid + 1, r, optl, optr);
             return;

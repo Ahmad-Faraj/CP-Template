@@ -10,7 +10,7 @@
 using namespace std;
 using ll = long long;
 
-// floor(k * phi), phi = (1 + sqrt 5) / 2, exact: cand <= k*phi iff (2*cand - k)^2 < 5*k^2
+// floor(k * phi), phi = (1 + sqrt 5) / 2, exact
 ll floor_k_phi(ll k) {
     static const long double PHI = (1.0L + sqrtl(5.0L)) / 2.0L;
     ll a = (ll)floorl((long double)k * PHI);

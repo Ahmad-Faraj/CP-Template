@@ -4,12 +4,10 @@
 //           rooted tree.
 // Usage: LCA g(n); g.add_edge(u, v); g.build(root); g.get_lca(u, v); g.dist(u, v);
 //        g.kth_ancestor(u, k);
-// Handles: any rooted tree, k-th ancestor, LCA, edge-count distance. Static - edges cannot change
-//          after build().
+// Not: edges changing after build() (static tree).
 // Time: build O(n log n) | get_lca O(log n) | kth_ancestor O(log n) | dist O(log n)
 // Indexing: 1-based nodes
-// Note: call build(root) once, after every add_edge. The traversal is iterative, so a path-shaped
-//       tree is fine.
+// Note: call build(root) once, after every add_edge. Iterative, so a path-shaped tree is fine.
 
 #include <bits/stdc++.h>
 using namespace std;
@@ -32,7 +30,6 @@ struct LCA {
         adj[v].push_back(u);
     }
 
-    // iterative on purpose: a path-shaped tree of 1e5 nodes overflows the stack when this recurses
     void dfs(int root, int p = 0) {
         vector<pair<int, int>> stack_{{root, p}};
         while (!stack_.empty()) {
@@ -47,7 +44,7 @@ struct LCA {
         }
     }
 
-    void build(int root = 1) { dfs(root); } // run once, after every add_edge
+    void build(int root = 1) { dfs(root); }
 
     int kth_ancestor(int u, int k) { // the ancestor k levels above u, or -1 if u is not that deep
         if (dep[u] < k) return -1;

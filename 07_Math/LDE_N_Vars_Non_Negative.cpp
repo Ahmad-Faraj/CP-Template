@@ -4,15 +4,14 @@
 // Handles: duplicates, gcd(a) > 1 (unreachable residues), k = 0 (always reachable), negative k / l.
 // Time: build O(min(a) * n * log(min(a))) | can O(1) | count O(min(a))
 // Indexing: 0-based a
-// Note: every a[i] > 0; min(a) is the table size, so keep min(a) <= ~1e6. k up to ~9e18. Dijkstra
-//       on residues mod x = min(a): d[r] = least reachable total = r (mod x); k ok iff d[k%x] <= k.
+// Note: every a[i] > 0; min(a) is the table size, so keep min(a) <= ~1e6. k up to ~9e18.
 
 #include <bits/stdc++.h>
 using namespace std;
 using ll = long long;
 
-struct LDE { // sum(a[i] * x[i]) = k, x[i] >= 0
-    static constexpr ll inf = LLONG_MAX; // unreachable residue
+struct LDE {
+    static constexpr ll inf = LLONG_MAX;
     int n, x;
     vector<ll> d;
     LDE() {}
@@ -38,10 +37,10 @@ struct LDE { // sum(a[i] * x[i]) = k, x[i] >= 0
             }
         }
     }
-    bool can(ll k) { return k >= 0 && d[k % x] <= k; } // is k reachable
+    bool can(ll k) { return k >= 0 && d[k % x] <= k; }
     ll count(ll l, ll r) { // number of reachable k with l <= k <= r
         ll ans = 0;
-        for (int i = 0; i < x; i++) { // d[i], d[i] + x, d[i] + 2x, ... are reachable
+        for (int i = 0; i < x; i++) {
             ans += d[i] <= r ? (r - d[i]) / x + 1 : 0;
             ans -= d[i] <= l - 1 ? (l - 1 - d[i]) / x + 1 : 0;
         }

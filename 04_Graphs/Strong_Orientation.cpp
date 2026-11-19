@@ -11,7 +11,7 @@ using namespace std;
 
 struct Strong_Orientation {
     int n, timer = 0, comp_cnt = 0, bridge_cnt = 0;
-    vector<vector<pair<int, int>>> adj; // (neighbour, edge id)
+    vector<vector<pair<int, int>>> adj;
     vector<pair<int, int>> edges;
     vector<int> tin, low;
     vector<bool> edge_used;
@@ -26,7 +26,7 @@ struct Strong_Orientation {
         return (int)edges.size() - 1;
     }
 
-    void find_bridges(int v) { // orient each edge the first time it is walked
+    void find_bridges(int v) {
         low[v] = tin[v] = timer++;
         for (auto p : adj[v]) {
             if (edge_used[p.second]) continue;

@@ -24,7 +24,7 @@ struct SegTree {
         seg.assign(n << 1, none);
     }
 
-    void build(const vector<ll> &a) { // O(n) fill, instead of n calls to update()
+    void build(const vector<ll> &a) {
         for (int i = 0; i < (int)a.size(); i++) seg[n + i] = a[i];
         for (int i = n - 1; i >= 1; i--) seg[i] = merge(seg[i << 1], seg[i << 1 | 1]);
     }
@@ -35,7 +35,7 @@ struct SegTree {
         for (idx >>= 1; idx >= 1; idx >>= 1) seg[idx] = merge(seg[idx << 1], seg[idx << 1 | 1]);
     }
 
-    // merge over a[l .. r], in left-to-right order (KACTL SegmentTree.h loop)
+    // merge over a[l .. r], in left-to-right order
     ll query(int l, int r) {
         ll ra = none, rb = none;
         for (l += n, r += n + 1; l < r; l >>= 1, r >>= 1) {

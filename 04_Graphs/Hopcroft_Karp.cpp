@@ -1,4 +1,4 @@
-// Hopcroft-Karp: maximum matching in a bipartite graph, augmenting along shortest paths in phases.
+// Hopcroft-Karp: maximum matching in a bipartite graph.
 // Use when: "assign workers to jobs", "max pairs", Konig cover, and Kuhn's O(V * E) is too slow.
 // Usage: HopcroftKarp M(n, m); M.add_edge(u, v); int k = M.maximum_matching(); M.pairs();
 // Handles: unequal sides, isolated nodes, multi-edges, n or m = 0. Re-callable after more edges.
@@ -20,7 +20,7 @@ struct HopcroftKarp {
 
     void add_edge(int u, int v) { g[u].push_back(v + n); } // left u, right v
 
-    bool bfs() { // node 0 = "free right node"; d[0] = length of the shortest augmenting path
+    bool bfs() {
         queue<int> q;
         for (int u = 1; u <= n; u++) {
             if (!l[u]) d[u] = 0, q.push(u);

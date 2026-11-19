@@ -22,14 +22,13 @@ struct LiChaoTree {
         Line line;
         node *left = nullptr, *right = nullptr;
         node(Line line) : line(line) {}
-        // node covers [l, r]; insert nw on the part of [L, R] inside it
         void add_segment(Line nw, ll l, ll r, ll L, ll R) {
             if (l > r || r < L || l > R) return;
             ll m = (l + 1 == r ? l : (l + r) / 2);
             if (l >= L && r <= R) {
                 bool lef = nw.eval(l) < line.eval(l);
                 bool mid = nw.eval(m) < line.eval(m);
-                if (mid) swap(line, nw); // keep the winner at m here, push the loser to one side
+                if (mid) swap(line, nw);
                 if (l == r) return;
                 if (lef != mid) {
                     if (left == nullptr) left = new node(nw);
@@ -49,7 +48,7 @@ struct LiChaoTree {
                 right->add_segment(nw, m + 1, r, L, R);
             }
         }
-        ll query(ll x, ll l, ll r) { // min over the lines on the root-to-x path
+        ll query(ll x, ll l, ll r) {
             ll ans = line.eval(x);
             if (l == r) return ans;
             ll m = (l + 1 == r ? l : (l + r) / 2);
@@ -63,6 +62,6 @@ struct LiChaoTree {
     node *root;
     LiChaoTree(ll L = -1e9, ll R = 1e9) : L(L), R(R), root(new node({0, INF})) {}
     void add_line(Line line) { root->add_segment(line, L, R, L, R); }
-    void add_segment(Line line, ll l, ll r) { root->add_segment(line, L, R, l, r); } // x in [l, r]
-    ll query(ll x) { return root->query(x, L, R); } // INF if no line covers x; needs L <= x <= R
+    void add_segment(Line line, ll l, ll r) { root->add_segment(line, L, R, l, r); }
+    ll query(ll x) { return root->query(x, L, R); }
 };

@@ -10,7 +10,6 @@
 //           a vertex and a block containing it, so it is bipartite (a forest if disconnected).
 // Note: a bridge is a block of 2 vertices. Cut vertices strictly inside the u-v tree path are the
 //       vertices every u-v path must use. dfs recurses up to n deep.
-// Source: Shohag's "Block Cut Tree" (Tarjan with a vertex stack), wrapped in a struct.
 
 #include <bits/stdc++.h>
 using namespace std;
@@ -35,7 +34,7 @@ struct Block_Cut_Tree {
             if (!tin[v]) {
                 dfs(v, u);
                 low[u] = min(low[u], low[v]);
-                if (low[v] >= tin[u]) { // u separates v's subtree: pop one block
+                if (low[v] >= tin[u]) {
                     comps.push_back({u});
                     int x;
                     do x = st.back(), st.pop_back(), comps.back().push_back(x);

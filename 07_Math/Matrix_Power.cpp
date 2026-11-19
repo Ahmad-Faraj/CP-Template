@@ -7,8 +7,7 @@
 // Time: * O(n m p) | ^ O(m^3 log k) | Jumper build O(m^3 LOG), each jump O(m^2 log k)
 // Indexing: 0-based mat[row][col]; v is a row vector (state as a row, transition A[from][to])
 // Note: Matrix::mod is shared by all matrices (default 1e9+7), set it before use; mod < 2^31.
-// Entries must stay in [0, mod) if you write mat[i][j] directly (the vector ctor normalises).
-// Source: other/mazen/Matrix_Power.cpp (macros removed); jumps: ACPC 2024 F precomputed powers.
+//       Entries must stay in [0, mod) if you write mat[i][j] directly (the vector ctor normalises).
 
 #include <bits/stdc++.h>
 using namespace std;
@@ -68,7 +67,7 @@ vector<ll> vec_mul(const vector<ll> &v, const Matrix &A) {
     return r;
 }
 
-struct Matrix_Jumper { // pw[i] = A^(2^i); jump never multiplies two matrices
+struct Matrix_Jumper {
     vector<Matrix> pw;
     Matrix_Jumper(const Matrix &A, int LOG = 60) : pw(1, A) {
         for (int i = 1; i < LOG; i++) pw.push_back(pw.back() * pw.back());

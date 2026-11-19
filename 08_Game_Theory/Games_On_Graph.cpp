@@ -13,9 +13,9 @@ using namespace std;
 
 struct Games_On_Graph {
     int n;
-    vector<vector<int>> adj_rev; // adj_rev[v]: the positions u that can move to v
+    vector<vector<int>> adj_rev;
     vector<bool> winning, losing, visited;
-    vector<int> degree; // moves out of u not yet known to lead to a winning position
+    vector<int> degree;
 
     Games_On_Graph(int n) : n(n), adj_rev(n), winning(n), losing(n), visited(n), degree(n) {}
 

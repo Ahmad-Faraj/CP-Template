@@ -6,16 +6,14 @@
 // Handles: len = 0, overlapping ranges, a == b, repeats; online (find is valid after any unite).
 // Time: all unites together O((n log n + q) * alpha); f runs once per level-0 merge (<= n - 1)
 // Indexing: 0-based, needs 0 <= a, b and a + len, b + len <= n
-// Note: level k joins block [a, a+2^k) with [b, b+2^k); a level-k merge that is new is pushed to
-// both halves at level k-1, so every level does at most n merges. f(keep, gone): keep = new root.
-// Source: Library Checker range_parallel_unionfind reference solution (maspy), adapted.
+// Note: f(keep, gone): keep = the new root, gone = the root merged into it.
 
 #include <bits/stdc++.h>
 using namespace std;
 
 struct DSU_Range_Parallel {
     struct UF {
-        vector<int> p; // parent, or -size for a root
+        vector<int> p;
         UF(int n = 0) : p(n, -1) {}
         int find(int x) {
             while (p[x] >= 0) {
@@ -34,7 +32,7 @@ struct DSU_Range_Parallel {
     };
 
     int n, components;
-    vector<UF> uf; // uf[k] joins i, j iff block [i, i+2^k) equals block [j, j+2^k)
+    vector<UF> uf;
 
     DSU_Range_Parallel(int n) : n(n), components(n) {
         int lg = 1;
@@ -49,7 +47,7 @@ struct DSU_Range_Parallel {
     template <class F> void unite(int a, int b, int len, F f) {
         if (len <= 0) return;
         if (len == 1) return go(0, a, b, f);
-        int k = 31 - __builtin_clz(len - 1); // 2^k < len <= 2^(k+1): two blocks cover it
+        int k = 31 - __builtin_clz(len - 1);
         go(k, a, b, f);
         go(k, a + len - (1 << k), b + len - (1 << k), f);
     }
@@ -66,7 +64,7 @@ struct DSU_Range_Parallel {
             f(keep, x ^ y ^ keep);
             return;
         }
-        if (!uf[k].unite(a, b)) return; // these blocks were already equal
+        if (!uf[k].unite(a, b)) return;
         go(k - 1, a, b, f);
         go(k - 1, a + (1 << (k - 1)), b + (1 << (k - 1)), f);
     }

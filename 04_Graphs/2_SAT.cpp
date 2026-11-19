@@ -10,7 +10,7 @@
 using namespace std;
 
 struct Two_SAT {
-    int n; // literal nodes: 2v = (x_v true), 2v + 1 = (x_v false)
+    int n;
     vector<vector<int>> g, gt;
     vector<bool> vis, res; // res[v] = value of x_v, valid after ok() returns true
     vector<int> comp;
@@ -21,8 +21,8 @@ struct Two_SAT {
     void addOR(int a, bool af, int b, bool bf) { // (x_a == af) OR (x_b == bf)
         a += a + (af ^ 1);
         b += b + (bf ^ 1);
-        g[a ^ 1].push_back(b); // !a => b
-        g[b ^ 1].push_back(a); // !b => a
+        g[a ^ 1].push_back(b);
+        g[b ^ 1].push_back(a);
         gt[b].push_back(a ^ 1);
         gt[a].push_back(b ^ 1);
     }
@@ -52,7 +52,7 @@ struct Two_SAT {
         for (int v : gt[u])
             if (comp[v] == -1) dfs2(v, c);
     }
-    bool ok() { // Kosaraju; comp ids come out in topological order
+    bool ok() {
         vis.assign(n, false);
         comp.assign(n, -1);
         for (int i = 0; i < n; ++i)

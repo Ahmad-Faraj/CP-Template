@@ -1,4 +1,4 @@
-// Convex Hull 2: Graham scan on integer points, exact arithmetic, no epsilons.
+// Convex Hull 2: convex hull of integer points, exact arithmetic, no epsilons.
 // Use when: "smallest convex polygon containing all points", fence/perimeter, integer coordinates.
 // Usage: vector<Point> h = convexHull(pts);
 // Handles: duplicates, all points identical (returns 1 point), all collinear (returns 2 ends).
@@ -40,7 +40,6 @@ vector<Point> convexHull(vector<Point> points) {
     int n = points.size();
     if (n <= 1) return points;
 
-    // base point: lowest y, then lowest x
     int basePoint = 0;
     for (int i = 1; i < n; i++)
         if (points[i].y < points[basePoint].y ||
@@ -48,7 +47,6 @@ vector<Point> convexHull(vector<Point> points) {
             basePoint = i;
     swap(points[0], points[basePoint]);
 
-    // sort by polar angle around the base point, nearer first on ties
     Point p0 = points[0];
     sort(points.begin() + 1, points.end(), [&p0](const Point &p1, const Point &p2) {
         ll c = cross(p0, p1, p2);

@@ -1,7 +1,7 @@
 // Euler Phi: phi(n) = how many of 1..n are coprime to n, for one n or for every n up to a limit.
 // Use when: coprime pairs / reduced fractions, reducing an exponent mod phi(m), gcd(i, n) = 1.
 // Usage: phi(n);  vector<ll> f = phi_sieve(MAX);  // f[i] = phi(i)
-// Handles: n = 1 (phi = 1), primes, prime powers, n up to 9e18 (no i*i overflow).
+// Handles: n = 1 (phi = 1), primes, prime powers, n up to 9e18.
 // Time: phi O(sqrt(n)) | phi_sieve O(MAX log log MAX)
 // Indexing: phi_sieve returns MAX + 1 values, index i holds phi(i), f[0] = 0
 // Note: a^k = a^(k mod phi(m)) (mod m) only when gcd(a, m) = 1. phi(n) for n <= 0 returns n.

@@ -2,10 +2,10 @@
 // Use when: "print the answer modulo 1e9+7", division mod a prime, a number too long to store.
 // Usage: add_mod(a, b, m);  sub_mod(a, b, m);  mul_mod(a, b, m);  // m defaults to MOD
 //        mod_pow(a, e, m);  mod_inv(a, m);  Big_Mod(s, m);
-// Handles: negative inputs (results in [0, m)), m up to 9e18 (__int128 products), e = 0, m = 1.
+// Handles: negative inputs (results in [0, m)), m up to 9e18, e = 0, m = 1.
 // Time: O(1) add/sub/mul | O(log e) pow and inverse | O(|s|) Big_Mod
 // Indexing: not applicable
-// Note: mod_inv is Fermat: m must be PRIME and a % m != 0 (else use Extended_GCD).
+// Note: mod_inv needs a PRIME m and a % m != 0 (else use Extended_GCD).
 //       Big_Mod takes digits only (no sign, no spaces).
 
 #include <bits/stdc++.h>
@@ -21,7 +21,6 @@ ll mul_mod(ll a, ll b, ll m = MOD) {
     return r < 0 ? r + m : r;
 }
 
-// get a mod for big int
 ll Big_Mod(string s, ll mod) {
     ll res = 0;
     for (auto &c : s) res = ((__int128)res * 10 + (c - '0')) % mod;
@@ -41,5 +40,5 @@ ll mod_pow(ll a, ll b, ll m = MOD) {
 }
 
 ll mod_inv(ll a, ll m = MOD) {
-    return mod_pow(a, m - 2, m); // Fermat
+    return mod_pow(a, m - 2, m);
 }

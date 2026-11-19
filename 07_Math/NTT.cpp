@@ -1,4 +1,4 @@
-// NTT: exact polynomial product modulo 998244353 (number-theoretic transform, integers only).
+// NTT: exact polynomial product modulo 998244353 (integers only).
 // Use when: convolution / polynomial product "modulo 998244353", counting ways combined by sums.
 // Usage: vector<ll> c = NTT::multiply(a, b); | NTT::poly_pow_mod(a, e) | generator(p)
 // Handles: empty input (returns {}), coefficients outside [0, MOD) incl. negatives (reduced first).
@@ -12,8 +12,8 @@ using namespace std;
 using ll = long long;
 
 struct NTT {
-    static constexpr ll MOD = 998244353; // 119 * 2^23 + 1
-    static constexpr ll ROOT = 3;        // primitive root of MOD
+    static constexpr ll MOD = 998244353;
+    static constexpr ll ROOT = 3;
 
     static ll mod_pow(ll base, ll exp, ll mod) {
         ll result = 1;

@@ -11,7 +11,6 @@
 using namespace std;
 
 template <typename T = int> struct Monotonic_Queue {
-    // strictly decreasing values; b[i] = how many older, smaller elements a[i] absorbed
     vector<T> a;
     vector<int> b;
     int l = 0;

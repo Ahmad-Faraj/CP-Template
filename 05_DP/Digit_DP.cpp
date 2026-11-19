@@ -3,10 +3,9 @@
 //           is a count.
 // Usage: digit_dp(l, r, k) -> count. To change the property, change the state (sum) and the base
 //        case.
-// Handles: both bounds tight at once (no f(r) - f(l - 1) needed), l = 0. Not for querying one
-//          number.
+// Handles: l = 0, both bounds in one call (no f(r) - f(l - 1) needed).
 // Time: O(len * 2 * 2 * k * 10), len = number of digits of r
-// Indexing: 0-based (string index)
+// Indexing: none (works on the values l, r)
 // Note: sized for 0 <= l <= r < 1e19 and 1 <= k <= 90. Leading zeros of the padded l add 0 to the
 //       sum.
 

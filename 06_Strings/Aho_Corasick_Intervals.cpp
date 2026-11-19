@@ -4,7 +4,7 @@
 //        (or: Aho ac; ac.insert(p, idx) per pattern; ac.build();)
 // Handles: overlapping occurrences, patterns inside patterns. Equal patterns give ONE interval
 //          (the last idx inserted wins), so intervals are distinct.
-// Time: build O(26 * nodes) | search O(|text| * max |p|) (walks the fail chain per position)
+// Time: build O(26 * nodes) | search O(|text| * max |p|)
 // Indexing: 0-based, inclusive [start, end] in the text; sorted by end, then by decreasing length.
 // Note: lowercase 'a'..'z' only. Empty patterns are never reported. Memory: one node per trie
 //       character (~240 bytes each). Not copyable. Long fail chains make search slow: fine
@@ -17,8 +17,8 @@ struct Aho {
     struct Node {
         Node *fail = nullptr;
         Node *child[26];
-        int patIdx = -1; // pattern ending here (one per node), -1 if none
-        vector<char> chars; // real children, for build() and the destructor
+        int patIdx = -1;
+        vector<char> chars;
         Node() { memset(child, 0, sizeof child); }
         ~Node() {
             for (auto c : chars) delete child[(int)c];

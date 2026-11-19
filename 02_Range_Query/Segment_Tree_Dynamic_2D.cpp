@@ -16,7 +16,7 @@ struct SegTree2D {
 
     ll merge(ll x, ll y) { return x + y; }
 
-    struct X_NODE { // path-compressed node over columns [s, e]
+    struct X_NODE {
         int s, e;
         X_NODE *left = nullptr, *right = nullptr;
         ll value = 0;
@@ -24,7 +24,7 @@ struct SegTree2D {
         ~X_NODE() { delete left, delete right; }
     };
 
-    struct Y_NODE { // node over a row range, holding the column tree of its rows
+    struct Y_NODE {
         Y_NODE *left = nullptr, *right = nullptr;
         X_NODE xtree;
         Y_NODE(int c_min, int c_max) : xtree(c_min, c_max) {}
@@ -50,7 +50,7 @@ struct SegTree2D {
             (*child_ptr)->value = k; // apply update
         } else if ((*child_ptr)->s <= q && q <= (*child_ptr)->e) {
             update_y(*child_ptr, q, k);
-        } else { // split: new node where q and the old child's range part ways
+        } else {
             int new_s = s, new_e = e, new_m = m;
             do {
                 if (q <= new_m) new_e = new_m;

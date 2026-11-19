@@ -3,7 +3,7 @@
 // copy), building strings char by char and comparing them, hash of a concatenation of two of them.
 // Usage: Dynamic_Hashing h("abc"); h.push_front('z'); h.pop_back(); h.get_Hash() == g.get_Hash();
 // Handles: push/pop at front and back, merge(a, b) = hash of a's content followed by b's.
-// Time: O(1) amortized per operation (power tables grow on demand)
+// Time: O(1) amortized per operation
 // Indexing: none; the deque `hash` holds the current content
 // Note: lowercase 'a'..'z' only (value c - 'a' + 1). Other alphabets: map to 1..30 first.
 // Pop on an empty hash does nothing. Bases are fixed (31, 313), so anti-hash tests are possible.
@@ -19,7 +19,7 @@ struct Dynamic_Hashing {
     ll h1 = 0, h2 = 0, len = 0;
     deque<char> hash;
 
-    static ll pw(int k, ll i) { // P[k]^i mod M[k]
+    static ll pw(int k, ll i) {
         static vector<ll> p[2] = {{1}, {1}};
         while ((ll)p[k].size() <= i) p[k].push_back(p[k].back() * P[k] % M[k]);
         return p[k][i];
@@ -63,7 +63,6 @@ struct Dynamic_Hashing {
 
     pair<ll, ll> get_Hash() const { return {h1, h2}; }
 
-    // hash of prefix's content followed by suffix's content
     static pair<ll, ll> merge(const Dynamic_Hashing &prefix, const Dynamic_Hashing &suffix) {
         return {(prefix.h1 * pw(0, suffix.len) + suffix.h1) % M[0],
                 (prefix.h2 * pw(1, suffix.len) + suffix.h2) % M[1]};

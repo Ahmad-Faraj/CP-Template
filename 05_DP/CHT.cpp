@@ -6,7 +6,7 @@
 // Max: add(-m, -b) with slopes non-DEcreasing, negate the answer.
 // Not: slopes in any order (use Li_Chao_Tree).
 // Time: add O(1) amortised | query O(1) amortised | query_bs O(log n)
-// Indexing: 0-based lines in insertion order (only the hull survives)
+// Indexing: none (lines are not addressable)
 // Note: query on an empty hull is undefined. |m*x + b| must fit in ll; the hull test is __int128.
 
 #include <bits/stdc++.h>
@@ -17,13 +17,13 @@ struct CHT {
     vector<ll> m, b;
     int ptr = 0;
 
-    bool bad(int l1, int l2, int l3) { // l2 is never strictly below both l1 and l3
+    bool bad(int l1, int l2, int l3) {
         return (__int128)(b[l3] - b[l1]) * (m[l1] - m[l2]) <=
                (__int128)(b[l2] - b[l1]) * (m[l1] - m[l3]);
     }
 
     void add(ll _m, ll _b) {
-        if (!m.empty() && m.back() == _m) { // equal slopes: keep only the lower line
+        if (!m.empty() && m.back() == _m) {
             if (b.back() <= _b) return;
             m.pop_back(), b.pop_back();
         }
@@ -35,12 +35,12 @@ struct CHT {
             m.erase(m.end() - 2);
             b.erase(b.end() - 2);
         }
-        ptr = min(ptr, s - 1); // ptr's line may be gone; the new last line replaces it
+        ptr = min(ptr, s - 1);
     }
 
     ll f(int i, ll x) { return m[i] * x + b[i]; }
 
-    ll query(ll x) { // x must be >= every earlier x passed to query()
+    ll query(ll x) {
         while (ptr < (int)m.size() - 1 && f(ptr + 1, x) < f(ptr, x)) ptr++;
         return f(ptr, x);
     }
@@ -52,5 +52,5 @@ struct CHT {
         return f(mid, x);
     }
 
-    ll query_bs(ll x) { return bs(0, m.size() - 1, x); } // any x, does not move ptr
+    ll query_bs(ll x) { return bs(0, m.size() - 1, x); }
 };

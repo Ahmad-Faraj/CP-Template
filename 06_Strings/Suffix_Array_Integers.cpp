@@ -5,9 +5,8 @@
 //        sa.lcp[r] = LCP(suffix p[r-1], suffix p[r])
 // Time: build O(n log n) (about 0.1 s at n = 2e5, 1 s at n = 1e6) | lcp O(n)
 // Indexing: 0-based; a 0 sentinel is appended, so n = |v| + 1, p[0] = n - 1 and lcp[0] = 0
-// Note: every value must be >= 1 (0 is the sentinel and must be the unique smallest). Compress
-//       first.
-//       Same struct name as Suffix_Array.cpp: paste only one of the two.
+// Note: every value must be >= 1 (0 is the sentinel and must be the unique smallest); compress
+//       first. Same struct name as Suffix_Array.cpp: paste only one of the two.
 
 #include <bits/stdc++.h>
 using namespace std;

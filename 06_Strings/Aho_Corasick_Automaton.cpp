@@ -10,7 +10,6 @@
 // Note: alphabet 'a'..'z' (change K / BASE). Call build() once, after the last insert.
 //       cnt[s] = patterns that are suffixes of state s (own count summed along fail links).
 //       order = BFS order: link[v] comes before v, so fold the fail tree with a reverse loop.
-// Source: cp-algorithms "Aho-Corasick algorithm" (BFS construction of the automaton).
 
 #include <bits/stdc++.h>
 using namespace std;
@@ -19,7 +18,7 @@ using ll = long long;
 struct AhoCorasickAutomaton {
     static constexpr int K = 26;
     static constexpr char BASE = 'a';
-    vector<array<int, K>> nxt; // trie edges before build(), full goto function after
+    vector<array<int, K>> nxt;
     vector<int> link, cnt, order, node_of;
 
     AhoCorasickAutomaton() { add_node(); }
@@ -42,7 +41,7 @@ struct AhoCorasickAutomaton {
         for (char ch : s) {
             int c = ch - BASE;
             if (nxt[v][c] == -1) {
-                int u = add_node(); // add_node may reallocate nxt: no reference held across it
+                int u = add_node();
                 nxt[v][c] = u;
             }
             v = nxt[v][c];

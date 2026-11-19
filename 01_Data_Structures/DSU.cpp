@@ -5,7 +5,7 @@
 //        d.get_components_number(); d.get_components();
 // Time: union / find almost O(1) amortised | get_components O(n)
 // Indexing: Base = 1 (default) means nodes 1..n; DSU<int, 0> for nodes 0..n-1
-// Note: find_leader is recursive, but path compression keeps it shallow in practice.
+// Note: find_leader is recursive (path compression keeps it shallow in practice).
 
 #include <bits/stdc++.h>
 using namespace std;
@@ -31,7 +31,6 @@ template <typename T = int, int Base = 1> struct DSU {
     void union_sets(int u, int v) {
         int leader_u = find_leader(u), leader_v = find_leader(v);
         if (leader_u == leader_v) return;
-        // make leader_u is the leader with the larger component
         if (Gsize[leader_u] < Gsize[leader_v]) swap(leader_u, leader_v);
         int p = pos[leader_v];
         Gsize[leader_u] += Gsize[leader_v];

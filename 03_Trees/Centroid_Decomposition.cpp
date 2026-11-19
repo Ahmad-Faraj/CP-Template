@@ -4,7 +4,7 @@
 // Handles: any tree, n = 1. par[c] is c's parent in the centroid tree, -1 for its root.
 // Time: O(n log n)
 // Indexing: 1-based nodes
-// Note: call decompose() once; vis[] marks removed centroids, so a rerun needs a fresh object.
+// Note: call decompose() once; a rerun needs a fresh object.
 // Note: recursive (depth = tree height), so a 2e5 path needs a big stack.
 
 #include <bits/stdc++.h>
@@ -40,7 +40,7 @@ struct centroid_decomposition {
         return u;
     }
 
-    void decompose(int u = 1, int p = -1) { // p = the centroid-tree parent of this piece
+    void decompose(int u = 1, int p = -1) {
         int tree_size = get_subtree_size(u, p);
         int centroid = get_centroid(u, p, tree_size);
         vis[centroid] = true;

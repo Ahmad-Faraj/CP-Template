@@ -6,7 +6,7 @@
 // when cost satisfies the quadrangle inequality and never shrinks as the interval grows.
 // Time: O(n^2), memory O(n^2)
 // Indexing: 0-based points 0..n; dp[l][l+1] = 0 (nothing to split)
-// Note: without the monotone opt it is silently wrong. The O(n^3) loop is m = l+1 .. r-1.
+// Note: without the monotone opt it is silently wrong.
 
 #include <bits/stdc++.h>
 using namespace std;
@@ -16,9 +16,9 @@ template <class F> ll knuth(int n, F cost) {
     vector<vector<ll>> dp(n + 1, vector<ll>(n + 1, 0));
     vector<vector<int>> opt(n + 1, vector<int>(n + 1));
     for (int l = 0; l < n; l++) opt[l][l + 1] = l + 1;
-    for (int s = 2; s <= n; s++) // s = length of the interval
+    for (int s = 2; s <= n; s++)
         for (int l = 0; l + s <= n; l++) {
-            int r = l + s; // the best split of [l, r] lies in [opt[l][r-1], opt[l+1][r]]
+            int r = l + s;
             dp[l][r] = LLONG_MAX;
             for (int m = max(l + 1, opt[l][r - 1]); m <= min(r - 1, opt[l + 1][r]); m++) {
                 ll cur = dp[l][m] + dp[m][r] + cost(l, r);

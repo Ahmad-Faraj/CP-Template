@@ -37,7 +37,6 @@ struct Dynamic_Segment_Tree {
         return res;
     }
 
-    // floor((lx + rx) / 2) in 64 bits: lx + (rx - lx) / 2 overflows int on [-1e9, 1e9]
     static int mid(int lx, int rx) { return (int)(((ll)lx + rx) >> 1); }
 
     void update(TreeNode *&treenode, int idx, ll val, int lx, int rx) {

@@ -5,7 +5,7 @@
 // Time: O(n) for each function (plus O(log) gcds)
 // Indexing: 0-based, p is a permutation of 0..n-1; p^k means applying p k times: x -> p[p[..p[x]]]
 // Note: order() is the lcm of the cycle lengths; it always fits in ll for n <= 347 and can overflow
-// beyond. For large n take the lcm mod M from each prime's max exponent over the cycle lengths.
+//       beyond. For large n take the lcm mod M from each prime's max exponent over cycle lengths.
 
 #include <bits/stdc++.h>
 using namespace std;
@@ -43,7 +43,7 @@ vector<vector<int>> power(const vector<int> &p, ll k) { // cycle decomposition o
     vector<vector<int>> ans;
     for (auto &v : decompose(p)) {
         int len = v.size();
-        int s = (k % len + len) % len, g = __gcd(s, len); // g cycles of length len / g
+        int s = (k % len + len) % len, g = __gcd(s, len);
         for (int i = 0; i < g; i++) {
             vector<int> w;
             for (int j = i, cnt = 0; cnt < len / g; cnt++, j = (j + s) % len) w.push_back(v[j]);

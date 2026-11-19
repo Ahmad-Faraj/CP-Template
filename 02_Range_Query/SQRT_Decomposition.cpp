@@ -15,7 +15,7 @@ struct SqrtDecomp {
     vector<ll> arr, blk; // blk[b] = sum of arr over block b = [b * SQ, (b + 1) * SQ)
 
     SqrtDecomp(const vector<ll> &a) : n((int)a.size()), arr(a) {
-        SQ = (int)sqrt(n) + 1; // block size, never 0
+        SQ = (int)sqrt(n) + 1;
         blk.assign(n / SQ + 1, 0);
         for (int i = 0; i < n; i++) blk[i / SQ] += arr[i];
     }

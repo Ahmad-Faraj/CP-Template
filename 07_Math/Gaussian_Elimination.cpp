@@ -3,10 +3,11 @@
 // Usage: Gauss g(aug, n, m);  g.kind (NO_SOLUTION / ONE_SOLUTION / INFINITE_SOLUTIONS), g.answer
 //        Gauss_XOR gx(rows, m);  // rows[i] = {mask of variables, rhs bit}; gx.solvable, gx.answer
 // Handles: singular systems (none / infinitely many), rectangular n != m, determinant if square.
+// Not: anything "mod p" (use Gaussian_Elimination_Mod.cpp).
 // Time: O(n * m * min(n, m))
 // Indexing: 0-based; aug has n rows of m coefficients then the right-hand side (m + 1 columns)
 // Note: |v| < EPS counts as zero; scale EPS with the input. Free variables come back as 0.
-//       Gauss_XOR needs m <= 64. Source: normalize branch (old gauss_solve divided by 0 pivots).
+//       Gauss_XOR needs m <= 64.
 
 #include <bits/stdc++.h>
 using namespace std;
@@ -19,20 +20,20 @@ struct Gauss {
     int rank = 0;
     double determinant = 0; // only meaningful for a square system
     Solutions kind = NO_SOLUTION;
-    vector<double> answer; // one solution; free variables come back as 0
+    vector<double> answer;
 
     Gauss(vector<vector<double>> aug, int n, int m) {
         answer.assign(m, 0.0);
-        vector<int> where(m, -1); // which row pins each variable
+        vector<int> where(m, -1);
         determinant = 1.0;
         int row = 0;
         for (int col = 0; col < m && row < n; col++) {
             int pivot = row;
             for (int i = row; i < n; i++)
-                if (fabs(aug[i][col]) > fabs(aug[pivot][col])) pivot = i; // partial pivoting
+                if (fabs(aug[i][col]) > fabs(aug[pivot][col])) pivot = i;
             if (fabs(aug[pivot][col]) < EPS) {
                 determinant = 0;
-                continue; // no pivot in this column: its variable is free
+                continue;
             }
             if (pivot != row) {
                 swap(aug[pivot], aug[row]);
@@ -53,7 +54,6 @@ struct Gauss {
         for (int col = 0; col < m; col++)
             if (where[col] != -1) answer[col] = aug[where[col]][m] / aug[where[col]][col];
 
-        // a row 0 = non-zero means no solution
         for (int i = 0; i < n; i++) {
             double sum = 0;
             for (int j = 0; j < m; j++) sum += answer[j] * aug[i][j];
@@ -70,7 +70,7 @@ struct Gauss {
 struct Gauss_XOR {
     int rank = 0;
     bool solvable = true;
-    vector<int> answer; // one solution; free variables come back as 0
+    vector<int> answer;
 
     Gauss_XOR(vector<pair<unsigned long long, int>> rows, int m) {
         answer.assign(m, 0);

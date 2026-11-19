@@ -1,4 +1,4 @@
-// HLD: path and subtree queries on a static tree; chains laid out on one array + segment tree.
+// HLD: path and subtree queries on a static tree.
 // Use when: "sum on the path u..v" / "sum over the subtree of u" with point updates.
 // Usage: HLD<int> h(n, adj, root); h.update(u, x); h.query(u, v); h.query_subtree(u);
 // Handles: values on nodes (default) or on edges via HLD<T, 1> (update(u, v, x) sets edge u-v).
@@ -42,11 +42,10 @@ template <typename T = int, int Base = 0> struct Segment_Tree {
         build(nums);
     }
 
-    // Main operation to do
+    // edit here to change the operation (see Note)
 
     Node operation(const Node &a, const Node &b) { return a.val + b.val; }
 
-    // If Base is 1 so the array is 1-based else the array is 0-based
 
     void build(const vector<T> &nums, int idx, int lx, int rx) {
         if (Base ? lx >= (int)nums.size() : lx > (int)nums.size()) return;
@@ -92,24 +91,20 @@ template <typename T = int, int Base = 0> struct Segment_Tree {
 };
 
 template <typename T = int, const int VAL_ON_EDGE = 0> struct HLD {
-    // VAL_ON_EDGE = 0 if value on nodes
-    // VAL_ON_EDGE = 1 if value on edges
 
-    vector<vector<pair<T, T>>> adj; // a copy: a reference member dangles if G was a temporary
+    vector<vector<pair<T, T>>> adj;
     vector<T> dep, par, root, pos, SubtreeSz, child;
     int nxtPos;
     Segment_Tree<T> seg;
 
     HLD(int n, const vector<vector<pair<T, T>>> &G, int treeRoot = 1) : adj(G) {
         nxtPos = 1;
-        // child is heavy child
         dep = par = root = pos = SubtreeSz = child = vector<T>(n + 5);
         init(treeRoot);
         build(treeRoot);
         seg = Segment_Tree<T>(n + 5);
     }
 
-    // init the tree
     void init(int u, int p = -1, int d = 0) {
         dep[u] = d, par[u] = p, SubtreeSz[u] = 1;
         for (auto [v, _] : adj[u]) {
@@ -120,7 +115,6 @@ template <typename T = int, const int VAL_ON_EDGE = 0> struct HLD {
         }
     }
 
-    // get the root of the chain
     int get_lca(int u, int v) {
         while (root[u] != root[v]) {
             if (dep[root[u]] < dep[root[v]]) swap(u, v);
@@ -129,7 +123,6 @@ template <typename T = int, const int VAL_ON_EDGE = 0> struct HLD {
         return dep[u] < dep[v] ? u : v;
     }
 
-    // build the chains
     void build(int u, bool newChain = true) {
         root[u] = newChain ? u : root[par[u]];
         pos[u] = nxtPos++;
@@ -140,12 +133,10 @@ template <typename T = int, const int VAL_ON_EDGE = 0> struct HLD {
         }
     }
 
-    // make u lower
     void makeULower(int &u, int &v) {
         if (dep[root[u]] < dep[root[v]] || (root[u] == root[v] && dep[u] < dep[v])) swap(u, v);
     }
 
-    // move up the chain and also change the next position
     pair<T, T> moveUp(int &u) {
         pair<T, T> ret = {pos[root[u]], pos[u]};
         u = par[root[u]];
@@ -153,22 +144,19 @@ template <typename T = int, const int VAL_ON_EDGE = 0> struct HLD {
     }
 
     vector<pair<T, T>> queryPath(int u, int v) {
-        // return all ranges in segment tree
         vector<pair<T, T>> ret;
         while (root[u] != root[v]) {
             makeULower(u, v);
             ret.push_back(moveUp(u));
         }
-        // add range between u and v
         makeULower(u, v);
-        if (!VAL_ON_EDGE) // value on nodes
+        if (!VAL_ON_EDGE)
             ret.push_back({pos[v], pos[u]});
-        else if (u != v) // don't include the root node
+        else if (u != v)
             ret.push_back({pos[v] + 1, pos[u]});
         return ret;
     }
 
-    // get child of a node for problem that value on edges
     int getChild(int u, int v) {
         if (par[u] == v) return u;
         return v;
@@ -183,13 +171,12 @@ template <typename T = int, const int VAL_ON_EDGE = 0> struct HLD {
         seg.update(pos[u], val);
     }
 
-    // query value
     T query(int u_q, int v_q) {
         T ret = 0;
         for (auto &[u, v] : queryPath(u_q, v_q)) ret += seg.query(u, v);
         return ret;
     }
 
-    // subtree of u is one range (build() lays it out contiguously); edge mode skips u's parent edge
+    // edge mode: edges inside u's subtree, not u's parent edge
     T query_subtree(int u) { return seg.query(pos[u] + VAL_ON_EDGE, pos[u] + SubtreeSz[u] - 1); }
 };

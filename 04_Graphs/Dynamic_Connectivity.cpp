@@ -4,15 +4,15 @@
 // Handles: remove_edge(t, u, v), multi-edges (a remove drops one copy), self loops.
 // Time: O(T log T log n)
 // Indexing: 1-based nodes and times 1..T; time t sees the edges after every op at time <= t
-// Note: remove only present edges, issue ops in nondecreasing t. Rollback DSU: no path compression.
+// Note: remove only present edges, issue ops in nondecreasing t.
 
 #include <bits/stdc++.h>
 using namespace std;
 
 struct Dynamic_Connectivity {
-    struct persistent_dsu { // union by rank with an undo stack
+    struct persistent_dsu {
         struct state {
-            int u, v, rnku, rnkv; // u = -1: a no-op union
+            int u, v, rnku, rnkv;
         };
         vector<state> st;
         vector<int> par, depth;
@@ -27,13 +27,13 @@ struct Dynamic_Connectivity {
         void unite(int x, int y) {
             int rx = root(x), ry = root(y);
             if (rx == ry) return st.push_back({-1, -1, -1, -1});
-            st.push_back({rx, ry, depth[rx], depth[ry]}); // ranks before the union
+            st.push_back({rx, ry, depth[rx], depth[ry]});
             if (depth[rx] < depth[ry]) par[rx] = ry;
             else if (depth[ry] < depth[rx]) par[ry] = rx;
             else par[rx] = ry, depth[ry]++;
             comp--;
         }
-        void backtrack(int c) { // undo the last c unions
+        void backtrack(int c) {
             while (!st.empty() && c--) {
                 state s = st.back();
                 st.pop_back();
@@ -46,8 +46,8 @@ struct Dynamic_Connectivity {
     } d;
 
     int T;
-    vector<vector<pair<int, int>>> alive; // segment tree over time: edges alive on that range
-    map<pair<int, int>, vector<int>> since; // present edge -> the times its copies were added
+    vector<vector<pair<int, int>>> alive;
+    map<pair<int, int>, vector<int>> since;
     vector<pair<int, int>> ask;
     vector<int> comps, same; // comps[t] for every t; same[t] = u, v connected, at query times
 
@@ -70,7 +70,7 @@ struct Dynamic_Connectivity {
     void remove_edge(int t, int u, int v) {
         if (u > v) swap(u, v);
         auto &s = since[{u, v}];
-        upd(1, 1, T, s.back(), t - 1, {u, v}); // in this time range this edge was in the DSU
+        upd(1, 1, T, s.back(), t - 1, {u, v});
         s.pop_back();
     }
     void add_query(int t, int u = 0, int v = 0) { ask[t] = {u, v}; } // u = 0: count only
@@ -90,7 +90,7 @@ struct Dynamic_Connectivity {
     }
     void run() { // call once, after every operation
         for (auto &[p, ts] : since)
-            for (int t : ts) upd(1, 1, T, t, T, p); // edges never removed live until T
+            for (int t : ts) upd(1, 1, T, t, T, p);
         since.clear();
         if (T > 0) query(1, 1, T);
     }

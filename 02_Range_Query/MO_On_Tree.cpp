@@ -2,13 +2,12 @@
 //             path u..v.
 // Use when: "q queries each asking something about the path between u and v", no updates, ranges
 //           cannot be merged.
-// Handles: values on nodes (default) or on edges via MoTree<int, true>. Hilbert-order sorted.
-//          Offline only.
+// Usage: MoTree<int> mo(n, q, G, V); mo.add_query(u, v) per query; auto ans = mo.run();
+// Handles: values on nodes (default) or on edges via MoTree<int, true>. Offline only.
 // Time: O((n + q) * sqrt(q)) calls to add/remove
 // Indexing: 1-based nodes; answers come back in the order the queries were added
 // Note: values must be small non-negative ints - compress them first. Edit add()/remove() per
 //       problem.
-// Usage: MoTree<int> mo(n, q, G, V); mo.add_query(u, v) per query; auto ans = mo.run();
 
 #include <bits/stdc++.h>
 using namespace std;

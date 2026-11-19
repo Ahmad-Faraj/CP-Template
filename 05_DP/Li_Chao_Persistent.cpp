@@ -8,7 +8,6 @@
 // Indexing: versions 0..count-1 (0 = empty), add_line returns the new id; integer x in [L, R]
 // Note: each insert adds <= log2(C) + 2 nodes of 24-32 bytes (1e5 lines, C = 2e6: <= 2.3e6 nodes,
 // ~75 MB max); t.reserve(...) skips vector regrowth. Keep |m * x + c| < INF = 2e18 on [L, R].
-// Source: Shohag's code library "Persistent Li Chao Tree" (globals -> vectors, floor mid).
 
 #include <bits/stdc++.h>
 using namespace std;
@@ -22,21 +21,20 @@ struct Li_Chao_Persistent {
     };
     struct Node {
         Line line;
-        int l = 0, r = 0; // child ids, 0 = none
+        int l = 0, r = 0;
     };
 
     ll L, R;
-    vector<Node> t;    // t[0] = empty sentinel (line = INF everywhere)
-    vector<int> roots; // roots[v] = root node of version v
+    vector<Node> t;
+    vector<int> roots;
 
     Li_Chao_Persistent(ll L = -1e9, ll R = 1e9) : L(L), R(R), t{Node{{0, INF}}}, roots{0} {}
 
     int latest() const { return (int)roots.size() - 1; }
     int count() const { return (int)roots.size(); }
 
-    // copy node pre, keep the winner at the middle, push the loser into one child (path copying)
     int upd(int pre, Line nw, ll l, ll r) {
-        ll m = l + (r - l) / 2; // floor, also for negative l
+        ll m = l + (r - l) / 2;
         int id = t.size();
         t.push_back(t[pre]);
         bool lef = nw.eval(l) < t[id].line.eval(l);

@@ -2,13 +2,12 @@
 //        value.
 // Use when: a sorted multiset that must also answer "k-th smallest" and "how many elements are
 //           below x".
-// Handles: insert, erase, k-th, lower_bound, upper_bound, duplicates via a per-node frequency
-//          count.
 // Usage: Treap<int> t; t.insert(x); t.erase(x); t.kth(k); t.lower_bound(x); t.count(x); t.size();
+// Handles: insert, erase, k-th, lower_bound, upper_bound, duplicates.
+// Not: sequences by position (insert at i, reverse [l, r)) - use Treap_Implicit.cpp.
 // Time: every operation O(log n) expected
 // Indexing: kth() is 0-based; lower_bound returns a rank, not an iterator
-// Note: EMPTY is one sentinel shared by every treap of a type - never delete it. upper_bound needs
-//       an integer type.
+// Note: upper_bound and count need an integer type.
 
 #include <bits/stdc++.h>
 using namespace std;
@@ -158,7 +157,7 @@ template <typename DataType> struct Treap {
         root = EMPTY;
     }
 
-    ~Treap() { clear(root); } // EMPTY is shared, so it is deliberately not freed here
+    ~Treap() { clear(root); }
 };
 
 template <typename DataType>

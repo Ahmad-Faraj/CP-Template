@@ -4,8 +4,7 @@
 // Handles: trees, cycles, multi-edges, self loops anywhere, several ground nodes, detached parts.
 // Time: O(n + m)
 // Indexing: 1-based nodes. set_ground every ground node BEFORE add_edge (default ground: node 1).
-// Note: recursive DFS, depth up to n: big stack for long paths. Idea: colon principle (a tree
-//       is the XOR of 1 + child value per edge), fusion (a cycle contracts to loops worth 1 each).
+// Note: recursive DFS, depth up to n: big stack for long paths.
 
 #include <bits/stdc++.h>
 using namespace std;
@@ -18,12 +17,12 @@ struct Hackenbush {
 
     Hackenbush(int n) : n(n), adj(n + 1), tin(n + 1), low(n + 1), is_ground(n + 1, 0) {}
 
-    void set_ground(int v) { // all ground nodes are fused into one root
+    void set_ground(int v) {
         is_ground[v] = 1;
         if (root < 0) root = v;
     }
 
-    void add_edge(int u, int v) { // a self loop stays at its node (it is worth 1 there)
+    void add_edge(int u, int v) {
         if (is_ground[u]) u = root;
         if (is_ground[v]) v = root;
         adj[u].push_back(v);
@@ -34,21 +33,21 @@ struct Hackenbush {
         tin[u] = low[u] = ++timer;
         int ans = 0;
         for (int v : adj[u]) {
-            if (v == pre) { // skip ONE edge to the parent; a parallel one closes a cycle
+            if (v == pre) {
                 pre += 2 * n;
                 continue;
             }
             if (tin[v] == 0) {
                 int res = dfs(v, u);
                 low[u] = min(low[u], low[v]);
-                if (low[v] > tin[u]) ans ^= (1 + res) ^ 1; // bridge
-                else ans ^= res;                           // non bridge
+                if (low[v] > tin[u]) ans ^= (1 + res) ^ 1;
+                else ans ^= res;
             } else
                 low[u] = min(low[u], tin[v]);
         }
         if (pre > n) pre -= 2 * n;
         for (int v : adj[u])
-            if (v != pre && tin[u] <= tin[v]) ans ^= 1; // every edge in a 2-edge-cc becomes a loop
+            if (v != pre && tin[u] <= tin[v]) ans ^= 1;
         return ans;
     }
 

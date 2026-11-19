@@ -1,5 +1,4 @@
-// XOR Hashing: gives every distinct value a random 64-bit tag, so a SET of values hashes to one
-//              XOR.
+// XOR Hashing: a random 64-bit tag per distinct value, so a SET of values hashes to one XOR.
 // Use when: "do prefixes a[0..x] and b[0..y] contain the same set of distinct values", set equality
 //           where multiplicity and order do not matter.
 // Usage: XorHashing h; auto pa = h.prefix(a), pb = h.prefix(b);  same set <=> pa[x] == pb[y]
@@ -17,7 +16,7 @@ struct XorHashing {
     map<long long, unsigned long long> tag;
     mt19937_64 gen{(unsigned long long)chrono::steady_clock::now().time_since_epoch().count()};
 
-    unsigned long long tag_of(long long v) { // random tag of v, created on first sight
+    unsigned long long tag_of(long long v) {
         auto it = tag.find(v);
         if (it != tag.end()) return it->second;
         return tag[v] = gen();

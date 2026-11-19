@@ -1,18 +1,16 @@
 // Aho-Corasick: finds every occurrence of every pattern of a fixed set inside a text in one pass.
 // Use when: "match many patterns against one text", dictionary hits, which patterns end at each
 //           position.
-// Usage: AhoCorasick ac(patterns);  auto res = ac.search(text);  res[i] = patterns ending at
-//        text[i]
+// Usage: AhoCorasick ac(patterns);  auto res = ac.search(text);
 //        (or: AhoCorasick ac; ac.insert(p, idx) for each pattern; ac.build();)
 // Handles: overlapping matches, duplicate patterns (both indices reported), patterns inside
 //          patterns.
 // Time: build O(26 + sum |p| + copied indices) | search O(|text| + number of matches)
 // Indexing: 0-based text positions; res[i] lists pattern indices whose occurrence ENDS at i
-//           (start = i - |pattern| + 1). Indices are those given to insert (vector order in the
-//           ctor).
+//           (start = i - |pattern| + 1). Indices are those given to insert (vector order in
+//           the ctor).
 // Note: lowercase 'a'..'z' only, non-empty patterns. Call build() once, after the last insert.
-//       Output (and memory: each node copies its fail chain's indices) can reach |text| * sqrt(2 *
-//       sum |p|).
+//       Output and memory can both reach |text| * sqrt(2 * sum |p|).
 
 #include <bits/stdc++.h>
 using namespace std;
@@ -21,8 +19,8 @@ struct AhoCorasick {
     struct Node {
         Node *fail;
         Node *child[26];
-        vector<int> patIdx; // patterns ending here, including those reached through fail links
-        vector<char> chars; // real trie children
+        vector<int> patIdx;
+        vector<char> chars;
         Node() {
             memset(child, 0, sizeof(child));
             fail = 0;

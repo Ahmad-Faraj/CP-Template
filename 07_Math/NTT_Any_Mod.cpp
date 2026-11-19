@@ -1,8 +1,8 @@
-// NTT Any Mod: exact polynomial product modulo ANY m (e.g. 1e9+7): three NTTs + CRT, no doubles.
+// NTT Any Mod: exact polynomial product modulo ANY m (e.g. 1e9+7), no doubles.
 // Use when: convolution "modulo 1e9+7" (any non-NTT modulus) where FFT would lose precision.
 // Usage: vector<ll> c = NTT_Any_Mod::multiply(a, b);  // mod 1e9+7 | NTT_Any_Mod::multiply(a, b, m)
 // Handles: empty input (returns {}), coefficients outside [0, m) incl. negatives (reduced first).
-// Time: O(n log n), about 3x NTT.cpp (6 transforms + 3 inverse)
+// Time: O(n log n), about 3x NTT.cpp
 // Indexing: 0-based; c[k] = sum a[i] * b[j] over i + j == k (mod m), |c| = |a| + |b| - 1
 // Note: exact while min(|a|, |b|) * (m - 1)^2 < M1 * M2 * M3 ~ 5.9e25 (m = 1e9+7: any length) and
 //       |a| + |b| - 1 <= 2^24 (~1.6e7). For m = 998244353 use NTT.cpp: it is 3x faster.
@@ -12,9 +12,9 @@ using namespace std;
 using ll = long long;
 
 struct NTT_Any_Mod {
-    static constexpr ll mod1 = 167772161, root1 = 3;  // 5 * 2^25 + 1
-    static constexpr ll mod2 = 469762049, root2 = 3;  // 7 * 2^26 + 1
-    static constexpr ll mod3 = 754974721, root3 = 11; // 45 * 2^24 + 1
+    static constexpr ll mod1 = 167772161, root1 = 3;
+    static constexpr ll mod2 = 469762049, root2 = 3;
+    static constexpr ll mod3 = 754974721, root3 = 11;
 
     static ll power(ll a, ll b, ll mod) {
         ll res = 1;
@@ -54,7 +54,6 @@ struct NTT_Any_Mod {
         }
     }
 
-    // product under one NTT prime; a, b already in [0, m) of the caller's modulus
     static vector<ll> multiply_mod(vector<ll> a, vector<ll> b, ll mod, ll root) {
         int need = a.size() + b.size() - 1, n = 1;
         while (n < need) n <<= 1;
@@ -68,7 +67,6 @@ struct NTT_Any_Mod {
         return a;
     }
 
-    // the x in [0, mod1 * mod2 * mod3) with x = r1, r2, r3 (mod mod1, mod2, mod3), reduced mod m
     static ll crt(ll r1, ll r2, ll r3, ll m) {
         static const ll m1_inv_m2 = power(mod1, mod2 - 2, mod2);
         static const ll m12_inv_m3 = power(mod1 * mod2 % mod3, mod3 - 2, mod3);

@@ -3,9 +3,9 @@
 // Usage: BigInt a("-1234567890123456789012345"), b = 42; cout << a * b + a / b << ' ' << a % b;
 // Handles: negatives, zero, long long operands (a * v, a / v, a % v), divmod, gcd, power(a, k).
 // Time: + - O(n) | * O(n^2), FFT once limbs(a) * limbs(b) > 1e6 | / % O(n^2) | n = digits / 9
-// Indexing: limbs base 1e9 in a, least significant first; you never touch them directly
+// Indexing: not applicable
 // Note: / and % truncate toward zero like C++ (-7 / 2 = -3, -7 % 2 = -1). a % (ll v) returns a ll
-// and needs |v| <= 9e9. Dividing by zero is undefined. gcd returns a non-negative value.
+//       and needs |v| <= 9e9. Dividing by zero is undefined. gcd returns a non-negative value.
 
 #include <bits/stdc++.h>
 using namespace std;
@@ -14,7 +14,7 @@ using ll = long long;
 struct BigInt {
     static constexpr int DIG = 9, FDIG = 4, BASE = 1000000000, FBASE = 10000;
     using ld = long double;
-    struct Cplx { // minimal complex number for the FFT
+    struct Cplx {
         ld x, y;
         Cplx(ld x = 0, ld y = 0) : x(x), y(y) {}
         Cplx operator+(const Cplx &c) const { return {x + c.x, y + c.y}; }
@@ -31,7 +31,7 @@ struct BigInt {
     BigInt(const string &s) { read(s); }
     BigInt &operator=(ll v) {
         sgn = v < 0 ? -1 : 1;
-        unsigned long long u = v < 0 ? 0ULL - (unsigned long long)v : v; // LLONG_MIN is fine
+        unsigned long long u = v < 0 ? 0ULL - (unsigned long long)v : v;
         a.clear();
         for (; u > 0; u /= BASE) a.push_back(u % BASE);
         return *this;
@@ -95,7 +95,7 @@ struct BigInt {
             if (carry) a[i] -= BASE;
         }
     }
-    void sub_abs(const BigInt &v) { // needs |*this| >= |v|
+    void sub_abs(const BigInt &v) {
         for (int i = 0, carry = 0; i < (int)v.a.size() || carry; ++i) {
             a[i] -= carry + (i < (int)v.a.size() ? v.a[i] : 0);
             carry = a[i] < 0;
@@ -215,8 +215,8 @@ struct BigInt {
         while (!res.empty() && !res.back()) res.pop_back();
         return res;
     }
-    static int rev_incr(int a, int n) { // next index in bit-reversed order
-        unsigned x = a, msk = n / 2, cnt = 0; // unsigned: the shift may run past bit 31
+    static int rev_incr(int a, int n) {
+        unsigned x = a, msk = n / 2, cnt = 0;
         while (x & msk) cnt++, x <<= 1;
         x &= msk - 1;
         x |= msk;
@@ -261,7 +261,7 @@ struct BigInt {
             carry = t / FBASE;
             c[i] = t % FBASE;
         }
-        for (; carry; carry /= FBASE) c.push_back(carry % FBASE); // top limb when sz is 2^k
+        for (; carry; carry /= FBASE) c.push_back(carry % FBASE);
     }
     BigInt mul_simple(const BigInt &v) const {
         BigInt res;
@@ -298,7 +298,7 @@ struct BigInt {
     }
     void trim() {
         while (!a.empty() && !a.back()) a.pop_back();
-        if (a.empty()) sgn = 1; // zero is always +0, or 0 < -0 style bugs appear
+        if (a.empty()) sgn = 1;
     }
     bool zero() const { return a.empty() || (a.size() == 1 && !a[0]); }
     friend BigInt gcd(const BigInt &a, const BigInt &b) {

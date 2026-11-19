@@ -66,10 +66,9 @@ vector<ll> find_any_solution(vector<ll> a, ll c) {
     ll cur = c;
     for (int i = 0; i + 1 < n; i++) {
         ll x0, y0, g;
-        // solve a[i] * x + suf_gcd[i + 1] * y = cur, the rest of the suffix makes up y * suf_gcd
         bool ok = find_any_solution(a[i], suf_gcd[i + 1], cur, x0, y0, g);
         assert(ok);
-        ll shift = g ? abs(suf_gcd[i + 1] / g) : 0; // 0 when the whole suffix is zero
+        ll shift = g ? abs(suf_gcd[i + 1] / g) : 0;
         if (shift) x0 = (x0 % shift + shift) % shift;
         x.push_back(x0);
         cur -= a[i] * x0;

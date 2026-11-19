@@ -6,9 +6,8 @@
 // Handles: negative or huge (any ll) inputs, normalised into [0, MOD); negative exponents.
 // Time: + - * O(1) | / inverse power O(log MOD)
 // Indexing: none
-// Note: MOD must be a prime below 2^31 (Fermat inverse, products fit in ll). inverse(0) = 0.
-// No stream operators: read an ll and assign it, print x.val.
-// Source: 7oSkaaa's ModInt (other/hossam/Mod_Int.cpp), with negative-input normalisation added.
+// Note: MOD must be a prime below 2^31. inverse(0) = 0.
+//       No stream operators: read an ll and assign it, print x.val.
 
 #include <bits/stdc++.h>
 using namespace std;

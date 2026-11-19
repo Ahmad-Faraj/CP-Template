@@ -5,14 +5,13 @@
 // Time: find / join / same / get_size O(log n) | rollback O(k)
 // Indexing: 1-based nodes 1..n
 // Note: every join() pushes one entry (even a no-op), so rollback(k) undoes exactly k joins.
-// Note: find() must never path-compress - that is what keeps rollback possible.
 
 #include <bits/stdc++.h>
 using namespace std;
 
 struct DSU {
     vector<int> parent, gsize;
-    stack<pair<int, int>> stk; // one entry per join, {-1, -1} when it was a no-op
+    stack<pair<int, int>> stk;
     int sets;
 
     DSU(int n) : sets(n) {
@@ -20,7 +19,7 @@ struct DSU {
         for (int i = 1; i <= n; i++) parent[i] = i;
     }
 
-    int find(int u) { // no path compression, on purpose
+    int find(int u) {
         while (u != parent[u]) u = parent[u];
         return u;
     }

@@ -7,8 +7,8 @@
 // Not: edge deletions (go offline with Dynamic_Connectivity.cpp).
 // Time: O(n log n + m) total, amortized
 // Indexing: 0-based nodes 0..n-1; for 1-based use OnlineBridges(n + 1)
-// Note: is_bridge(u, v) assumes u-v is an edge already added (it is "different 2-edge-connected
-// components"). find_2ecc / find_cc are recursive DSU finds (depth can reach n).
+// Note: is_bridge(u, v) assumes u-v is an edge already added. find_2ecc / find_cc are recursive
+// DSU finds (depth can reach n).
 
 #include <bits/stdc++.h>
 using namespace std;
@@ -46,7 +46,7 @@ struct OnlineBridges {
     void make_root(int v) {
         v = find_2ecc(v);
         int root = v, child = -1;
-        int comp_size = dsu_cc_size[find_cc(v)]; // the size lives on the old root
+        int comp_size = dsu_cc_size[find_cc(v)];
         while (v != -1) {
             int p = find_2ecc(par[v]);
             par[v] = child;

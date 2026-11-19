@@ -20,7 +20,7 @@ template <typename T = int, bool Base = 0> struct Hash_LazySegmentTree {
     string s;
     int n, size;
     vector<ll> pw[2];
-    vector<T> lazy; // -1 = nothing pending, else the letter value assigned to the whole node
+    vector<T> lazy;
     vector<pair<T, T>> tree;
 
     struct Item {
@@ -42,11 +42,11 @@ template <typename T = int, bool Base = 0> struct Hash_LazySegmentTree {
         if (n > 0) build(1, 1, n);
     }
 
-    pair<T, T> merge(const pair<T, T> &a, const pair<T, T> &b, T len) { // len = length of a
+    pair<T, T> merge(const pair<T, T> &a, const pair<T, T> &b, T len) {
         return {(a.first + b.first * pw[0][len]) % M[0], (a.second + b.second * pw[1][len]) % M[1]};
     }
 
-    pair<T, T> lazy_process(T val, T len) { // hash of val repeated len times
+    pair<T, T> lazy_process(T val, T len) {
         T h1 = val * ((pw[0][len] - 1 + M[0]) % M[0]) % M[0] * INVP1[0] % M[0];
         T h2 = val * ((pw[1][len] - 1 + M[1]) % M[1]) % M[1] * INVP1[1] % M[1];
         return {h1, h2};

@@ -2,8 +2,8 @@
 // Use when: "are these two trees the same shape", rooted or unrooted.
 // Usage: canonical_rooted(adj, root) == canonical_rooted(adj2, root2); canonical_unrooted(adj, n).
 // Handles: rooted (fixed roots) and unrooted (tries both centres, keeps the smaller string); n = 1.
-// Time: O(n * height) time AND memory (the strings): random 2e5 tree 0.1s, but a 2e4 path 0.4s,
-//   a 5e4 path 5.6s / ~2.5 GB, a 1e5 path runs out of memory. Deep trees need hashing instead.
+// Time: O(n * height) time AND memory: random 2e5 tree 0.1s, but a 5e4 path 5.6s / ~2.5 GB and
+//   a 1e5 path runs out of memory. Deep trees need hashing instead.
 // Indexing: 1-based nodes; adj sized n + 1 (index 0 unused)
 // Note: different sizes give different strings, so no separate n1 == n2 check is needed.
 // Note: canonical_rooted recurses (depth = tree height), so deep trees need a big stack.
@@ -37,7 +37,7 @@ string canonical_unrooted(const vector<vector<int>> &adj, int n) {
     for (int i = 1; i <= n; i++)
         if (degree[i] <= 1) leafs.push(i);
     vector<vector<string>> rep(n + 1);
-    while (remaining > 2) { // peel one layer of leaves at a time until only the centre remains
+    while (remaining > 2) {
         int layer = (int)leafs.size();
         while (layer--) {
             int leaf = leafs.front();
@@ -56,7 +56,7 @@ string canonical_unrooted(const vector<vector<int>> &adj, int n) {
     string s1 = node_rep(rep, r1);
     if (r2 == -1) return s1;
     string s2 = node_rep(rep, r2);
-    rep[r1].push_back(s2); // root at r1 with r2 hanging below, and vice versa
+    rep[r1].push_back(s2);
     rep[r2].push_back(s1);
     return min(node_rep(rep, r1), node_rep(rep, r2));
 }

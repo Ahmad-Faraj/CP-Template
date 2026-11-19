@@ -1,11 +1,11 @@
-// FFT: exact product of two integer polynomials (no modulus), long double FFT with exact roots.
+// FFT: exact product of two integer polynomials (no modulus).
 // Use when: "number of pairs with sum k", convolution of counts, big-number multiplication.
 // Usage: vector<ll> c = multiply(a, b); | poly_pow(a, e) | mul_big_int("123", "456") == "56088"
 // Handles: negative coefficients, empty input (returns {}), leading zeros in mul_big_int input.
 // Time: O(n log n), n = padded size >= |a| + |b| - 1. long double is slow: 2^20 padded ~1.4 s
 // Indexing: 0-based; c[k] = sum a[i] * b[j] over i + j == k, |c| = |a| + |b| - 1
-// Note: exact while the TRUE |c[k]| <= ~1e17 (tested: 2^19 x 2^19 terms of 1e6 is exact; fails at
-//       ~1e18). Mod answers: NTT / NTT_Any_Mod. poly_pow keeps every term: (|a| - 1) * e + 1.
+// Note: exact while the TRUE |c[k]| <= ~1e17 (2^19 x 2^19 terms of 1e6 is fine).
+//       Mod answers: NTT / NTT_Any_Mod. poly_pow keeps every term: (|a| - 1) * e + 1.
 
 #include <bits/stdc++.h>
 using namespace std;
@@ -22,7 +22,7 @@ void fft(vector<cplx> &a, bool invert) {
         if (i < j) swap(a[i], a[j]);
     }
     const long double PI = acosl(-1);
-    vector<cplx> w(n / 2 + 1); // roots by cosl / sinl, not w *= wlen: far less rounding error
+    vector<cplx> w(n / 2 + 1);
     for (int len = 2; len <= n; len <<= 1) {
         long double ang = 2 * PI / len;
         for (int j = 0; j < len / 2; j++) w[j] = cplx(cosl(ang * j), sinl(ang * j));

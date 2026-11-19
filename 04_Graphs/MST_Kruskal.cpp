@@ -1,4 +1,4 @@
-// MST Kruskal: the cheapest set of edges connecting every node (sort edges, join with a DSU).
+// MST Kruskal: the cheapest set of edges connecting every node.
 // Use when: "connect all cities as cheaply as possible", bottleneck edges, maximum spanning tree.
 // Usage: MST_Kruskal k(n); k.add_edge(u, v, w); ll c = k.build(); if (k.is_spanning()) ...
 // Handles: disconnected graphs (spanning forest), multi-edges, self loops, negative weights,
@@ -45,7 +45,7 @@ struct MST_Kruskal {
     }
 
     ll build(bool maximum = false) { // total weight of the spanning tree, or of the spanning forest
-        vector<Edge> sorted = edges; // sort a copy, so edge ids stay meaningful
+        vector<Edge> sorted = edges;
         sort(sorted.begin(), sorted.end(),
              [&](const Edge &a, const Edge &b) { return maximum ? a.w > b.w : a.w < b.w; });
         total = 0;

@@ -156,7 +156,7 @@ struct SGTBeats {
                 max_v[k] = min_v[k] = sum[k] = a[i];
                 smax_v[k] = -inf, smin_v[k] = inf;
                 max_c[k] = min_c[k] = 1;
-            } else { // padding leaf: invisible to every max/min
+            } else {
                 max_v[k] = smax_v[k] = -inf;
                 min_v[k] = smin_v[k] = inf;
                 max_c[k] = min_c[k] = 0;

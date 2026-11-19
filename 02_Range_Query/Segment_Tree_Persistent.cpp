@@ -16,7 +16,7 @@ template <typename T = ll> struct PST {
     struct Node {
         T val;
         Node *left, *right;
-        Node(T v = 0) : val(v), left(this), right(this) {} // a zero node is its own children
+        Node(T v = 0) : val(v), left(this), right(this) {}
         Node(T v, Node *l, Node *r) : val(v), left(l), right(r) {}
     };
 

@@ -15,20 +15,20 @@ using namespace std;
 struct Remoteness_Suspense {
     int n;
     vector<vector<int>> g;
-    vector<int> win, rem, sus; // -1 = not computed yet
+    vector<int> win, rem, sus;
 
     Remoteness_Suspense(int n) : n(n), g(n), win(n, -1), rem(n, -1), sus(n, -1) {}
 
     void add_move(int u, int v) { g[u].push_back(v); }
 
-    bool is_winning(int u) { // exists a move to a losing position
+    bool is_winning(int u) {
         if (win[u] != -1) return win[u];
         for (int v : g[u])
             if (!is_winning(v)) return (win[u] = 1);
         return (win[u] = 0);
     }
 
-    int remoteness(int u) { // moves left when the winner hurries and the loser stalls
+    int remoteness(int u) {
         if (rem[u] != -1) return rem[u];
         if (g[u].empty()) return rem[u] = 0;
         if (is_winning(u)) {
@@ -37,12 +37,12 @@ struct Remoteness_Suspense {
                 if (!is_winning(v)) best = min(best, remoteness(v));
             return rem[u] = 1 + best;
         }
-        int worst = 0; // losing: every move goes to a winning position
+        int worst = 0;
         for (int v : g[u]) worst = max(worst, remoteness(v));
         return rem[u] = 1 + worst;
     }
 
-    int suspense(int u) { // moves left when the winner stalls and the loser hurries
+    int suspense(int u) {
         if (sus[u] != -1) return sus[u];
         if (g[u].empty()) return sus[u] = 0;
         if (is_winning(u)) {

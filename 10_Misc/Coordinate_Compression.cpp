@@ -1,14 +1,10 @@
-// Coordinate Compression: replaces values by their rank, so a sparse range of coordinates fits an
-//                         array.
-// Use when: indices reach 1e9 but there are only 1e5 distinct ones - segment trees, sweeps, offline
-//           range queries.
+// Coordinate Compression: replaces values by their rank, so sparse coordinates fit an array.
+// Use when: indices reach 1e9 but only 1e5 are distinct - segment trees, sweeps, offline queries.
 // Usage: Coordinate_Compression<int> cc; cc.add(v); cc.build(); cc.rank(x); cc.value_at(r);
-// Handles: duplicates, negatives, values added after the build, and mapping ranks back to the
-//          original values.
+// Handles: duplicates, negatives, values added after the build, mapping ranks back to values.
 // Time: build O(n log n) | rank O(log n)
-// Indexing: ranks are 0-based and dense, so a value's rank is a valid array index straight away
-// Note: rank() of a value never added returns where it WOULD sit, which is rarely wanted - call
-//       contains first.
+// Indexing: ranks are 0-based and dense (valid array indices)
+// Note: rank() of a value never added returns where it WOULD sit - call contains first.
 
 #include <bits/stdc++.h>
 using namespace std;

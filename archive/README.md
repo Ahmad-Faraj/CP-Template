@@ -8,7 +8,7 @@ They will be deleted after ACPC 2026 unless someone wants something from them.
 | Slope_Trick.cpp | 05_DP | Empty (`//TODO`) |
 | FWHT.cpp | 07_Math | Empty (0 lines) |
 | Discrete_Log.cpp | 07_Math | Includes only, no code |
-| Treap_Implicit.cpp | 01_Data_Structures | Exact copy of Treap.cpp; there was no implicit treap |
+| Treap_Implicit.cpp | 01_Data_Structures | Exact copy of Treap.cpp, not implicit. A real one was added on 2026-11-19 |
 | Dijkstra_2.cpp | 04_Graphs | Duplicate of Dijkstra (whole solution file) |
 | Geometry_3.cpp | 09_Geometry | Duplicate geometry library (whole solution file) |
 | Geometry_4.cpp | 09_Geometry | Duplicate; treats a segment as a ray |
@@ -237,3 +237,11 @@ originals; move a file back only after it passes a brute-force test.
 | Block_Cut_Tree | Shohag | verified; yosupo biconnected_components |
 | Euler_Path | normalize + KACTL edge ids | verified (normalize returned {} for an edgeless graph); yosupo eulerian_trail_directed/undirected, CSES 1691, 1693 |
 | Partitions | Shohag "Partition Function" (plain ll) | verified vs O(n^2) DP; judge.yosupo.jp/problem/partition_function |
+
+## New templates (2026-11-19), from gaps found by Library Checker official tests
+
+| Template | Source | Notes |
+|---|---|---|
+| Segment_Tree_Lazy_Generic | AtCoder Library lazy_segtree (no teammate or Shohag version is generic) | verified; yosupo range_affine_range_sum, range_set_range_composite, point_set_range_composite all AC |
+| Gaussian_Elimination_Mod | Shohag modular Gauss + KACTL inverse | verified; yosupo system_of_linear_equations, matrix_det, inverse_matrix, matrix_rank all AC |
+| Treap_Implicit | Mazen Treap++ + Shohag reverse flag, one affine tag | verified; yosupo range_reverse_range_sum, dynamic_sequence_range_affine_range_sum all AC |

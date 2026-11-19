@@ -21,7 +21,7 @@ struct Bipartite_Check {
         adj[v].push_back(u);
     }
 
-    bool bfs(int s) { // colour s's component; false on an odd cycle
+    bool bfs(int s) {
         queue<int> q;
         color[s] = 1;
         q.push(s);

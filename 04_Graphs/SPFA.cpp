@@ -1,5 +1,4 @@
-// Bellman Ford SPFA: the queue-based Bellman Ford - only re-examines a node when its distance
-//                    actually improved.
+// Bellman Ford SPFA: queue-based Bellman Ford; single-source shortest paths, negative weights ok.
 // Use when: you need negative weights but O(n*m) is too slow in practice; typical graphs run far
 //           below the bound.
 // Handles: negative weights, negative-cycle detection, unreachable nodes, directed or undirected,
@@ -40,7 +39,7 @@ template <typename T = ll> struct SPFA {
     vector<T> shortest_path(int src) {
         dist.assign(n + 1, INF);
         par.assign(n + 1, -1);
-        neg_cycle = false; // reset, or a clean second run inherits the first verdict
+        neg_cycle = false;
         vector<int> relaxed(n + 1, 0), in_queue(n + 1, 0);
         queue<int> q;
         dist[src] = 0;
@@ -55,7 +54,7 @@ template <typename T = ll> struct SPFA {
                     dist[e.v] = dist[u] + e.w;
                     par[e.v] = u;
                     if (!in_queue[e.v]) {
-                        if (++relaxed[e.v] >= n) { // enqueued n times means a negative cycle
+                        if (++relaxed[e.v] >= n) {
                             neg_cycle = true;
                             return dist;
                         }

@@ -2,10 +2,9 @@
 // Use when: UVA 10003 / ZOJ 2860 "breaking strings", any "cut or merge in some order, pay the
 // piece size" interval DP (matrix-chain shape) whose O(n^3) is too slow.
 // Usage: ll best = stick_cutting(len, cuts); // cuts = distinct positions in (0, len), any order
-// Handles: no cuts (0), unsorted cuts. Knuth bounds: the best first cut of [i, j] lies in
-// [opt[i][j-1], opt[i+1][j]]; the plain O(n^3) version scans every k in (i, j).
+// Handles: no cuts (0), unsorted cuts.
 // Time: O(n^2), n = number of cuts
-// Indexing: 0-based; p[0] = 0, p[1..n] = sorted cuts, p[n+1] = len
+// Indexing: none (cuts are positions along the stick)
 
 #include <bits/stdc++.h>
 using namespace std;
@@ -17,7 +16,6 @@ ll stick_cutting(ll len, vector<ll> cuts) {
     vector<ll> p(n + 2);
     p[0] = 0, p[n + 1] = len;
     for (int i = 0; i < n; i++) p[i + 1] = cuts[i];
-    // dp[i][j] = cheapest way to make every cut strictly between p[i] and p[j]
     vector<vector<ll>> dp(n + 2, vector<ll>(n + 2, 0));
     vector<vector<int>> opt(n + 2, vector<int>(n + 2));
     for (int i = 0; i <= n; i++) opt[i][i + 1] = i + 1;

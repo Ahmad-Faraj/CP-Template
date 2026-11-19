@@ -8,8 +8,7 @@
 // Indexing: nodes 0..n (both 0- and 1-based work); edge ids 0-based in the order added.
 //           path = v0..vm, edge_path = e0..e(m-1), edge e_i joins path[i] -> path[i+1].
 // Note: run(-1) picks the start itself; when a circuit exists the walk returns to it.
-//       Iterative Hierholzer, no recursion. Source: normalize-branch Eulerian_Path + KACTL
-//       EulerWalk (edge ids on the stack).
+//       Iterative, no recursion.
 
 #include <bits/stdc++.h>
 using namespace std;
@@ -17,7 +16,7 @@ using namespace std;
 struct Euler_Path {
     int n, m = 0;
     bool directed;
-    vector<vector<pair<int, int>>> adj; // (neighbour, edge id)
+    vector<vector<pair<int, int>>> adj;
     vector<int> in_deg, path, edge_path;
 
     Euler_Path(int n, bool directed = false)
@@ -26,7 +25,7 @@ struct Euler_Path {
     int add_edge(int u, int v) {
         adj[u].push_back({v, m});
         in_deg[v]++;
-        if (!directed) adj[v].push_back({u, m}); // a self loop adds 2 to deg(u), as it should
+        if (!directed) adj[v].push_back({u, m});
         return m++;
     }
 
@@ -59,7 +58,7 @@ struct Euler_Path {
         }
         vector<char> used(m, 0);
         vector<int> it(n + 1, 0);
-        vector<pair<int, int>> st{{start, -1}}; // (node, edge used to reach it)
+        vector<pair<int, int>> st{{start, -1}};
         while (!st.empty()) {
             auto [u, e] = st.back();
             if (it[u] < (int)adj[u].size()) {
@@ -71,7 +70,7 @@ struct Euler_Path {
                 st.pop_back();
             }
         }
-        if ((int)path.size() != m + 1) { // some edge lies in another component
+        if ((int)path.size() != m + 1) {
             path.clear(), edge_path.clear();
             return false;
         }

@@ -9,8 +9,8 @@
 // Time: compute_grundy / Grundy_Graph O(states * moves) total; the Nim tests O(number of piles)
 // Indexing: states 0..; a state with no moves has Grundy 0 (lost for the mover in normal play)
 // Note: misere is NOT "invert the answer" except for plain Nim (misere_disjunctive_long).
-//       normal_selective_variant is proven for Nim piles (Moore's Nim, k = n - 1); on Grundy
-//       values of other games it matched brute force on small random games, but is unproven.
+//       normal_selective_variant is only proven for Nim piles; on Grundy values of other games
+//       it is unproven (matched brute force on small cases).
 //       compute_grundy / Grundy_Graph recurse: depth up to the longest chain of moves.
 
 #include <bits/stdc++.h>
@@ -69,7 +69,7 @@ bool misere_disjunctive_long(const vector<ll> &piles) {
         if (p > 1) all_small = false;
         ones += p == 1;
     }
-    if (all_small) return ones % 2 == 0; // only 0/1 piles: win iff the number of ones is even
+    if (all_small) return ones % 2 == 0;
     return nim_value(piles) != 0;
 }
 

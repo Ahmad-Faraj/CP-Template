@@ -46,7 +46,7 @@ struct MO {
             return (x.l / block) & 1 ? x.r > y.r : x.r < y.r;
         });
         int l = 0, r = -1;
-        for (auto &q : qs) { // grow before shrinking, so the window is never "negative"
+        for (auto &q : qs) {
             while (r < q.r) add(++r);
             while (l > q.l) add(--l);
             while (r > q.r) remove(r--);

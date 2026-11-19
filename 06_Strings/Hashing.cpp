@@ -41,7 +41,7 @@ template <typename T = long long, int Base = 0> struct Hash {
         static mt19937 rng(chrono::steady_clock::now().time_since_epoch().count());
         call_once(flag, []() {
             uniform_int_distribution<int> dist(0, 5);
-            int a = dist(rng), b = (a + 1 + dist(rng) % 5) % 6; // two different mods
+            int a = dist(rng), b = (a + 1 + dist(rng) % 5) % 6;
             p1 = powers[dist(rng)];
             p2 = powers[dist(rng)];
             m1 = mods[a];

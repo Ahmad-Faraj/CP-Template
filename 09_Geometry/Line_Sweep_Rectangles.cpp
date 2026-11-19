@@ -1,11 +1,11 @@
-// Line Sweep Rectangles: area of the union of axis-aligned rectangles (sweep x, segment tree on y).
+// Line Sweep Rectangles: area of the union of axis-aligned rectangles.
 // Use when: "total area covered by n rectangles", overlapping posters/photos, union of boxes.
 // Usage: Rect_Union ru; ll a = ru.area(rects);  // rects: vector<Rectangle>{x1, y1, x2, y2}
 // Handles: no rectangles, zero-width/height rectangles, nesting, duplicates, negative coordinates.
 // Time: O(n log n)
 // Indexing: Rectangle(x1, y1, x2, y2) with x1 <= x2, y1 <= y2 (lower-left, upper-right corners)
 // Note: |coordinates| <= 1e9 keeps the area inside long long. intersect() returns
-// Rectangle() (all zero) when two proper rectangles only touch or are apart.
+//       Rectangle() (all zero) when two proper rectangles only touch or are apart.
 
 #include <bits/stdc++.h>
 using namespace std;
@@ -21,13 +21,12 @@ struct Rectangle {
 };
 
 struct Rect_Union {
-    // prob = how many rectangles fully cover this node, sum = its length, ans = covered length
     struct Node {
         int prob = 0;
         ll sum = 0, ans = 0;
     };
     vector<Node> tree;
-    vector<ll> sorted, interval; // interval[j] = length of the j-th elementary y-interval (1-based)
+    vector<ll> sorted, interval;
 
     void build(int x, int a, int b) {
         tree[x] = Node();
@@ -56,14 +55,14 @@ struct Rect_Union {
         for (auto &R : rects) sorted.push_back(R.y1), sorted.push_back(R.y2);
         sort(sorted.begin(), sorted.end());
         sorted.erase(unique(sorted.begin(), sorted.end()), sorted.end());
-        int m = (int)sorted.size() - 1; // number of elementary y-intervals
+        int m = (int)sorted.size() - 1;
         if (m < 1) return 0;
         interval.assign(m + 1, 0);
         for (int j = 0; j < m; j++) interval[j + 1] = sorted[j + 1] - sorted[j];
         tree.assign(4 * m, Node());
         build(1, 1, m);
 
-        vector<array<ll, 4>> sweep; // {x, y1, y2, +1 open / -1 close}
+        vector<array<ll, 4>> sweep;
         for (auto &R : rects) {
             sweep.push_back({R.x1, R.y1, R.y2, 1});
             sweep.push_back({R.x2, R.y1, R.y2, -1});

@@ -1,21 +1,16 @@
 // Suffix Array: all suffixes sorted, with the LCP array and O(1) LCP of any two suffixes.
 // Use when: "find / count a pattern", distinct substrings, longest repeated substring, longest
-//           common
-//           substring of two strings, k-th substring, comparing two substrings fast.
-// Usage: SuffixArray sa(s);  sa.p[r] = start of the r-th smallest suffix, sa.c[i] = rank of suffix
-//        i,
-//        sa.lcp[r] = LCP(p[r-1], p[r]);  sa.count(pat), sa.longest_common_prefix(i, j), ...
+//           common substring of two strings, k-th substring, comparing two substrings fast.
+// Usage: SuffixArray sa(s);  sa.p[r] = start of the r-th smallest suffix, sa.c[i] = rank of
+//        suffix i, sa.lcp[r] = LCP(p[r-1], p[r]);  sa.count(pat), sa.longest_common_prefix(i, j)
 // Handles: find, count, lower/upper, distinct_substrings, longest_repeated_substring, compare,
 //          longest_common_substring(a, b), kth_substring, min_common_substring (all listed below).
 // Time: build O(n log n) | find / count O(m log n) | longest_common_prefix, compare(i, j, l) O(1)
-// Indexing: 0-based; n = |s| + 1: the end of the string (the '\0' that s[|s|] reads) is the
-//           sentinel
-//           suffix, so p[0] = |s| and lcp[0] = 0. The stored s has no sentinel character appended.
+// Indexing: 0-based; n = |s| + 1 (the empty suffix is included), so p[0] = |s| and lcp[0] = 0.
 // Note: characters must be > '\0' as signed char (no '\0', no bytes >= 128).
 //       Sparse table is n * 21 ints: about 85 MB at n = 1e6.
-//       longest_common_substring / min_common_substring join a + '#' + b + '$': neither may contain
-//       '#' or '$'. kth_substring is O(n + k): counts substrings WITH repetition, k in [1,
-//       n(n+1)/2].
+//       longest_common_substring / min_common_substring: a and b must not contain '#' or '$'.
+//       kth_substring is O(n + k): counts substrings WITH repetition, k in [1, n(n+1)/2].
 
 #include <bits/stdc++.h>
 using namespace std;
@@ -23,9 +18,8 @@ using namespace std;
 struct SuffixArray {
     string s;
     int n, LOG;
-    // p = sorted suffix starts, c = rank of each suffix, lcp[i] = LCP(p[i-1], p[i])
     vector<int> p, c, lcp;
-    vector<vector<int>> mn; // sparse table over lcp
+    vector<vector<int>> mn;
 
     SuffixArray() = default;
 
@@ -46,13 +40,13 @@ struct SuffixArray {
 
     void build() {
         vector<pair<char, int>> a(n);
-        for (int i = 0; i < n; i++) a[i] = {s[i], i}; // s[n - 1] is the '\0' terminator
+        for (int i = 0; i < n; i++) a[i] = {s[i], i};
         sort(a.begin(), a.end());
         for (int i = 0; i < n; i++) p[i] = a[i].second;
         c[p[0]] = 0;
         for (int i = 1; i < n; i++) c[p[i]] = c[p[i - 1]] + (a[i].first != a[i - 1].first);
         for (int k = 0; (1 << k) < n; k++) {
-            for (int i = 0; i < n; i++) p[i] = (p[i] - (1 << k) + n) % n; // cyclic shift
+            for (int i = 0; i < n; i++) p[i] = (p[i] - (1 << k) + n) % n;
             count_sort();
             vector<int> c_new(n);
             c_new[p[0]] = 0;
@@ -68,7 +62,7 @@ struct SuffixArray {
     void build_lcp() {
         int k = 0;
         for (int i = 0; i < n - 1; i++) {
-            int pi = c[i], j = p[pi - 1]; // previous suffix in sorted order
+            int pi = c[i], j = p[pi - 1];
             while (s[i + k] == s[j + k]) k++;
             lcp[pi] = k;
             if (k > 0) k--;

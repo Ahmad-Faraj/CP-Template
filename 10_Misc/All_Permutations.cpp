@@ -24,7 +24,7 @@ vector<int> applyPermutation(const vector<int> &sequence, const vector<int> &per
     return newSequence;
 }
 
-// Applies a permutation k times using binary exponentiation
+// Applies a permutation k times
 vector<int> permute(vector<int> sequence, vector<int> permutation, long long k) {
     while (k > 0) {
         if (k & 1) sequence = applyPermutation(sequence, permutation);

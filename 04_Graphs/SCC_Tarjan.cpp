@@ -75,6 +75,6 @@ struct Strongly_Connected_Components {
         return dag;
     }
 
-    // true if u is an ancestor of v in the DFS forest; uses entry/exit times, not low-links
+    // true if u is an ancestor of v in the DFS forest
     bool is_ancestor(int u, int v) { return tin[u] <= tin[v] && tout[v] <= tout[u]; }
 };

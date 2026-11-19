@@ -3,6 +3,7 @@
 // Usage: LazyBinTreeUniversal t(a); auto m = t.modInit(); m[x] = y; t.modify(l, r, m); t.query(i);
 // Time: modify O(log n * 101) | query O(log n * 101)
 // Indexing: 0-based, half-open [l, r)
+// Not: a general lazy segment tree (no range sum); for that use Segment_Tree_Lazy_Generic.cpp.
 // Note: n >= 1 and values in [0, 100]. Any map is allowed; later maps apply after earlier ones.
 
 #include <bits/stdc++.h>

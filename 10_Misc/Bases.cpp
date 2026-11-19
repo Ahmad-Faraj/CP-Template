@@ -11,7 +11,6 @@
 using namespace std;
 using ll = long long;
 
-// Convert Decimal to any base
 string decimal_to_any_base(ll decimal, ll base) {
     if (decimal == 0) return "0";
     string num = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -25,7 +24,6 @@ string decimal_to_any_base(ll decimal, ll base) {
     return string(result.rbegin(), result.rend());
 }
 
-// Convert any base to decimal
 ll any_base_to_decimal(const string &str, ll base) {
     auto val = [](char c) { return isdigit(c) ? c - '0' : toupper(c) - 'A' + 10; };
     bool neg = !str.empty() && str[0] == '-';

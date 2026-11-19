@@ -1,4 +1,4 @@
-// Convex Hull: Andrew's monotone chain on floating-point points (complex<double>).
+// Convex Hull: convex hull of floating-point points (complex<double>).
 // Use when: "smallest convex polygon containing all points" and the coordinates are not integers.
 // Usage: CH ch; vector<pt> h = ch.hull_points(pts);
 // Handles: duplicates (within EPS), all points equal (returns 1 point), all collinear (2 ends).
@@ -38,17 +38,14 @@ struct CH {
 
         vector<pt> h(2 * n2);
         int k = 0;
-        // lower hull
         for (int i = 0; i < n2; i++) {
             while (k >= 2 && ccw(h[k - 2], h[k - 1], pts[i]) <= EPS) --k;
             h[k++] = pts[i];
         }
-        // upper hull
         for (int i = n2 - 2, t = k + 1; i >= 0; --i) {
             while (k >= t && ccw(h[k - 2], h[k - 1], pts[i]) <= EPS) --k;
             h[k++] = pts[i];
         }
-        // remove the repeated start point
         if (k > 1) --k;
         h.resize(k);
         return h;

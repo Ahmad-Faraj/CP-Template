@@ -26,14 +26,13 @@ struct KMP {
         for (int i = 1; i < n; i++) lp[i] = failure(lp[i - 1], pattern[i]);
     }
 
-    // for "ababab": "", "", "a", "ab", "a", "ab". Fills nol, keeps lp (needs build() first).
     void build_non_overlapping() {
         int n = pattern.size();
         nol.assign(n, 0);
         for (int i = 1, k = 0; i < n; i++) {
             while (k > 0 && pattern[k] != pattern[i]) k = lp[k - 1];
             k += pattern[k] == pattern[i];
-            while (2 * k > i + 1) k = lp[k - 1]; // shrink along the border chain
+            while (2 * k > i + 1) k = lp[k - 1];
             nol[i] = k;
         }
     }
@@ -48,21 +47,20 @@ struct KMP {
         vector<int> ret;
         for (int i = 0, k = 0; i < n; i++) {
             k = failure(k, str[i]);
-            if (k == m) ret.push_back(i - m + 2); // 1-based start
+            if (k == m) ret.push_back(i - m + 2);
         }
         return ret;
     }
 
-    vector<int> count() { // occurrences of each prefix (by length) inside the pattern itself
+    vector<int> count() {
         int m = pattern.size();
         vector<int> cnt(m + 1);
         for (int i = 1; i < m; i++) cnt[lp[i]]++;
         for (int i = m - 1; i > 0; i--) cnt[lp[i - 1]] += cnt[i];
-        for (int i = 0; i <= m; i++) cnt[i]++; // the prefix itself
+        for (int i = 0; i <= m; i++) cnt[i]++;
         return cnt;
     }
 
-    // count the number of occurrences of each prefix of pattern in another string t
     vector<int> countInAnother(const string &t) {
         string s = pattern + "#" + t;
         int n = s.size();
@@ -79,7 +77,7 @@ struct KMP {
     vector<int> get_prefixes() {
         vector<int> indexes = {(int)pattern.size()};
         for (int i = lp[pattern.size() - 1]; i > 0; i = lp[i - 1]) indexes.push_back(i);
-        sort(indexes.begin(), indexes.end()); // increasing
+        sort(indexes.begin(), indexes.end());
         return indexes;
     }
 };

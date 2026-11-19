@@ -1,10 +1,9 @@
 // MEX With Updates: the mex of an array under point assignment a[idx] = value.
 // Use when: "set a[i] = x, then print the mex of the whole array", many times.
 // Usage: Mex m(a); m.update(idx, val); int x = m.mex();
-// Handles: duplicates, negatives, values of any size (frequencies are kept, so repeats are safe).
+// Handles: duplicates, negatives, values of any size.
 // Time: build O(n log n) | update O(log n) | mex O(1)
 // Indexing: 0-based positions
-// Note: the mex never exceeds n, so only 0..n are tracked as missing; other values never matter.
 
 #include <bits/stdc++.h>
 using namespace std;

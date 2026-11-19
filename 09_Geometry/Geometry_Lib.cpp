@@ -14,9 +14,8 @@
 using namespace std;
 
 namespace geo_lib {
-// ! beware that angles are in rad by default
 const double EPS = 1E-9, PI = acos(-1);
-using T = double; //  for some functions , double is a must
+using T = double; // keep double: some functions need it
 typedef complex<T> pt;
 
 int dblcmp(T a, T b) { return fabs(a - b) < EPS ? 0 : a < b ? -1 : 1; }
@@ -31,15 +30,14 @@ T sq(pt a) { return dot(a, a); }
 double dist(pt a, pt b) { return abs(a - b); }
 double length(pt a) { return abs(a); }
 
-// counter clockwise test (ccw) peace sign
-// + if c is on the left of BA , - for the right , 0 if collinear
+// + if c is on the left of a->b, - if on the right, 0 if collinear
 T ccw(pt a, pt b, pt c) { return cross(b - a, c - a); }
 
 pt rotate_by(pt a, double theta) { return a * polar(1.0, theta); }
 pt rotate_around(pt a, pt b, double theta) { return (a - b) * polar(1.0, theta) + b; }
 pt perp(pt p) { return pt(-p.imag(), p.real()); }
 pt translate(pt a, pt b) { return a + b; }
-// scale vector p , with factor around center
+// scale p by factor around center
 pt scale_around(pt center, double factor, pt p) { return center + (p - center) * factor; }
 
 bool collinear(pt a, pt b, pt c) { return fabs(ccw(a, b, c)) < EPS; }
@@ -48,8 +46,7 @@ bool on_ray(pt a, pt b, pt p) {
     if (!collinear(a, b, p)) return false;
     return dblcmp(dot(b - a, p - a), 0) >= 0;
 }
-// check if point p is inside the angle BAC (peace sign)
-// check if point p lies in the angle between ba and ac (bac counter-clockwise)
+// is p inside angle bac (counter-clockwise from ab to ac); -1 when a, b, c are collinear
 int in_angle(pt a, pt b, pt c, pt p) {
     if (fabs(ccw(a, b, c)) < EPS) return -1;
     T abp = ccw(a, b, p), acp = ccw(a, c, p), abc = ccw(a, b, c);
@@ -122,7 +119,7 @@ vector<pt> seg_inters(pt a, pt b, pt c, pt d) {
     if (on_segment(c, d, b)) ret.push_back(b);
     if (on_segment(a, b, c)) ret.push_back(c);
     if (on_segment(a, b, d)) ret.push_back(d);
-    sort(ret.begin(), ret.end(), [](pt p, pt q) { // lexicographic so equal points are adjacent
+    sort(ret.begin(), ret.end(), [](pt p, pt q) {
         return make_pair(p.real(), p.imag()) < make_pair(q.real(), q.imag());
     });
     ret.erase(unique(ret.begin(), ret.end()), ret.end());
@@ -132,10 +129,10 @@ vector<pt> seg_inters(pt a, pt b, pt c, pt d) {
 double segment_point_dist(pt a, pt b, pt p) {
     if (a != b) {
         line l(a, b);
-        if (l.cmp_proj(a, p) && l.cmp_proj(p, b)) // if closest to projection
-            return l.dist(p);                     // output distance to	line
+        if (l.cmp_proj(a, p) && l.cmp_proj(p, b))
+            return l.dist(p);
     }
-    return min(abs(p - a), abs(p - b)); // otherwise distance to A or B
+    return min(abs(p - a), abs(p - b));
 }
 
 double seg_seg_dist(pt a, pt b, pt c, pt d) {
@@ -171,7 +168,7 @@ int point_circle_location(pt center, double radius, pt p) {
 // returns the number of common points (0, 1, 2), written to out
 int intersect_circle_line(pt o, double r, line l, pair<pt, pt> &out) {
     double h2 = r * r - l.sq_dist(o);
-    if (h2 < -EPS) return 0; // line not touching
+    if (h2 < -EPS) return 0;
     if (fabs(h2) < EPS) h2 = 0;
     pt p = l.proj(o);
     pt h = l.v * sqrt(h2) / abs(l.v);
@@ -183,7 +180,7 @@ int intersect_circle_line(pt o, double r, line l, pair<pt, pt> &out) {
 int intersect_circles(pt o1, double r1, pt o2, double r2, pair<pt, pt> &out) {
     pt d = o2 - o1;
     double d2 = sq(d);
-    if (d2 < EPS) return fabs(r1 - r2) <= EPS ? INT_MAX : -1; // same ? inf : else none
+    if (d2 < EPS) return fabs(r1 - r2) <= EPS ? INT_MAX : -1;
     double pd = (d2 + r1 * r1 - r2 * r2) / 2;
     double h2 = r1 * r1 - pd * pd / d2;
     if (h2 < -EPS) return 0;
@@ -212,7 +209,6 @@ bool circle_points_radius_center(pt p1, pt p2, double r, pt &ret) {
     if (det < -EPS) return false;
     if (fabs(det) < EPS) det = 0;
     double h = sqrt(det);
-    // computes c1 , to get the other center reverse p1 and p2
     ret = pt((p1.real() + p2.real()) * 0.5 + (p1.imag() - p2.imag()) * h,
              (p1.imag() + p2.imag()) * 0.5 + (p2.real() - p1.real()) * h);
     return true;
@@ -236,7 +232,6 @@ bool is_convex(const vector<pt> &p) {
 // is a inside polygon p; strict = 1: boundary counts as outside, strict = 0: as inside
 bool in_polygon(const vector<pt> &p, pt a, bool strict = 1) {
     auto above = [](pt p, pt q) { return p.imag() >= q.imag() - EPS; };
-    // check if [PQ] crosses ray from A
     auto ray_cut = [above](pt a, pt p, pt q) {
         return (above(a, q) - above(a, p)) * ccw(a, p, q) > EPS;
     };

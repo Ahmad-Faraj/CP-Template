@@ -65,7 +65,6 @@ public:
         }
     }
 
-    // total occurrences of the patterns in s
     ll count_occurrences(const string &s) {
         ll ans = 0;
         int cur = 0;
@@ -78,7 +77,6 @@ public:
         return ans;
     }
 
-    // ret[id] gets the end position of every match of pattern id
     void get_occ(const string &s, vector<vector<int>> &ret) {
         int cur = 0;
         for (int i = 0; i < (int)s.size(); i++) {
@@ -92,7 +90,7 @@ public:
 
 class aho_corasick {
     int curr_size = 0;
-    static const int LOG = 20; // buckets of size 2^i; if all are used, bucket 0 just grows
+    static const int LOG = 20;
     aho_corasick_node aho[LOG];
     vector<pair<string, int>> list[LOG];
 

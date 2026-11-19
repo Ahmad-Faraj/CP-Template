@@ -12,8 +12,8 @@
 using namespace std;
 
 struct Super_Win_Lose {
-    static constexpr int SL = 100000000; // Super Losing
-    static constexpr int SW = SL + 1;    // Super Winning
+    static constexpr int SL = 100000000;
+    static constexpr int SW = SL + 1;
 
     function<vector<int>(int)> get_moves;
     unordered_map<int, int> memo_normal, memo_misere;
@@ -33,7 +33,7 @@ struct Super_Win_Lose {
         for (int to : moves) {
             int val = grundy_normal(to);
             if (val == SL) return memo_normal[state] = SW;
-            if (val != SW) next.insert(val); // moving to SW hands the opponent the win
+            if (val != SW) next.insert(val);
         }
         return memo_normal[state] = mex(next);
     }
@@ -59,7 +59,7 @@ struct Super_Win_Lose {
             else if (g == SW) sw = true;
             else xor_sum ^= g;
         }
-        if (sl) return false; // a component is already finished: the previous player won
+        if (sl) return false;
         if (sw) return true;
         return xor_sum != 0;
     }

@@ -16,7 +16,7 @@ struct Hash_2D {
     static constexpr int PX = 3731, PY = 2999, MOD = 998244353;
     int n = 0, m = 0;
     vector<int> PWX, PWY;
-    vector<vector<int>> hs; // hs[i][j] = hash of rectangle rows [1, i] x columns [1, j]
+    vector<vector<int>> hs;
 
     static ll add(ll a, ll b) { return (a + b) % MOD; }
     static ll sub(ll a, ll b) { return (a - b + 2 * MOD) % MOD; }

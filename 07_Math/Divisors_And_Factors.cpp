@@ -2,9 +2,9 @@
 // plus sum of sigma(i) for i = 1..n.
 // Use when: "divisors of n", "how many divisors", "prime factors of n" for a few n up to ~1e13.
 // Usage: prime_factorization(n) -> {2,2,3} | get_factors(n) -> {{2,2},{3,1}} | get_divisors(n)
-//        count_divisors(n) | get_sum_div(n) = sum_{i<=n} sigma(i) = sum_{d<=n} d * (n / d)
+//        count_divisors(n) | get_sum_div(n) = sum_{i<=n} sigma(i)
 // Handles: n = 1 (empty factor lists, divisors {1}), primes and prime squares up to 1e18.
-// Time: factor / divisors / count O(sqrt(n)) | get_sum_div O(sqrt(n)) by grouping equal n / d
+// Time: factor / divisors / count O(sqrt(n)) | get_sum_div O(sqrt(n))
 // Indexing: not applicable
 // Note: n >= 1. sqrt(1e18) = 1e9 steps (~1 s), so a prime near 1e18 is slow: use Pollard rho there.
 //       get_sum_div overflows ll past n ~ 3e9. For many n <= 1e7 use the spf table in Sieve.cpp.
@@ -51,7 +51,7 @@ ll count_divisors(ll n) {
     return cnt;
 }
 
-ll get_sum_div(ll x) { // sum_{i=1..x} sigma(i)
+ll get_sum_div(ll x) {
     ll ans = 0;
     for (ll left = 1, right; left <= x; left = right + 1) {
         right = x / (x / left);

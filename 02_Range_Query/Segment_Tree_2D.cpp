@@ -13,7 +13,7 @@ using namespace std;
 
 struct SegTree2D {
     int n, m;
-    int Default = 0; // declared before t: t's initializer reads it
+    int Default = 0;
     vector<vector<int>> t;
 
     SegTree2D(int n, int m) : n(n), m(m), t(4 * n, vector<int>(4 * m, Default)) {}

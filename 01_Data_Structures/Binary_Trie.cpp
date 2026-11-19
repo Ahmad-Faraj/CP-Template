@@ -5,7 +5,7 @@
 // Time: every operation O(LOG)
 // Indexing: none; bits LOG..0 are stored, so values must be in [0, 2^(LOG+1))
 // Note: max_xor / min_xor need a non-empty trie. erase() asserts the value is present.
-// Note: for subarray-XOR problems insert(0) first (the empty prefix). Recursion depth is only LOG.
+// Note: for subarray-XOR problems insert(0) first (the empty prefix).
 
 #include <bits/stdc++.h>
 using namespace std;
@@ -13,7 +13,7 @@ using ll = long long;
 
 template <typename T = int> struct Binary_Trie {
     struct Node {
-        int freq = 0; // stored values passing through here
+        int freq = 0;
         Node *child[2] = {nullptr, nullptr};
     };
 
@@ -73,17 +73,17 @@ template <typename T = int> struct Binary_Trie {
 
     int count(T x, T k) const { // how many stored v have (x ^ v) <= k
         if (k < 0) return 0;
-        if (LOG + 1 < 8 * (int)sizeof(T) && (k >> (LOG + 1))) return cnt; // k above every value
+        if (LOG + 1 < 8 * (int)sizeof(T) && (k >> (LOG + 1))) return cnt;
         int ans = 0;
         Node *cur = root;
         for (int i = LOG; i >= 0 && cur; i--) {
             bool xb = get_bit(x, i), kb = get_bit(k, i);
             if (kb) {
-                if (cur->child[xb]) ans += cur->child[xb]->freq; // this bit equal: x ^ v < k
+                if (cur->child[xb]) ans += cur->child[xb]->freq;
                 cur = cur->child[!xb];
             } else cur = cur->child[xb];
         }
-        if (cur) ans += cur->freq; // x ^ v == k
+        if (cur) ans += cur->freq;
         return ans;
     }
 
@@ -91,7 +91,7 @@ template <typename T = int> struct Binary_Trie {
     int size() const { return cnt; }
 
   private:
-    void erase(T x, int bit, Node *cur) { // nodes whose count drops to 0 are freed
+    void erase(T x, int bit, Node *cur) {
         if (bit < 0) return void(--cnt);
         bool b = get_bit(x, bit);
         erase(x, bit - 1, cur->child[b]);

@@ -1,20 +1,19 @@
 // NTT Large: polynomial product mod 998244353 for ANY length, even past NTT's 2^23 limit.
 // Use when: product length > 2^23 (~8.4e6) under 998244353, where plain NTT has no root that big.
 // Usage: vector<int> c = NTT_Large::fast_ntt_poly_mul(a, b);  // a, b are restored on return
-// Handles: any lengths >= 1, lengths that are not powers of two (pads to y * 2^x with y <= 64).
-// Time: O(n log n + n * lim), lim = 64 (naive base case on blocks of <= 64)
+// Handles: any lengths >= 1, lengths that are not powers of two.
+// Time: O(n log n + 64 n)
 // Indexing: 0-based; c[k] = sum a[i] * b[j] over i + j == k (mod 998244353), |c| = |a| + |b| - 1
-// Note: inputs in [0, 998244353), non-empty, |a| + |b| <= ~5e8. Computes a * b mod (X^n - g^x) by
-//       X^n - c = (X^(n/2) - sqrt c)(X^(n/2) + sqrt c); recursion depth ~log2(n / 64) only.
+// Note: inputs in [0, 998244353), non-empty, |a| + |b| <= ~5e8.
 
 #include <bits/stdc++.h>
 using namespace std;
 using ll = long long;
 
 struct NTT_Large {
-    static constexpr int special_mod = 998244353; // 119 * 2^23 + 1
+    static constexpr int special_mod = 998244353;
     static constexpr int primitive_root = 3;
-    static constexpr int lim = 64; // naive multiplication at or below this size
+    static constexpr int lim = 64;
 
     static ll powrmod(ll b, ll n, ll m) {
         ll result = 1;
@@ -26,13 +25,12 @@ struct NTT_Large {
         return result;
     }
 
-    static int mod_div(int x) { // x / 2 mod special_mod, x in [0, 2 * special_mod)
+    static int mod_div(int x) {
         if (x >= special_mod) x -= special_mod;
         if (x & 1) x += special_mod;
         return x / 2;
     }
 
-    // a mod (X^(n/2) - g^x) and a mod (X^(n/2) + g^x)
     static pair<vector<int>, vector<int>> mod_poly(vector<int> &a, int x) {
         int n = a.size();
         int c = powrmod(primitive_root, x, special_mod);
@@ -47,10 +45,9 @@ struct NTT_Large {
         return {a_minus, a_plus};
     }
 
-    // a * b mod (X^n - g^x), with n = a.size() = b.size()
     static vector<int> fast_ntt_poly_mul(vector<int> &a, vector<int> &b, int x) {
         int n = a.size();
-        if (n <= lim || (n & 1)) { // naive O(n^2), reduced every 16 rows so u64 never overflows
+        if (n <= lim || (n & 1)) {
             vector<unsigned long long> temp(2 * n);
             for (int i = 0; i < n; i++) {
                 for (int j = 0; j < n; j++) temp[i + j] += (ll)a[i] * b[j];
@@ -64,7 +61,7 @@ struct NTT_Large {
             return result;
         }
         int x1 = x / 2;
-        int x2 = (x1 + special_mod / 2) % (special_mod - 1); // g^x2 = -g^x1
+        int x2 = (x1 + special_mod / 2) % (special_mod - 1);
         vector<int> ans_minus, ans_plus;
         {
             auto [a_minus, a_plus] = mod_poly(a, x1);
@@ -85,7 +82,7 @@ struct NTT_Large {
     static vector<int> fast_ntt_poly_mul(vector<int> &a, vector<int> &b) {
         int n1 = a.size(), n2 = b.size();
         int len = n1 + n2 - 1;
-        int x = 1; // pad to n = y * 2^x with y <= lim
+        int x = 1;
         while ((lim << x) < len) ++x;
         int y = ((len - 1) >> x) + 1;
         int n = (y << x);

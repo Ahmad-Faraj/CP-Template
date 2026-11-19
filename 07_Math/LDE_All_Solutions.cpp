@@ -27,7 +27,7 @@ ll extended_gcd(ll a, ll b, ll &x, ll &y) {
 
 bool find_any_solution(ll a, ll b, ll c, ll &x0, ll &y0, ll &g) {
     g = extended_gcd(abs(a), abs(b), x0, y0);
-    if (g == 0) return x0 = y0 = 0, c == 0; // a = b = 0
+    if (g == 0) return x0 = y0 = 0, c == 0;
     if (c % g) return false;
     x0 *= c / g;
     y0 *= c / g;

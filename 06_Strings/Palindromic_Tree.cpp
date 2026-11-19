@@ -6,8 +6,7 @@
 // Handles: any contiguous alphabet via sigma and base; per-node len, occ, firstPos, suffix link.
 // Time: addChar O(1) amortized | propagateOccurrences O(k log k), k = distinct palindromes
 // Indexing: characters go in at 1-based positions 1, 2, 3, ...; nodes 0 (len -1) and 1 (len 0) are
-//           the
-//           two roots, real palindromes are nodes 2 .. tree.size() - 1; firstPos = 1-based END
+//           the two roots, real palindromes are nodes 2 .. tree.size() - 1; firstPos = 1-based END
 //           position
 // Note: call propagateOccurrences() exactly once, after the last addChar, before reading occ.
 //       Memory: sigma ints per node (26 * 4 bytes * n), about 100 MB at n = 1e6.
@@ -28,15 +27,15 @@ struct PalindromicTree {
     };
 
     vector<Node> tree;
-    string s;  // processed string, with a dummy prefix
-    int last;  // node of the longest suffix palindrome so far
-    int SIGMA; // alphabet size
-    char BASE; // first character of the alphabet
+    string s;
+    int last;
+    int SIGMA;
+    char BASE;
 
     PalindromicTree(int maxLen, int sigma, char base) : s("#"), last(1), SIGMA(sigma), BASE(base) {
         tree.reserve(maxLen + 3);
-        tree.emplace_back(sigma, -1); // imaginary root (len = -1)
-        tree.emplace_back(sigma, 0);  // empty root     (len = 0)
+        tree.emplace_back(sigma, -1);
+        tree.emplace_back(sigma, 0);
         tree[0].link = 0;
         tree[1].link = 0;
     }
@@ -45,12 +44,12 @@ struct PalindromicTree {
         int c = ch - BASE;
         s.push_back(ch);
         int cur = last;
-        while (true) { // longest suffix palindrome that can be extended by ch
+        while (true) {
             int curlen = tree[cur].len;
             if (pos - 1 - curlen >= 0 && s[pos - 1 - curlen] == ch) break;
             cur = tree[cur].link;
         }
-        if (tree[cur].next[c]) { // already exists
+        if (tree[cur].next[c]) {
             last = tree[cur].next[c];
             tree[last].occ++;
             return;
@@ -79,7 +78,7 @@ struct PalindromicTree {
         propagateOccurrences();
     }
 
-    void propagateOccurrences() { // push occ from longer palindromes to their suffix links
+    void propagateOccurrences() {
         int k = tree.size();
         vector<int> order(k);
         iota(order.begin(), order.end(), 0);

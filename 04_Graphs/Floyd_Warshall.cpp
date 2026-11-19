@@ -17,7 +17,7 @@ template <typename T = ll> struct Floyd {
 
     int n;
     vector<vector<T>> dist;
-    vector<vector<int>> nxt; // nxt[u][v] = the next node after u on a shortest u..v path
+    vector<vector<int>> nxt;
 
     Floyd(int n) : n(n), dist(n + 1, vector<T>(n + 1, INF)), nxt(n + 1, vector<int>(n + 1, -1)) {
         for (int i = 1; i <= n; i++) dist[i][i] = 0, nxt[i][i] = i;
@@ -33,10 +33,9 @@ template <typename T = ll> struct Floyd {
     void build() {
         for (int k = 1; k <= n; k++)
             for (int u = 1; u <= n; u++) {
-                if (is_inf(dist[u][k])) continue; // skip, or INF + INF silently overflows
+                if (is_inf(dist[u][k])) continue;
                 for (int v = 1; v <= n; v++) {
                     if (is_inf(dist[k][v])) continue;
-                    // clamp (KACTL): negative cycles would overflow
                     T nd = max(dist[u][k] + dist[k][v], -INF);
                     if (nd < dist[u][v]) {
                         dist[u][v] = nd;
@@ -68,12 +67,11 @@ template <typename T = ll> struct Floyd {
             u = nxt[u][v];
             if (u == -1) return {};
             p.push_back(u);
-            if ((int)p.size() > n + 1) return {}; // a negative cycle makes the walk unbounded
+            if ((int)p.size() > n + 1) return {};
         }
         return p;
     }
 
-    // repairs all pairs in O(n^2)
     void add_edge_after_build(int u, int v, T w, bool bidirectional = false) {
         auto relax = [&](int a, int b, T weight) {
             if (weight >= dist[a][b]) return;
