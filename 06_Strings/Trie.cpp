@@ -4,6 +4,7 @@
 // Usage: Trie<> t; t.insert(s); t.erase(s); t.search(s); t.is_prefix(p); t.count_prefix(p);
 // Handles: insert, erase, exact match, prefix test, prefix count. Mode selects lowercase /
 //          uppercase / digits.
+// Not: XOR / bit queries on numbers (use Binary_Trie.cpp).
 // Time: every operation O(length of the word)
 // Indexing: none
 // Note: erase() removes one occurrence and only if the word is present. Set Mode to match your

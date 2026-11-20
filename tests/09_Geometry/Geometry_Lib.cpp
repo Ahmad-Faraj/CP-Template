@@ -32,9 +32,11 @@ bool o_onseg(P a, P b, P p) {
     if (orient(a, b, p) != 0) return false;
     return min(a.x, b.x) <= p.x && p.x <= max(a.x, b.x) && min(a.y, b.y) <= p.y && p.y <= max(a.y, b.y);
 }
-// exact angle class of v in [0, 2pi): (half, then cross). origin counts as angle 0.
+// exact angle class of v in [0, 2pi): (half, then cross).
 int half(P v) { return (v.y < 0 || (v.y == 0 && v.x < 0)) ? 1 : 0; }
-bool ang_less(P a, P b) { // angle(a) < angle(b), both in [0, 2pi)
+bool ang_less(P a, P b) { // angle(a) < angle(b), both in [0, 2pi); the origin sorts first
+    bool za = a.x == 0 && a.y == 0, zb = b.x == 0 && b.y == 0;
+    if (za || zb) return za && !zb;
     if (half(a) != half(b)) return half(a) < half(b);
     return cr(a, b) > 0;
 }

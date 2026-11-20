@@ -11,7 +11,7 @@
 // Note: misere is NOT "invert the answer" except for plain Nim (misere_disjunctive_long).
 //       normal_selective_variant is only proven for Nim piles; on Grundy values of other games
 //       it is unproven (matched brute force on small cases).
-//       compute_grundy / Grundy_Graph recurse: depth up to the longest chain of moves.
+//       Grundy_Graph recurses: depth up to the longest chain of moves.
 
 #include <bits/stdc++.h>
 using namespace std;
@@ -29,10 +29,18 @@ int mex(const vector<int> &values) { // smallest non-negative integer not in val
 // subtraction game: from h you may remove any mv in moves (mv >= 1, h >= mv). dp sized > h, all -1.
 int compute_grundy(int h, const vector<int> &moves, vector<int> &dp) {
     if (dp[h] != -1) return dp[h];
-    vector<int> S;
-    for (int mv : moves)
-        if (h >= mv) S.push_back(compute_grundy(h - mv, moves, dp));
-    return dp[h] = mex(S);
+    int lo = h;
+    while (lo > 0 && dp[lo - 1] == -1) lo--;
+    vector<char> seen(moves.size() + 2);
+    for (int x = lo; x <= h; x++) { // bottom-up: no deep recursion, no allocation per state
+        fill(seen.begin(), seen.end(), 0);
+        for (int mv : moves)
+            if (x >= mv && dp[x - mv] >= 0 && dp[x - mv] <= (int)moves.size()) seen[dp[x - mv]] = 1;
+        int g = 0;
+        while (seen[g]) g++;
+        dp[x] = g;
+    }
+    return dp[h];
 }
 
 // Grundy values on an explicit acyclic move graph, memoised

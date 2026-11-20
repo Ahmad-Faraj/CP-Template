@@ -56,6 +56,8 @@ int in_angle(pt a, pt b, pt c, pt p) {
 
 // sort by angle in [0, 2pi) starting from the +x axis (the origin counts as angle 0)
 bool polar_comp(const pt &a, const pt &b) {
+    bool za = abs(a) < EPS, zb = abs(b) < EPS; // the origin sorts first
+    if (za || zb) return za && !zb;
     int ha = a.imag() > EPS || (fabs(a.imag()) < EPS && a.real() >= -EPS);
     int hb = b.imag() > EPS || (fabs(b.imag()) < EPS && b.real() >= -EPS);
     if (ha != hb) return ha > hb;

@@ -10,8 +10,9 @@ map<string, pair<long long, long long>> cov;
 mt19937_64 rng(4242);
 void chk(const string &m, bool ok) { cov[m].first++, cov[m].second += !ok; }
 
-pair<ll, ll> naive(const string &s, int l, int r) { // 1-based inclusive range of a 0-based string
-    const ll P[2] = {31, 37}, M[2] = {1000000007, 1000000009};
+// 1-based inclusive range of a 0-based string, with the bases the tree picked at random
+template <class T, bool B> pair<ll, ll> naive(const string &s, int l, int r) {
+    const ll *P = Hash_LazySegmentTree<T, B>::P, M[2] = {1000000007, 1000000009};
     ll h[2] = {0, 0};
     for (int k = 0; k < 2; k++) {
         ll p = 1;
@@ -42,7 +43,7 @@ template <class T, bool B> void run(int it) {
             s[l - 1] = c;
         } else if (t == 2) {
             auto h = st.query(l, r);
-            chk(tag + ":query", pair<ll, ll>(h.first, h.second) == naive(s, l, r));
+            chk(tag + ":query", pair<ll, ll>(h.first, h.second) == naive<T, B>(s, l, r));
         } else {
             int a = 1 + rng() % (n - (r - l)), b = a + (r - l); // same length, random place
             bool eq = s.substr(l - 1, r - l + 1) == s.substr(a - 1, b - a + 1);
@@ -57,7 +58,7 @@ template <class T, bool B> void run(int it) {
     for (int l = 1; l <= n; l++)
         for (int r = l; r <= n; r++) {
             auto h = st.query(l, r);
-            ok &= pair<ll, ll>(h.first, h.second) == naive(s, l, r);
+            ok &= pair<ll, ll>(h.first, h.second) == naive<T, B>(s, l, r);
             for (int a = 1; a + (r - l) <= n; a++) {
                 bool eq = s.compare(l - 1, r - l + 1, s, a - 1, r - l + 1) == 0;
                 bool heq = st.query(a, a + (r - l)) == h;

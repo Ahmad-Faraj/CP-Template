@@ -14,8 +14,15 @@ using namespace std;
 using ll = long long;
 
 template <typename T = int, bool Base = 0> struct Hash_LazySegmentTree {
-    static constexpr ll M[2] = {1000000007, 1000000009}, P[2] = {31, 37};
-    static constexpr ll INVP1[2] = {233333335, 972222231}; // (P - 1)^-1 mod M
+    static constexpr ll M[2] = {1000000007, 1000000009};
+    inline static ll P[2] = {0, 0}, INVP1[2]; // random bases, shared by every tree
+
+    static ll power(ll b, ll e, ll m) {
+        ll r = 1;
+        for (b %= m; e; e >>= 1, b = b * b % m)
+            if (e & 1) r = r * b % m;
+        return r;
+    }
 
     string s;
     int n, size;
@@ -31,6 +38,13 @@ template <typename T = int, bool Base = 0> struct Hash_LazySegmentTree {
     };
 
     explicit Hash_LazySegmentTree(int n, const string &s) : s(s), n(n) {
+        if (!P[0]) {
+            mt19937_64 rng(chrono::steady_clock::now().time_since_epoch().count());
+            for (int k = 0; k < 2; k++) {
+                P[k] = 1000 + rng() % (M[k] - 2000);
+                INVP1[k] = power(P[k] - 1, M[k] - 2, M[k]);
+            }
+        }
         for (int k = 0; k < 2; k++) {
             pw[k].assign(n + 1, 1);
             for (int i = 1; i <= n; i++) pw[k][i] = pw[k][i - 1] * P[k] % M[k];
